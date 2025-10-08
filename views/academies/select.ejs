@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>학원 선택 - 클래빗</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f5f5f5;
+        }
+
+        .academy-select-container {
+            max-width: 1200px;
+            width: 100%;
+            padding: 40px 20px;
+        }
+
+        .academy-select-container.has-academies {
+            display: block;
+        }
+
+        .select-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .select-header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+
+        /* 빈 상태 - 화면 중앙 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-icon {
+            font-size: 80px;
+            margin-bottom: 24px;
+        }
+
+        .empty-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .empty-text {
+            color: #666;
+            margin-bottom: 32px;
+        }
+
+        .btn-add-academy {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 32px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            text-decoration: none;
+        }
+
+        .btn-add-academy:hover {
+            background: #0056B3;
+        }
+
+        /* 학원 그리드 */
+        .academy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        /* 학원 카드 */
+        .academy-card {
+            background: white;
+            border: 2px solid #E0E0E0;
+            border-radius: 12px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .academy-card:hover {
+            border-color: #007BFF;
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .academy-card.selected {
+            border-color: #007BFF;
+            background: #F0F8FF;
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+        }
+
+        .academy-icon {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .academy-name {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .academy-info {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .academy-info p {
+            margin: 4px 0;
+        }
+
+        /* 추가 카드 */
+        .add-card {
+            border-style: dashed;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+        }
+
+        .add-card:hover {
+            background: #F8F9FA;
+        }
+
+        .add-icon {
+            font-size: 48px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+
+        .add-card p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        /* 배지 */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .badge-success {
+            background: #D4EDDA;
+            color: #155724;
+        }
+
+        /* 액션 버튼 */
+        .action-buttons {
+            text-align: center;
+        }
+
+        .btn-large {
+            padding: 16px 48px;
+            font-size: 18px;
+            min-width: 280px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-large:hover:not(:disabled) {
+            background: #0056B3;
+        }
+
+        .btn-large:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="academy-select-container <%= academies.length > 0 ? 'has-academies' : '' %>">
+        <% if (academies.length > 0) { %>
+            <div class="select-header">
+                <h1>🏫 학원 선택</h1>
+                <p class="subtitle">관리할 학원을 선택해주세요</p>
+            </div>
+        <% } %>
+
+        <div class="academy-list" id="academyList">
+            <% if (academies.length === 0) { %>
+                <!-- 학원이 없는 경우 -->
+                <div class="empty-state">
+                    <div class="empty-icon">🏫</div>
+                    <p class="empty-title">등록된 학원이 없습니다</p>
+                    <p class="empty-text">학원을 추가하여 시작해보세요</p>
+                    <a href="/academies/new" class="btn-add-academy">
+                        <span style="font-size: 24px;">+</span>
+                        학원 추가하기
+                    </a>
+                </div>
+            <% } else { %>
+                <!-- 학원 목록 -->
+                <div class="academy-grid">
+                    <% academies.forEach(academy => { %>
+                        <div class="academy-card" data-academy-id="<%= academy.id %>">
+                            <div class="academy-icon">📚</div>
+                            <h3 class="academy-name"><%= academy.name %></h3>
+                            <div class="academy-info">
+                                <p>학원등록번호: <%= academy.registration_number %></p>
+                                <p>사업자번호: <%= academy.business_number %></p>
+                            </div>
+                            <% if (academy.verification_status === 'verified') { %>
+                                <span class="badge badge-success">✓ 인증완료</span>
+                            <% } %>
+                        </div>
+                    <% }) %>
+
+                    <!-- 추가 버튼 -->
+                    <div class="academy-card add-card" onclick="location.href='/academies/new'">
+                        <div class="add-icon">+</div>
+                        <p>새 학원 추가</p>
+                    </div>
+                </div>
+
+                <!-- 입장 버튼 -->
+                <div class="action-buttons">
+                    <button class="btn-large" id="enterBtn" disabled>
+                        선택한 학원으로 입장하기
+                    </button>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const academyCards = document.querySelectorAll('.academy-card:not(.add-card)');
+            const enterBtn = document.getElementById('enterBtn');
+            let selectedAcademyId = null;
+
+            // 학원 입장 함수
+            async function enterAcademy(academyId) {
+                if (!academyId) {
+                    alert('학원을 선택해주세요.');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/academies/enter', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ academyId: academyId })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        window.location.href = data.redirectUrl || '/dashboard';
+                    } else {
+                        alert(data.error || '입장 중 오류가 발생했습니다.');
+                    }
+
+                } catch (error) {
+                    console.error('입장 오류:', error);
+                    alert('입장 중 오류가 발생했습니다.');
+                }
+            }
+
+            // 학원 카드 클릭
+            academyCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // 모든 카드 선택 해제
+                    academyCards.forEach(c => c.classList.remove('selected'));
+
+                    // 클릭한 카드 선택
+                    this.classList.add('selected');
+                    selectedAcademyId = this.dataset.academyId;
+
+                    // 입장 버튼 활성화
+                    if (enterBtn) {
+                        enterBtn.disabled = false;
+                    }
+                });
+
+                // 더블클릭 이벤트 추가
+                card.addEventListener('dblclick', function() {
+                    const academyId = this.dataset.academyId;
+                    enterAcademy(academyId);
+                });
+            });
+
+            // 입장 버튼 클릭
+            if (enterBtn) {
+                enterBtn.addEventListener('click', function() {
+                    enterAcademy(selectedAcademyId);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

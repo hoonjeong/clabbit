@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>출결 체크 - 키오스크</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .kiosk-container {
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+        }
+
+        .kiosk-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .kiosk-logo {
+            font-size: 48px;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .kiosk-time {
+            font-size: 24px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 5px;
+        }
+
+        .kiosk-date {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .kiosk-main {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .input-display {
+            background: #f5f7fa;
+            border: 2px solid #e1e8ed;
+            border-radius: 16px;
+            padding: 20px;
+            font-size: 32px;
+            text-align: center;
+            margin-bottom: 30px;
+            min-height: 70px;
+            letter-spacing: 8px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .input-display.empty {
+            color: #a0aec0;
+            letter-spacing: normal;
+            font-size: 20px;
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .key-btn {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 0;
+            font-size: 28px;
+            font-weight: 600;
+            color: #2d3748;
+            cursor: pointer;
+            transition: all 0.2s;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .key-btn:hover {
+            background: #edf2f7;
+            transform: scale(1.05);
+        }
+
+        .key-btn:active {
+            background: #e2e8f0;
+            transform: scale(0.95);
+        }
+
+        .key-btn.delete {
+            background: #fed7d7;
+            border-color: #fc8181;
+            color: #c53030;
+        }
+
+        .key-btn.delete:hover {
+            background: #feb2b2;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .action-btn {
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .action-btn.check-in {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            box-shadow: 0 4px 14px rgba(72, 187, 120, 0.4);
+        }
+
+        .action-btn.check-out {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            box-shadow: 0 4px 14px rgba(66, 153, 225, 0.4);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .admin-link {
+            text-align: center;
+        }
+
+        .admin-link a {
+            color: #718096;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .admin-link a:hover {
+            color: #4a5568;
+            text-decoration: underline;
+        }
+
+        /* 결과 메시지 */
+        .result-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .result-overlay.show {
+            display: flex;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .result-box {
+            background: white;
+            border-radius: 24px;
+            padding: 60px;
+            text-align: center;
+            animation: scaleIn 0.3s;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .result-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .result-icon.success {
+            color: #48bb78;
+        }
+
+        .result-icon.error {
+            color: #f56565;
+        }
+
+        .result-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2d3748;
+        }
+
+        .result-message {
+            font-size: 20px;
+            color: #718096;
+            margin-bottom: 10px;
+        }
+
+        .result-time {
+            font-size: 18px;
+            color: #a0aec0;
+        }
+
+        .result-sessions {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 12px;
+        }
+
+        .result-sessions-label {
+            font-size: 16px;
+            color: #718096;
+            margin-bottom: 5px;
+        }
+
+        .result-sessions-count {
+            font-size: 28px;
+            font-weight: bold;
+            color: #4299e1;
+        }
+
+        /* 아이콘 */
+        .icon {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            vertical-align: middle;
+        }
+
+        /* 반응형 */
+        @media (max-width: 640px) {
+            .kiosk-logo { font-size: 36px; }
+            .kiosk-time { font-size: 20px; }
+            .kiosk-date { font-size: 16px; }
+            .input-display { font-size: 24px; }
+            .key-btn { font-size: 24px; height: 70px; }
+            .action-btn { font-size: 20px; padding: 16px; }
+        }
+
+        /* 전체화면 모드 */
+        .fullscreen-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .fullscreen-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- 전체화면 버튼 -->
+    <button class="fullscreen-btn" onclick="toggleFullscreen()">
+        전체화면
+    </button>
+
+    <div class="kiosk-container">
+        <!-- 헤더 -->
+        <div class="kiosk-header">
+            <div class="kiosk-logo">클래빗 학원</div>
+            <div class="kiosk-time" id="currentTime">00:00:00</div>
+            <div class="kiosk-date" id="currentDate">2025년 1월 1일 월요일</div>
+        </div>
+
+        <!-- 메인 -->
+        <div class="kiosk-main">
+            <!-- 입력 디스플레이 -->
+            <div class="input-display empty" id="inputDisplay">
+                전화번호 뒷 4자리를 입력하세요
+            </div>
+
+            <!-- 숫자 키패드 -->
+            <div class="keypad">
+                <button class="key-btn" onclick="appendNumber('1')">1</button>
+                <button class="key-btn" onclick="appendNumber('2')">2</button>
+                <button class="key-btn" onclick="appendNumber('3')">3</button>
+                <button class="key-btn" onclick="appendNumber('4')">4</button>
+                <button class="key-btn" onclick="appendNumber('5')">5</button>
+                <button class="key-btn" onclick="appendNumber('6')">6</button>
+                <button class="key-btn" onclick="appendNumber('7')">7</button>
+                <button class="key-btn" onclick="appendNumber('8')">8</button>
+                <button class="key-btn" onclick="appendNumber('9')">9</button>
+                <button class="key-btn" onclick="clearInput()">C</button>
+                <button class="key-btn" onclick="appendNumber('0')">0</button>
+                <button class="key-btn delete" onclick="deleteLastNumber()">←</button>
+            </div>
+
+            <!-- 액션 버튼 -->
+            <div class="action-buttons">
+                <button class="action-btn check-in" id="checkInBtn" onclick="doCheckIn()" disabled>
+                    <span>📥</span> 등원
+                </button>
+                <button class="action-btn check-out" id="checkOutBtn" onclick="doCheckOut()" disabled>
+                    <span>📤</span> 하원
+                </button>
+            </div>
+
+            <!-- 관리자 링크 -->
+            <div class="admin-link">
+                <a href="/dashboard">관리자 페이지로 이동</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 결과 오버레이 -->
+    <div class="result-overlay" id="resultOverlay" onclick="hideResult()">
+        <div class="result-box" onclick="event.stopPropagation()">
+            <div class="result-icon" id="resultIcon"></div>
+            <div class="result-title" id="resultTitle"></div>
+            <div class="result-message" id="resultMessage"></div>
+            <div class="result-time" id="resultTime"></div>
+            <div class="result-sessions" id="resultSessions" style="display: none;">
+                <div class="result-sessions-label">남은 수업</div>
+                <div class="result-sessions-count" id="resultSessionsCount"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let inputCode = '';
+        let isProcessing = false;
+
+        // 시간 업데이트
+        function updateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('ko-KR', { hour12: false });
+            const dateStr = now.toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                weekday: 'long'
+            });
+
+            document.getElementById('currentTime').textContent = timeStr;
+            document.getElementById('currentDate').textContent = dateStr;
+        }
+
+        // 초기 시간 설정 및 1초마다 업데이트
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // 숫자 입력
+        function appendNumber(num) {
+            if (inputCode.length < 10) {
+                inputCode += num;
+                updateDisplay();
+            }
+        }
+
+        // 마지막 숫자 삭제
+        function deleteLastNumber() {
+            if (inputCode.length > 0) {
+                inputCode = inputCode.slice(0, -1);
+                updateDisplay();
+            }
+        }
+
+        // 입력 초기화
+        function clearInput() {
+            inputCode = '';
+            updateDisplay();
+        }
+
+        // 디스플레이 업데이트
+        function updateDisplay() {
+            const display = document.getElementById('inputDisplay');
+            const checkInBtn = document.getElementById('checkInBtn');
+            const checkOutBtn = document.getElementById('checkOutBtn');
+
+            if (inputCode.length > 0) {
+                display.textContent = '*'.repeat(inputCode.length);
+                display.classList.remove('empty');
+
+                // 4자리 이상 입력시 버튼 활성화
+                if (inputCode.length >= 4) {
+                    checkInBtn.disabled = false;
+                    checkOutBtn.disabled = false;
+                } else {
+                    checkInBtn.disabled = true;
+                    checkOutBtn.disabled = true;
+                }
+            } else {
+                display.textContent = '전화번호 뒷 4자리를 입력하세요';
+                display.classList.add('empty');
+                checkInBtn.disabled = true;
+                checkOutBtn.disabled = true;
+            }
+        }
+
+        // 등원 처리
+        async function doCheckIn() {
+            if (isProcessing || inputCode.length < 4) return;
+
+            isProcessing = true;
+            try {
+                const response = await fetch('/api/attendance/check-in', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: inputCode, method: 'kiosk' })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showResult('success', '등원 완료', result.message, result.data);
+                    playSound('success');
+                } else {
+                    showResult('error', '등원 실패', result.error || result.message);
+                    playSound('error');
+                }
+            } catch (error) {
+                showResult('error', '오류 발생', '네트워크 오류가 발생했습니다');
+                playSound('error');
+            } finally {
+                isProcessing = false;
+                clearInput();
+            }
+        }
+
+        // 하원 처리
+        async function doCheckOut() {
+            if (isProcessing || inputCode.length < 4) return;
+
+            isProcessing = true;
+            try {
+                const response = await fetch('/api/attendance/check-out', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: inputCode, method: 'kiosk' })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showResult('success', '하원 완료', result.message, result.data);
+                    playSound('success');
+                } else {
+                    showResult('error', '하원 실패', result.error || result.message);
+                    playSound('error');
+                }
+            } catch (error) {
+                showResult('error', '오류 발생', '네트워크 오류가 발생했습니다');
+                playSound('error');
+            } finally {
+                isProcessing = false;
+                clearInput();
+            }
+        }
+
+        // 결과 표시
+        function showResult(type, title, message, data = {}) {
+            const overlay = document.getElementById('resultOverlay');
+            const icon = document.getElementById('resultIcon');
+            const titleEl = document.getElementById('resultTitle');
+            const messageEl = document.getElementById('resultMessage');
+            const timeEl = document.getElementById('resultTime');
+            const sessionsEl = document.getElementById('resultSessions');
+            const sessionsCountEl = document.getElementById('resultSessionsCount');
+
+            // 아이콘 설정
+            if (type === 'success') {
+                icon.innerHTML = '✅';
+                icon.className = 'result-icon success';
+            } else {
+                icon.innerHTML = '❌';
+                icon.className = 'result-icon error';
+            }
+
+            // 내용 설정
+            titleEl.textContent = title;
+            messageEl.textContent = message;
+
+            // 시간 표시
+            if (data.check_time) {
+                const time = new Date(data.check_time);
+                timeEl.textContent = time.toLocaleTimeString('ko-KR');
+            } else {
+                timeEl.textContent = '';
+            }
+
+            // 횟수제 표시
+            if (data.remaining_sessions !== null && data.remaining_sessions !== undefined) {
+                sessionsEl.style.display = 'block';
+                sessionsCountEl.textContent = `${data.remaining_sessions}회`;
+            } else {
+                sessionsEl.style.display = 'none';
+            }
+
+            // 오버레이 표시
+            overlay.classList.add('show');
+
+            // 3초 후 자동 닫기
+            setTimeout(() => {
+                hideResult();
+            }, 3000);
+        }
+
+        // 결과 숨기기
+        function hideResult() {
+            const overlay = document.getElementById('resultOverlay');
+            overlay.classList.remove('show');
+        }
+
+        // 소리 재생 (간단한 비프음)
+        function playSound(type) {
+            try {
+                const context = new AudioContext();
+                const oscillator = context.createOscillator();
+                const gainNode = context.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(context.destination);
+
+                if (type === 'success') {
+                    oscillator.frequency.value = 800;
+                    oscillator.type = 'sine';
+                } else {
+                    oscillator.frequency.value = 300;
+                    oscillator.type = 'square';
+                }
+
+                gainNode.gain.setValueAtTime(0.3, context.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.2);
+
+                oscillator.start(context.currentTime);
+                oscillator.stop(context.currentTime + 0.2);
+            } catch (e) {
+                // 소리 재생 실패 시 무시
+            }
+        }
+
+        // 전체화면 토글
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.error('전체화면 전환 실패:', err);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // 키보드 입력 지원
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '0' && e.key <= '9') {
+                appendNumber(e.key);
+            } else if (e.key === 'Backspace') {
+                deleteLastNumber();
+            } else if (e.key === 'Delete' || e.key === 'Escape') {
+                clearInput();
+            } else if (e.key === 'Enter') {
+                // 엔터키로 등원 처리
+                if (!document.getElementById('checkInBtn').disabled) {
+                    doCheckIn();
+                }
+            }
+        });
+
+        // 터치 이벤트 최적화
+        document.querySelectorAll('.key-btn, .action-btn').forEach(btn => {
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                btn.click();
+            });
+        });
+    </script>
+</body>
+</html>

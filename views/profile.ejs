@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+    <%- include('components/dashboard-header', { academyName, page: 'profile', userName: userName }) %>
+
+    <main class="dashboard-main">
+        <div class="dashboard-container" style="max-width: 800px; margin: 0 auto;">
+            <!-- 페이지 헤더 -->
+            <div class="page-header" style="margin-bottom: 32px;">
+                <h1 class="page-title">👤 내정보</h1>
+            </div>
+
+            <!-- 사용자 정보 카드 -->
+            <div class="card" style="background: white; border-radius: 16px; padding: 32px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin-bottom: 24px;">
+                <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 24px; color: #333;">기본 정보</h2>
+
+                <div class="info-grid" style="display: grid; gap: 20px;">
+                    <div class="info-item">
+                        <label style="display: block; font-size: 14px; color: #666; margin-bottom: 8px;">이름</label>
+                        <div style="font-size: 16px; color: #333; font-weight: 500;"><%= user.name %></div>
+                    </div>
+
+                    <div class="info-item">
+                        <label style="display: block; font-size: 14px; color: #666; margin-bottom: 8px;">이메일</label>
+                        <div style="font-size: 16px; color: #333;"><%= user.email %></div>
+                    </div>
+
+                    <div class="info-item">
+                        <label style="display: block; font-size: 14px; color: #666; margin-bottom: 8px;">전화번호</label>
+                        <div style="font-size: 16px; color: #333;"><%= user.phone || '-' %></div>
+                    </div>
+
+                    <div class="info-item">
+                        <label style="display: block; font-size: 14px; color: #666; margin-bottom: 8px;">가입일</label>
+                        <div style="font-size: 16px; color: #333;"><%= new Date(user.created_at).toLocaleDateString('ko-KR') %></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 학원 정보 카드 -->
+            <div class="card" style="background: white; border-radius: 16px; padding: 32px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin-bottom: 24px;">
+                <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 24px; color: #333;">관리 중인 학원</h2>
+
+                <div id="academyList" style="display: grid; gap: 12px;">
+                    <!-- 학원 목록이 여기에 동적으로 추가됩니다 -->
+                </div>
+            </div>
+
+            <!-- 비밀번호 변경 섹션 -->
+            <div class="card" style="background: white; border-radius: 16px; padding: 32px; box-shadow: 0 2px 12px rgba(0,0,0,0.08);">
+                <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 24px; color: #333;">비밀번호 변경</h2>
+
+                <form id="passwordForm" style="display: grid; gap: 16px;">
+                    <div>
+                        <label for="currentPassword" style="display: block; font-size: 14px; color: #666; margin-bottom: 8px;">현재 비밀번호</label>
+                        <input
+                            type="password"
+                            id="currentPassword"
+                            name="currentPassword"
+                            required
+                            style="width: 100%; padding: 12px 16px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px;"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="newPassword" style="display: block; font-size: 14px; color: #666; margin-bottom: 8px;">새 비밀번호</label>
+                        <input
+                            type="password"
+                            id="newPassword"
+                            name="newPassword"
+                            required
+                            minlength="6"
+                            style="width: 100%; padding: 12px 16px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px;"
+                        >
+                        <p style="font-size: 12px; color: #999; margin-top: 4px;">최소 6자 이상 입력해주세요</p>
+                    </div>
+
+                    <div>
+                        <label for="confirmPassword" style="display: block; font-size: 14px; color: #666; margin-bottom: 8px;">새 비밀번호 확인</label>
+                        <input
+                            type="password"
+                            id="confirmPassword"
+                            name="confirmPassword"
+                            required
+                            style="width: 100%; padding: 12px 16px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px;"
+                        >
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="padding: 12px 24px; margin-top: 8px;">비밀번호 변경</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 학원 목록 로드
+        async function loadAcademies() {
+            try {
+                const response = await fetch('/api/academies');
+                const data = await response.json();
+
+                if (data.success && data.academies) {
+                    displayAcademies(data.academies);
+                }
+            } catch (error) {
+                console.error('학원 목록 로드 오류:', error);
+            }
+        }
+
+        // 학원 목록 표시
+        function displayAcademies(academies) {
+            const academyList = document.getElementById('academyList');
+
+            if (academies.length === 0) {
+                academyList.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">관리 중인 학원이 없습니다</div>';
+                return;
+            }
+
+            academyList.innerHTML = academies.map(academy => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; border: 1px solid #e0e0e0; border-radius: 8px;">
+                    <div>
+                        <div style="font-weight: 600; color: #333; margin-bottom: 4px;">${academy.name}</div>
+                        <div style="font-size: 13px; color: #666;">${academy.address || '-'}</div>
+                    </div>
+                    <span style="padding: 4px 12px; background: #e8f5e9; color: #2e7d32; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                        ${academy.role === 'owner' ? '원장' : '관리자'}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        // 비밀번호 변경
+        document.getElementById('passwordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // 유효성 검사
+            if (newPassword !== confirmPassword) {
+                alert('새 비밀번호가 일치하지 않습니다.');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                alert('비밀번호는 최소 6자 이상이어야 합니다.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        currentPassword,
+                        newPassword
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('비밀번호가 변경되었습니다.');
+                    this.reset();
+                } else {
+                    alert(data.error || '비밀번호 변경에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('비밀번호 변경 오류:', error);
+                alert('비밀번호 변경 중 오류가 발생했습니다.');
+            }
+        });
+
+        // 페이지 로드 시 학원 목록 로드
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAcademies();
+        });
+    </script>
+</body>
+</html>

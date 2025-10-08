@@ -1,0 +1,23 @@
+<header class="main-header">
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="/" class="nav-brand">
+                    <img src="/image/logo.ico" alt="클래빗 로고" class="logo-img">
+                    <span class="brand-text">CLABBIT</span>
+                </a>
+                <a href="/" class="nav-link">클래빗 소개</a>
+            </div>
+            <div class="nav-right">
+                <% if (page === 'signup') { %>
+                    <a href="/login" class="btn btn-outline">로그인</a>
+                <% } else if (page === 'login') { %>
+                    <a href="/signup" class="btn btn-primary">회원가입</a>
+                <% } else { %>
+                    <a href="/signup" class="btn btn-outline">회원가입</a>
+                    <a href="/login" class="btn btn-primary">로그인</a>
+                <% } %>
+            </div>
+        </div>
+    </nav>
+</header>

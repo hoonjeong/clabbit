@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>학원 등록 - 클래빗</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .btn-back {
+            display: inline-block;
+            color: #007BFF;
+            text-decoration: none;
+            margin-bottom: 16px;
+        }
+
+        .academy-form {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-section {
+            margin-bottom: 32px;
+        }
+
+        .form-section h3 {
+            margin: 0 0 24px 0;
+            font-size: 20px;
+            border-bottom: 2px solid #007BFF;
+            padding-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="tel"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #DDD;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #007BFF;
+        }
+
+        .form-hint {
+            display: block;
+            margin-top: 4px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .file-upload {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-file-select {
+            padding: 10px 20px;
+            background: #F8F9FA;
+            border: 1px solid #DDD;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-file-select:hover {
+            background: #E9ECEF;
+        }
+
+        .file-name {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .alert {
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .alert-warning {
+            background: #FFF3CD;
+            border: 1px solid #FFE69C;
+            color: #856404;
+        }
+
+        .alert strong {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .btn-primary, .btn-secondary {
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #007BFF;
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #0056B3;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <a href="/academies/select" class="btn-back">← 돌아가기</a>
+            <h1>🏫 학원 등록</h1>
+        </div>
+
+        <form class="academy-form" id="academyForm">
+            <div class="form-section">
+                <h3>학원 정보</h3>
+
+                <div class="form-group">
+                    <label for="name">학원 이름 *</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="registration_number">학원등록번호 *</label>
+                    <input type="text" id="registration_number" name="registration_number" required>
+                    <small class="form-hint">예: 제1234호</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="business_number">사업자등록번호 *</label>
+                    <input type="text" id="business_number" name="business_number" required>
+                    <small class="form-hint">예: 123-45-67890</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="address">주소</label>
+                    <input type="text" id="address" name="address">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">전화번호</label>
+                    <input type="tel" id="phone" name="phone">
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>서류 첨부</h3>
+
+                <div class="form-group">
+                    <label for="registration_cert">학원운영등록증 *</label>
+                    <div class="file-upload">
+                        <input type="file" id="registration_cert" name="registration_cert" accept="image/*,.pdf" required style="display: none;">
+                        <button type="button" class="btn-file-select" onclick="document.getElementById('registration_cert').click()">
+                            파일 선택
+                        </button>
+                        <span id="regCertName" class="file-name">선택된 파일 없음</span>
+                    </div>
+                    <small class="form-hint">📄 이미지(JPG, PNG) 또는 PDF만 가능</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="business_cert">사업자등록증 *</label>
+                    <div class="file-upload">
+                        <input type="file" id="business_cert" name="business_cert" accept="image/*,.pdf" required style="display: none;">
+                        <button type="button" class="btn-file-select" onclick="document.getElementById('business_cert').click()">
+                            파일 선택
+                        </button>
+                        <span id="bizCertName" class="file-name">선택된 파일 없음</span>
+                    </div>
+                    <small class="form-hint">📄 이미지(JPG, PNG) 또는 PDF만 가능</small>
+                </div>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>⚠️ 주의사항</strong>
+                <p>첨부된 서류에 기재된 정보와 입력한 정보가 일치해야 합니다.</p>
+                <p>서류 검증 후 학원이 등록됩니다.</p>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">등록하기</button>
+                <a href="/academies/select" class="btn-secondary">취소</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('academyForm');
+            const regCertInput = document.getElementById('registration_cert');
+            const bizCertInput = document.getElementById('business_cert');
+            const businessNumberInput = document.getElementById('business_number');
+
+            // 파일 선택 시 파일명 표시
+            regCertInput.addEventListener('change', function() {
+                const fileName = this.files[0] ? this.files[0].name : '선택된 파일 없음';
+                document.getElementById('regCertName').textContent = fileName;
+            });
+
+            bizCertInput.addEventListener('change', function() {
+                const fileName = this.files[0] ? this.files[0].name : '선택된 파일 없음';
+                document.getElementById('bizCertName').textContent = fileName;
+            });
+
+            // 사업자번호 자동 포맷팅
+            businessNumberInput.addEventListener('input', function() {
+                let value = this.value.replace(/[^0-9]/g, '');
+
+                if (value.length > 3 && value.length <= 5) {
+                    value = value.slice(0, 3) + '-' + value.slice(3);
+                } else if (value.length > 5) {
+                    value = value.slice(0, 3) + '-' + value.slice(3, 5) + '-' + value.slice(5, 10);
+                }
+
+                this.value = value;
+            });
+
+            // 폼 제출
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                // 유효성 검사
+                if (!regCertInput.files[0] || !bizCertInput.files[0]) {
+                    alert('학원운영등록증과 사업자등록증을 모두 첨부해주세요.');
+                    return;
+                }
+
+                // FormData 생성
+                const formData = new FormData();
+                formData.append('name', document.getElementById('name').value);
+                formData.append('registration_number', document.getElementById('registration_number').value);
+                formData.append('business_number', document.getElementById('business_number').value);
+                formData.append('address', document.getElementById('address').value);
+                formData.append('phone', document.getElementById('phone').value);
+                formData.append('registration_cert', regCertInput.files[0]);
+                formData.append('business_cert', bizCertInput.files[0]);
+
+                try {
+                    // 로딩 표시
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'OCR 검증 중...';
+                    form.classList.add('loading');
+
+                    const response = await fetch('/api/academies', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        alert('학원이 성공적으로 등록되었습니다.');
+                        window.location.href = '/academies/select';
+                    } else {
+                        // 검증 오류 표시
+                        if (data.errors && data.errors.length > 0) {
+                            alert('서류 검증 실패:\n\n' + data.errors.join('\n'));
+                        } else {
+                            alert(data.error || '학원 등록 중 오류가 발생했습니다.');
+                        }
+
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = '등록하기';
+                        form.classList.remove('loading');
+                    }
+
+                } catch (error) {
+                    console.error('등록 오류:', error);
+                    alert('학원 등록 중 오류가 발생했습니다.');
+
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '등록하기';
+                    form.classList.remove('loading');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

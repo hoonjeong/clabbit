@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+    <%- include('../components/sidebar-menu', { academyName, page, userName }) %>
+
+    <main class="main-content">
+        <div class="dashboard-container">
+            <div class="page-header">
+                <h1 class="page-title">📝 과제 관리</h1>
+                <p class="page-subtitle">수업 관리</p>
+            </div>
+
+            <section class="content-section">
+                <div class="empty-state" style="text-align: center; padding: 80px 20px;">
+                    <div style="font-size: 72px; margin-bottom: 24px;">🚧</div>
+                    <h2 style="color: #374151; margin-bottom: 16px; font-size: 24px;">페이지 개발 중</h2>
+                    <p style="color: #6b7280; font-size: 16px; margin-bottom: 32px;">
+                        과제 관리 기능이 곧 제공될 예정입니다.
+                    </p>
+                    <a href="/classes" style="display: inline-block; padding: 12px 24px; background: #3b82f6; color: white; text-decoration: none; border-radius: 8px; font-weight: 600;">
+                        수업 목록으로 돌아가기
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="/js/navigation.js"></script>
+</body>
+</html>

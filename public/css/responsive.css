@@ -1,0 +1,499 @@
+/**
+ * 클래빗 반응형 디자인
+ * 모바일 퍼스트 접근법
+ */
+
+/* =====================================================
+   모바일 기본 스타일 (Mobile First)
+   ===================================================== */
+
+/* 모바일 네비게이션 */
+.mobile-nav-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: var(--space-2);
+}
+
+.mobile-nav-toggle span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background-color: currentColor;
+    position: relative;
+    transition: var(--transition-transform);
+}
+
+.mobile-nav-toggle span::before,
+.mobile-nav-toggle span::after {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 2px;
+    background-color: currentColor;
+    position: absolute;
+    left: 0;
+    transition: var(--transition-transform);
+}
+
+.mobile-nav-toggle span::before {
+    top: -8px;
+}
+
+.mobile-nav-toggle span::after {
+    bottom: -8px;
+}
+
+/* 햄버거 메뉴 애니메이션 */
+.mobile-nav-toggle.is-active span {
+    background-color: transparent;
+}
+
+.mobile-nav-toggle.is-active span::before {
+    top: 0;
+    transform: rotate(45deg);
+}
+
+.mobile-nav-toggle.is-active span::after {
+    bottom: 0;
+    transform: rotate(-45deg);
+}
+
+/* 모바일 사이드바 */
+.sidebar-mobile {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 280px;
+    height: 100vh;
+    background-color: var(--white);
+    box-shadow: var(--shadow-xl);
+    z-index: var(--z-fixed);
+    transition: left var(--duration-300) var(--ease-out);
+    overflow-y: auto;
+}
+
+.sidebar-mobile.is-open {
+    left: 0;
+}
+
+/* 모바일 오버레이 */
+.mobile-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: calc(var(--z-fixed) - 1);
+}
+
+.mobile-overlay.is-visible {
+    display: block;
+}
+
+/* =====================================================
+   태블릿 스타일 (640px+)
+   ===================================================== */
+@media (min-width: 640px) {
+    .container {
+        max-width: 640px;
+    }
+
+    /* 그리드 조정 */
+    .grid-cols-1 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    /* 카드 레이아웃 */
+    .card-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-4);
+    }
+
+    /* 폼 레이아웃 */
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-4);
+    }
+}
+
+/* =====================================================
+   작은 데스크톱 스타일 (768px+)
+   ===================================================== */
+@media (min-width: 768px) {
+    .container {
+        max-width: 768px;
+    }
+
+    /* 네비게이션 바 */
+    .navbar {
+        padding: var(--space-4) var(--space-6);
+    }
+
+    /* 사이드바 표시 */
+    .sidebar {
+        display: block;
+        position: sticky;
+        top: 0;
+        width: 240px;
+        height: 100vh;
+        overflow-y: auto;
+    }
+
+    .mobile-nav-toggle {
+        display: none;
+    }
+
+    .sidebar-mobile {
+        display: none;
+    }
+
+    /* 메인 콘텐츠 레이아웃 */
+    .layout-wrapper {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        min-height: 100vh;
+    }
+
+    /* 테이블 반응형 */
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    /* 모달 크기 조정 */
+    .modal-content {
+        max-width: 600px;
+    }
+}
+
+/* =====================================================
+   데스크톱 스타일 (1024px+)
+   ===================================================== */
+@media (min-width: 1024px) {
+    .container {
+        max-width: 1024px;
+    }
+
+    /* 3열 그리드 */
+    .grid-cols-lg-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    /* 사이드바 확장 */
+    .sidebar {
+        width: 280px;
+    }
+
+    .layout-wrapper {
+        grid-template-columns: 280px 1fr;
+    }
+
+    /* 대시보드 카드 */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-6);
+    }
+
+    /* 폼 3열 레이아웃 */
+    .form-row-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-4);
+    }
+}
+
+/* =====================================================
+   큰 데스크톱 스타일 (1280px+)
+   ===================================================== */
+@media (min-width: 1280px) {
+    .container {
+        max-width: 1280px;
+    }
+
+    /* 4열 그리드 */
+    .grid-cols-xl-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    /* 대시보드 확장 */
+    .dashboard-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    /* 사이드바 + 콘텐츠 + 사이드 패널 */
+    .layout-wrapper-with-aside {
+        display: grid;
+        grid-template-columns: 280px 1fr 320px;
+        gap: var(--space-6);
+    }
+}
+
+/* =====================================================
+   초대형 데스크톱 스타일 (1536px+)
+   ===================================================== */
+@media (min-width: 1536px) {
+    .container {
+        max-width: 1536px;
+    }
+
+    /* 5열 그리드 */
+    .grid-cols-2xl-5 {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+}
+
+/* =====================================================
+   모바일 전용 스타일
+   ===================================================== */
+@media (max-width: 639px) {
+    /* 작은 화면 텍스트 크기 조정 */
+    h1, .h1 { font-size: var(--text-3xl); }
+    h2, .h2 { font-size: var(--text-2xl); }
+    h3, .h3 { font-size: var(--text-xl); }
+    h4, .h4 { font-size: var(--text-lg); }
+
+    /* 모바일 패딩 감소 */
+    .section {
+        padding-top: var(--space-8);
+        padding-bottom: var(--space-8);
+    }
+
+    /* 모바일 테이블 카드 스타일 */
+    .table-mobile {
+        display: block;
+    }
+
+    .table-mobile thead {
+        display: none;
+    }
+
+    .table-mobile tbody {
+        display: block;
+    }
+
+    .table-mobile tr {
+        display: block;
+        margin-bottom: var(--space-4);
+        padding: var(--space-4);
+        background-color: var(--white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .table-mobile td {
+        display: flex;
+        justify-content: space-between;
+        padding: var(--space-2) 0;
+        border: none;
+    }
+
+    .table-mobile td::before {
+        content: attr(data-label);
+        font-weight: var(--font-semibold);
+        color: var(--text-secondary);
+    }
+
+    /* 모바일 모달 전체 화면 */
+    .modal-content {
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 0;
+    }
+
+    /* 모바일 버튼 스택 */
+    .btn-group-mobile {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+    }
+
+    .btn-group-mobile .btn {
+        width: 100%;
+    }
+
+    /* 모바일 폼 */
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    /* 모바일 네비게이션 하단 고정 */
+    .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: var(--white);
+        border-top: 1px solid var(--border-primary);
+        display: flex;
+        justify-content: space-around;
+        padding: var(--space-2) 0;
+        z-index: var(--z-sticky);
+    }
+
+    .bottom-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-1);
+        padding: var(--space-2);
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: var(--text-xs);
+        transition: var(--transition-colors);
+    }
+
+    .bottom-nav-item.active {
+        color: var(--primary-600);
+    }
+
+    /* 콘텐츠 하단 여백 (bottom nav 공간) */
+    main {
+        padding-bottom: 80px;
+    }
+}
+
+/* =====================================================
+   태블릿 전용 스타일
+   ===================================================== */
+@media (min-width: 640px) and (max-width: 1023px) {
+    /* 태블릿 2열 레이아웃 */
+    .tablet-grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-4);
+    }
+
+    /* 태블릿 카드 크기 */
+    .card {
+        min-height: 200px;
+    }
+}
+
+/* =====================================================
+   가로 모드 최적화
+   ===================================================== */
+@media (orientation: landscape) and (max-height: 600px) {
+    /* 가로 모드 헤더 축소 */
+    .navbar {
+        padding: var(--space-2) var(--space-4);
+    }
+
+    /* 가로 모드 컴팩트 뷰 */
+    .compact-view {
+        display: flex;
+        gap: var(--space-4);
+    }
+
+    .compact-view > * {
+        flex: 1;
+    }
+}
+
+/* =====================================================
+   인쇄 스타일
+   ===================================================== */
+@media print {
+    /* 인쇄 시 불필요한 요소 숨기기 */
+    .no-print,
+    .navbar,
+    .sidebar,
+    .mobile-nav-toggle,
+    .bottom-nav,
+    .btn,
+    .fab {
+        display: none !important;
+    }
+
+    /* 인쇄 여백 조정 */
+    @page {
+        margin: 2cm;
+    }
+
+    /* 링크 URL 표시 */
+    a[href]:after {
+        content: " (" attr(href) ")";
+    }
+
+    /* 색상 단순화 */
+    * {
+        color: black !important;
+        background-color: white !important;
+    }
+
+    /* 테이블 페이지 분리 방지 */
+    table {
+        page-break-inside: avoid;
+    }
+
+    /* 제목 페이지 분리 방지 */
+    h1, h2, h3, h4, h5, h6 {
+        page-break-after: avoid;
+    }
+}
+
+/* =====================================================
+   터치 디바이스 최적화
+   ===================================================== */
+@media (hover: none) and (pointer: coarse) {
+    /* 터치 타겟 크기 증가 */
+    button,
+    a,
+    .btn,
+    input[type="checkbox"],
+    input[type="radio"],
+    select {
+        min-height: 48px;
+        min-width: 48px;
+    }
+
+    /* 호버 효과 제거 */
+    .btn:hover,
+    .card:hover,
+    .link:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    /* 터치 피드백 */
+    .touchable {
+        -webkit-tap-highlight-color: var(--primary-100);
+    }
+
+    /* 스크롤 최적화 */
+    .scrollable {
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+    }
+
+    .scrollable > * {
+        scroll-snap-align: start;
+    }
+}
+
+/* =====================================================
+   고해상도 디스플레이
+   ===================================================== */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    /* 레티나 디스플레이용 얇은 보더 */
+    .border-hairline {
+        border-width: 0.5px;
+    }
+
+    /* 고해상도 이미지 */
+    .logo {
+        background-image: url('/images/logo@2x.png');
+        background-size: contain;
+    }
+}

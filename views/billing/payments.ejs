@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/form.css">
+    <style>
+        .payments-container {
+            padding: 20px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .filter-section {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-section input, .filter-section select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .payments-table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .payments-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .payments-table th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .payments-table td {
+            padding: 12px;
+            border-top: 1px solid #eee;
+        }
+
+        .payments-table tr:hover {
+            background: #fafafa;
+        }
+
+        .payment-method {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .amount {
+            text-align: right;
+            font-weight: 500;
+            color: #4CAF50;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 0.85rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-sm:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-danger {
+            color: #f44336;
+        }
+
+        /* 모달 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #f44336;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .unpaid-charges {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+        }
+
+        .charge-item {
+            padding: 8px;
+            margin-bottom: 8px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .charge-item:hover {
+            background: #f5f5f5;
+        }
+
+        .charge-item.selected {
+            background: #e3f2fd;
+            border-color: #1976d2;
+        }
+
+        .daily-summary {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .summary-item {
+            text-align: center;
+        }
+
+        .summary-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../components/sidebar-menu', { academyName, userName, page }) %>
+
+    <div class="payments-container">
+        <div class="page-header">
+            <h1>수납 관리</h1>
+            <button class="btn-primary" onclick="openPaymentModal()">+ 수납 등록</button>
+        </div>
+
+        <!-- 일일 수납 요약 -->
+        <div class="daily-summary" id="dailySummary">
+            <div class="summary-item">
+                <div class="summary-label">오늘 수납액</div>
+                <div class="summary-value" id="todayTotal">₩0</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">현금</div>
+                <div class="summary-value" id="todayCash">₩0</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">카드</div>
+                <div class="summary-value" id="todayCard">₩0</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">계좌이체</div>
+                <div class="summary-value" id="todayTransfer">₩0</div>
+            </div>
+        </div>
+
+        <!-- 필터 섹션 -->
+        <div class="filter-section">
+            <input type="date" id="filterFromDate" value="<%= new Date().toISOString().slice(0,10) %>">
+            <span>~</span>
+            <input type="date" id="filterToDate" value="<%= new Date().toISOString().slice(0,10) %>">
+            <select id="filterMethod">
+                <option value="">전체 수납방법</option>
+                <option value="cash">현금</option>
+                <option value="card">카드</option>
+                <option value="transfer">계좌이체</option>
+                <option value="auto_transfer">자동이체</option>
+            </select>
+            <input type="text" id="searchStudent" placeholder="학생명 검색">
+            <button class="btn-primary" onclick="loadPayments()">조회</button>
+        </div>
+
+        <!-- 수납 목록 테이블 -->
+        <div class="payments-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>수납일시</th>
+                        <th>학생명</th>
+                        <th>수납방법</th>
+                        <th>수납금액</th>
+                        <th>영수증번호</th>
+                        <th>처리자</th>
+                        <th>메모</th>
+                        <th>작업</th>
+                    </tr>
+                </thead>
+                <tbody id="paymentsTableBody">
+                    <!-- 동적으로 로드됨 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 수납 등록 모달 -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>수납 등록</h2>
+                <span class="close" onclick="closePaymentModal()">&times;</span>
+            </div>
+            <form id="paymentForm">
+                <div class="form-group">
+                    <label>학생 선택 *</label>
+                    <select id="studentId" required onchange="loadUnpaidCharges()">
+                        <option value="">학생을 선택하세요</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="unpaidChargesGroup" style="display:none;">
+                    <label>미납 청구 선택 (선택사항)</label>
+                    <div class="unpaid-charges" id="unpaidChargesList">
+                        <!-- 동적으로 로드됨 -->
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>수납 금액 *</label>
+                    <input type="number" id="amount" required>
+                </div>
+
+                <div class="form-group">
+                    <label>수납 방법 *</label>
+                    <select id="paymentMethod" required onchange="togglePaymentFields()">
+                        <option value="cash">현금</option>
+                        <option value="card">카드</option>
+                        <option value="transfer">계좌이체</option>
+                        <option value="auto_transfer">자동이체</option>
+                        <option value="other">기타</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="cardFields" style="display:none;">
+                    <label>카드번호 (마지막 4자리)</label>
+                    <input type="text" id="cardNumber" maxlength="4" placeholder="1234">
+                </div>
+
+                <div class="form-group" id="transferFields" style="display:none;">
+                    <label>입금자명</label>
+                    <input type="text" id="depositorName">
+                    <label style="margin-top:10px;">은행명</label>
+                    <input type="text" id="bankName">
+                </div>
+
+                <div class="form-group">
+                    <label>수납일시</label>
+                    <input type="datetime-local" id="paymentDate" required value="<%= new Date().toISOString().slice(0,16) %>">
+                </div>
+
+                <div class="form-group">
+                    <label>메모</label>
+                    <textarea id="notes" rows="3"></textarea>
+                </div>
+
+                <div class="form-buttons">
+                    <button type="submit" class="btn-primary">등록</button>
+                    <button type="button" onclick="closePaymentModal()">취소</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let selectedChargeId = null;
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPayments();
+            loadStudents();
+            loadDailySummary();
+
+            // URL 파라미터 확인 (청구에서 넘어온 경우)
+            const urlParams = new URLSearchParams(window.location.search);
+            const chargeId = urlParams.get('charge_id');
+            const studentId = urlParams.get('student_id');
+
+            if (chargeId && studentId) {
+                openPaymentModal();
+                document.getElementById('studentId').value = studentId;
+                selectedChargeId = chargeId;
+                loadUnpaidCharges();
+            }
+        });
+
+        // 일일 수납 요약 로드
+        async function loadDailySummary() {
+            const today = new Date().toISOString().split('T')[0];
+
+            try {
+                const response = await fetch(`/api/billing/statistics/payments?type=daily&date=${today}`);
+                const result = await response.json();
+
+                if (result.success && result.data) {
+                    const data = result.data;
+                    document.getElementById('todayTotal').textContent = formatCurrency(data.total_amount || 0);
+                    document.getElementById('todayCash').textContent = formatCurrency(data.cash_amount || 0);
+                    document.getElementById('todayCard').textContent = formatCurrency(data.card_amount || 0);
+                    document.getElementById('todayTransfer').textContent = formatCurrency(data.transfer_amount || 0);
+                }
+            } catch (error) {
+                console.error('일일 요약 로드 실패:', error);
+            }
+        }
+
+        // 수납 목록 로드
+        async function loadPayments() {
+            const fromDate = document.getElementById('filterFromDate').value;
+            const toDate = document.getElementById('filterToDate').value;
+            const method = document.getElementById('filterMethod').value;
+            const search = document.getElementById('searchStudent').value;
+
+            try {
+                let url = `/api/payments/period?from_date=${fromDate}&to_date=${toDate}`;
+                if (method) url += `&payment_method=${method}`;
+
+                const response = await fetch(url);
+                const result = await response.json();
+
+                if (result.success) {
+                    let payments = result.data;
+
+                    // 학생명 필터링
+                    if (search) {
+                        payments = payments.filter(p =>
+                            p.student_name.toLowerCase().includes(search.toLowerCase())
+                        );
+                    }
+
+                    displayPayments(payments);
+                }
+            } catch (error) {
+                console.error('수납 목록 로드 실패:', error);
+            }
+        }
+
+        // 수납 목록 표시
+        function displayPayments(payments) {
+            const tbody = document.getElementById('paymentsTableBody');
+
+            if (payments.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">수납 내역이 없습니다.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = payments.map(payment => `
+                <tr>
+                    <td>${formatDateTime(payment.payment_date)}</td>
+                    <td>${payment.student_name}</td>
+                    <td><span class="payment-method">${getPaymentMethodText(payment.payment_method)}</span></td>
+                    <td class="amount">${formatCurrency(payment.amount)}</td>
+                    <td>${payment.receipt_number || '-'}</td>
+                    <td>${payment.processor_name || '-'}</td>
+                    <td>${payment.notes || '-'}</td>
+                    <td class="action-buttons">
+                        <button class="btn-sm" onclick="printReceipt(${payment.id})">영수증</button>
+                        ${payment.status === 'completed' ?
+                            `<button class="btn-sm btn-danger" onclick="cancelPayment(${payment.id})">취소</button>` : ''}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 학생 목록 로드
+        async function loadStudents() {
+            try {
+                const response = await fetch('/api/students?status=active');
+                const result = await response.json();
+
+                if (result.success) {
+                    const select = document.getElementById('studentId');
+                    select.innerHTML = '<option value="">학생을 선택하세요</option>' +
+                        result.data.map(s =>
+                            `<option value="${s.id}">${s.name} (${s.grade || ''})</option>`
+                        ).join('');
+                }
+            } catch (error) {
+                console.error('학생 목록 로드 실패:', error);
+            }
+        }
+
+        // 미납 청구 로드
+        async function loadUnpaidCharges() {
+            const studentId = document.getElementById('studentId').value;
+
+            if (!studentId) {
+                document.getElementById('unpaidChargesGroup').style.display = 'none';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/students/${studentId}/charges?status=pending`);
+                const result = await response.json();
+
+                if (result.success && result.data.length > 0) {
+                    document.getElementById('unpaidChargesGroup').style.display = 'block';
+
+                    const container = document.getElementById('unpaidChargesList');
+                    container.innerHTML = result.data.map(charge => `
+                        <div class="charge-item ${selectedChargeId == charge.id ? 'selected' : ''}"
+                             onclick="selectCharge(${charge.id}, ${charge.remaining_amount || charge.final_amount})"
+                             data-charge-id="${charge.id}">
+                            <div><strong>${charge.item_name || '청구'}</strong></div>
+                            <div>${formatDate(charge.charge_date)} - ${formatCurrency(charge.remaining_amount || charge.final_amount)}</div>
+                        </div>
+                    `).join('');
+
+                    // 선택된 청구가 있으면 금액 설정
+                    if (selectedChargeId) {
+                        const selectedCharge = result.data.find(c => c.id == selectedChargeId);
+                        if (selectedCharge) {
+                            document.getElementById('amount').value = selectedCharge.remaining_amount || selectedCharge.final_amount;
+                        }
+                    }
+                } else {
+                    document.getElementById('unpaidChargesGroup').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('미납 청구 로드 실패:', error);
+            }
+        }
+
+        // 청구 선택
+        function selectCharge(chargeId, amount) {
+            // 이전 선택 제거
+            document.querySelectorAll('.charge-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+
+            // 새로운 선택
+            const item = document.querySelector(`[data-charge-id="${chargeId}"]`);
+            if (item) {
+                item.classList.add('selected');
+                selectedChargeId = chargeId;
+                document.getElementById('amount').value = amount;
+            }
+        }
+
+        // 수납 방법에 따른 필드 표시/숨김
+        function togglePaymentFields() {
+            const method = document.getElementById('paymentMethod').value;
+
+            document.getElementById('cardFields').style.display =
+                method === 'card' ? 'block' : 'none';
+            document.getElementById('transferFields').style.display =
+                (method === 'transfer' || method === 'auto_transfer') ? 'block' : 'none';
+        }
+
+        // 수납 모달 열기
+        function openPaymentModal() {
+            document.getElementById('paymentModal').style.display = 'block';
+        }
+
+        // 수납 모달 닫기
+        function closePaymentModal() {
+            document.getElementById('paymentModal').style.display = 'none';
+            document.getElementById('paymentForm').reset();
+            selectedChargeId = null;
+            document.getElementById('unpaidChargesGroup').style.display = 'none';
+        }
+
+        // 수납 등록 폼 제출
+        document.getElementById('paymentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const paymentData = {
+                student_id: document.getElementById('studentId').value,
+                charge_id: selectedChargeId,
+                payment_date: document.getElementById('paymentDate').value,
+                amount: document.getElementById('amount').value,
+                payment_method: document.getElementById('paymentMethod').value,
+                notes: document.getElementById('notes').value
+            };
+
+            // 결제 방법별 추가 정보
+            if (paymentData.payment_method === 'card') {
+                const cardNumber = document.getElementById('cardNumber').value;
+                if (cardNumber) {
+                    paymentData.card_number_masked = `****-****-****-${cardNumber}`;
+                }
+            } else if (paymentData.payment_method === 'transfer' || paymentData.payment_method === 'auto_transfer') {
+                paymentData.depositor_name = document.getElementById('depositorName').value;
+                paymentData.bank_name = document.getElementById('bankName').value;
+            }
+
+            try {
+                const response = await fetch('/api/payments', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(paymentData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('수납이 등록되었습니다.');
+                    closePaymentModal();
+                    loadPayments();
+                    loadDailySummary();
+                } else {
+                    alert('수납 등록 실패: ' + result.error);
+                }
+            } catch (error) {
+                console.error('수납 등록 오류:', error);
+                alert('수납 등록 중 오류가 발생했습니다.');
+            }
+        });
+
+        // 수납 취소
+        async function cancelPayment(paymentId) {
+            const reason = prompt('취소 사유를 입력하세요:');
+            if (!reason) return;
+
+            try {
+                const response = await fetch(`/api/payments/${paymentId}/cancel`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reason })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('수납이 취소되었습니다.');
+                    loadPayments();
+                    loadDailySummary();
+                } else {
+                    alert('수납 취소 실패: ' + result.error);
+                }
+            } catch (error) {
+                console.error('수납 취소 오류:', error);
+                alert('수납 취소 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 영수증 출력
+        function printReceipt(paymentId) {
+            window.open(`/billing/receipt/${paymentId}`, '_blank', 'width=400,height=600');
+        }
+
+        // 유틸리티 함수들
+        function formatDateTime(dateString) {
+            const date = new Date(dateString);
+            return `${date.getMonth() + 1}/${date.getDate()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return `${date.getMonth() + 1}/${date.getDate()}`;
+        }
+
+        function formatCurrency(amount) {
+            return '₩' + Number(amount).toLocaleString('ko-KR');
+        }
+
+        function getPaymentMethodText(method) {
+            const methodMap = {
+                'cash': '현금',
+                'card': '카드',
+                'transfer': '계좌이체',
+                'auto_transfer': '자동이체',
+                'other': '기타'
+            };
+            return methodMap[method] || method;
+        }
+    </script>
+</body>
+</html>

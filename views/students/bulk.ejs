@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/students.css">
+</head>
+<body>
+    <%- include('../components/sidebar-menu', { academyName, page: 'students', userName: userName }) %>
+
+    <main class="students-main">
+        <div class="students-container">
+            <!-- 페이지 헤더 -->
+            <div class="page-header">
+                <h1 class="page-title">📊 엑셀로 학생 일괄 등록</h1>
+                <a href="/students" class="back-btn">← 목록으로</a>
+            </div>
+
+            <!-- 안내 사항 -->
+            <div class="info-card">
+                <h3>📋 사용 안내</h3>
+                <ol>
+                    <li>엑셀 템플릿을 다운로드하세요.</li>
+                    <li>템플릿에 학생 정보를 입력하세요.</li>
+                    <li>작성한 엑셀 파일을 업로드하세요.</li>
+                    <li>데이터를 확인하고 등록하세요.</li>
+                </ol>
+                <div class="warning-box">
+                    ⚠️ <strong>주의사항:</strong> 학생 이름, 생년월일, 학부모 전화번호는 필수 항목입니다.
+                </div>
+            </div>
+
+            <!-- 템플릿 다운로드 -->
+            <div class="form-section">
+                <h3 class="form-section-title">1단계: 템플릿 다운로드</h3>
+                <div class="template-download">
+                    <p>학생 정보를 입력할 엑셀 템플릿을 다운로드하세요.</p>
+                    <button class="btn btn-outline" id="downloadTemplateBtn">
+                        📥 엑셀 템플릿 다운로드
+                    </button>
+                </div>
+            </div>
+
+            <!-- 파일 업로드 -->
+            <div class="form-section">
+                <h3 class="form-section-title">2단계: 엑셀 파일 업로드</h3>
+                <div class="file-upload-area" id="fileUploadArea">
+                    <div class="upload-icon">📁</div>
+                    <p class="upload-text">엑셀 파일을 드래그하거나 클릭하여 선택하세요</p>
+                    <p class="upload-hint">지원 형식: .xlsx, .xls, .csv (최대 5MB)</p>
+                    <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display: none;">
+                    <button class="btn btn-primary" id="selectFileBtn">파일 선택</button>
+                </div>
+                <div id="selectedFile" class="selected-file" style="display: none;">
+                    <span id="fileName"></span>
+                    <button class="btn btn-secondary btn-sm" id="removeFileBtn">제거</button>
+                </div>
+            </div>
+
+            <!-- 데이터 미리보기 -->
+            <div class="form-section" id="previewSection" style="display: none;">
+                <h3 class="form-section-title">3단계: 데이터 확인</h3>
+                <div class="preview-info">
+                    <span>총 <strong id="totalRows">0</strong>명의 학생 정보가 있습니다.</span>
+                    <span class="success-count">✅ 유효: <strong id="validCount">0</strong>명</span>
+                    <span class="error-count">❌ 오류: <strong id="errorCount">0</strong>명</span>
+                </div>
+                <div class="preview-table-container">
+                    <table class="preview-table" id="previewTable">
+                        <thead>
+                            <tr>
+                                <th>상태</th>
+                                <th>이름</th>
+                                <th>생년월일</th>
+                                <th>학교</th>
+                                <th>학년</th>
+                                <th>학생 전화번호</th>
+                                <th>학부모 전화번호</th>
+                                <th>주소</th>
+                                <th>메모</th>
+                                <th>오류</th>
+                            </tr>
+                        </thead>
+                        <tbody id="previewTableBody">
+                            <!-- 동적으로 채워짐 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 등록 버튼 -->
+            <div class="form-actions" id="submitSection" style="display: none;">
+                <button type="button" class="btn btn-secondary" id="cancelBtn">취소</button>
+                <button type="button" class="btn btn-primary" id="submitBtn">
+                    <span id="submitBtnText">일괄 등록</span>
+                </button>
+            </div>
+
+            <!-- 결과 표시 -->
+            <div class="result-section" id="resultSection" style="display: none;">
+                <h3 class="form-section-title">등록 결과</h3>
+                <div class="result-summary">
+                    <div class="result-item success">
+                        <span class="result-label">✅ 성공</span>
+                        <span class="result-value" id="successCount">0</span>
+                    </div>
+                    <div class="result-item failure">
+                        <span class="result-label">❌ 실패</span>
+                        <span class="result-value" id="failureCount">0</span>
+                    </div>
+                </div>
+                <div id="resultDetails"></div>
+                <div class="form-actions">
+                    <a href="/students" class="btn btn-primary">학생 목록으로</a>
+                    <button class="btn btn-outline" id="resetBtn">다시 등록</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/navigation.js"></script>
+    <script src="/js/students/bulk.js"></script>
+</body>
+</html>

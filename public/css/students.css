@@ -1,0 +1,934 @@
+/* 드롭다운 메뉴 스타일 */
+.menu-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.menu-dropdown .menu-item {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    min-width: 180px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 8px 0;
+    z-index: 1000;
+    margin-top: 0;
+    flex-direction: column;
+}
+
+.menu-dropdown.show .dropdown-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.dropdown-item {
+    display: block !important;
+    width: 100%;
+    padding: 12px 20px;
+    color: #666;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.2s;
+    text-align: left;
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+
+.dropdown-item:hover {
+    background: #F8F9FA;
+    color: #333;
+}
+
+.dropdown-item.current {
+    font-weight: 700;
+}
+
+/* 학생 관리 페이지 공통 스타일 */
+.students-main {
+    margin-left: 260px;
+    background: #F8F9FA;
+    min-height: 100vh;
+    padding: 3rem 0;
+    transition: margin-left 0.3s ease;
+}
+
+/* 사이드바 축소 시 */
+.sidebar.collapsed ~ .students-main {
+    margin-left: 70px;
+}
+
+.students-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: white;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    color: #666;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+/* 학생 상세 페이지 스타일 */
+.student-detail {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.loading-state {
+    text-align: center;
+    padding: 4rem 0;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #f3f4f6;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error-state {
+    text-align: center;
+    padding: 4rem 0;
+}
+
+.error-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.error-state h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.error-state p {
+    color: #666;
+    margin-bottom: 2rem;
+}
+
+.detail-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #e1e5e9;
+}
+
+.form-display {
+    padding: 0.75rem 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    color: #333;
+    font-weight: 500;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.status-active {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-withdrawn {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+    border: none;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+}
+
+.btn-success {
+    background: #28a745;
+    color: white;
+    border: none;
+}
+
+.btn-success:hover {
+    background: #218838;
+}
+
+.back-btn:hover {
+    background: #F8F9FA;
+    border-color: #667eea;
+    color: #667eea;
+}
+
+/* 검색 및 필터 */
+.search-filter-bar {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.search-box {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.search-input {
+    flex: 1;
+    min-width: 250px;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.filter-select {
+    padding: 0.75rem 1rem;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+/* 버튼 스타일 */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.btn-secondary {
+    background: #6C757D;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+.btn-danger {
+    background: #DC3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+}
+
+.btn-success {
+    background: #28A745;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #218838;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid #667eea;
+    color: #667eea;
+}
+
+.btn-outline:hover {
+    background: #667eea;
+    color: white;
+}
+
+/* 학생 리스트 */
+.students-list {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+}
+
+.list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.total-count {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.students-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.students-table thead {
+    background: #f8f9fa;
+}
+
+.students-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.students-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    color: #333;
+}
+
+.students-table tbody tr {
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.students-table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+/* 학생 카드 (모바일) */
+.student-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-left: 4px solid #667eea;
+}
+
+.student-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.student-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.student-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.student-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-active {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-withdrawn {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.student-card-body {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.student-info-row {
+    display: flex;
+    gap: 0.5rem;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.info-icon {
+    width: 20px;
+}
+
+/* 빈 상태 */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.empty-icon {
+    font-size: 5rem;
+    margin-bottom: 1.5rem;
+}
+
+.empty-state h3 {
+    font-size: 1.5rem;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.empty-state p {
+    color: #999;
+    margin-bottom: 2rem;
+}
+
+/* 폼 스타일 */
+.form-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+}
+
+.form-section-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.form-label.required::after {
+    content: ' *';
+    color: #DC3545;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+    padding: 0.75rem;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    font-family: 'Pretendard', sans-serif;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.form-input.error,
+.form-select.error,
+.form-textarea.error {
+    border-color: #DC3545;
+}
+
+.form-textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.form-hint {
+    font-size: 0.85rem;
+    color: #999;
+    margin-top: 0.25rem;
+}
+
+.form-error {
+    font-size: 0.85rem;
+    color: #DC3545;
+    margin-top: 0.25rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid #f0f0f0;
+}
+
+/* 페이지네이션 */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+}
+
+.page-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #e1e5e9;
+    background: white;
+    color: #666;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.page-btn:hover {
+    border-color: #667eea;
+    color: #667eea;
+}
+
+.page-btn.active {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.page-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* 액션 버튼 스타일 */
+.action-btn {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid #e1e5e9;
+    background: white;
+    color: #666;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin-right: 0.5rem;
+}
+
+.action-btn:last-child {
+    margin-right: 0;
+}
+
+/* 작은 버튼 스타일 */
+.btn-small {
+    padding: 0.4rem 0.8rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-small.btn-primary {
+    background: #667eea;
+    color: white;
+}
+
+.btn-small.btn-primary:hover {
+    background: #5568d3;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-small.btn-danger {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-small.btn-danger:hover {
+    background: #c82333;
+    transform: none;
+}
+
+.reinstate-btn {
+    border-color: #28a745;
+    color: #28a745;
+}
+
+.reinstate-btn:hover {
+    background: #28a745;
+    color: white;
+}
+
+.view-btn {
+    border-color: #667eea;
+    color: #667eea;
+}
+
+.view-btn:hover {
+    background: #667eea;
+    color: white;
+}
+
+/* 엑셀 일괄 등록 페이지 스타일 */
+.info-card {
+    background: #e3f2fd;
+    border-left: 4px solid #2196F3;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.info-card h3 {
+    color: #1976D2;
+    margin-bottom: 1rem;
+}
+
+.info-card ol {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+}
+
+.info-card ol li {
+    margin-bottom: 0.5rem;
+    color: #555;
+}
+
+.warning-box {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-top: 1rem;
+    color: #856404;
+}
+
+.template-download {
+    text-align: center;
+    padding: 2rem;
+}
+
+.template-download p {
+    margin-bottom: 1.5rem;
+    color: #666;
+}
+
+.file-upload-area {
+    border: 2px dashed #667eea;
+    border-radius: 12px;
+    padding: 3rem;
+    text-align: center;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.file-upload-area:hover {
+    background: #e9ecef;
+    border-color: #5568d3;
+}
+
+.file-upload-area.drag-over {
+    background: #e3f2fd;
+    border-color: #2196F3;
+}
+
+.upload-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.upload-text {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.upload-hint {
+    color: #999;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.selected-file {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.preview-info {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.success-count {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.error-count {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+.preview-table-container {
+    overflow-x: auto;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+}
+
+.preview-table {
+    width: 100%;
+    min-width: 1000px;
+}
+
+.preview-table th {
+    background: #f8f9fa;
+    padding: 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid #e1e5e9;
+    white-space: nowrap;
+}
+
+.preview-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #e1e5e9;
+}
+
+.valid-row {
+    background: #f8fff9;
+}
+
+.invalid-row {
+    background: #fff5f5;
+}
+
+.status-valid {
+    color: #28a745;
+}
+
+.status-invalid {
+    color: #dc3545;
+}
+
+.error-cell {
+    color: #dc3545;
+    font-size: 0.85rem;
+}
+
+.result-section {
+    text-align: center;
+    padding: 2rem;
+}
+
+.result-summary {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin: 2rem 0;
+}
+
+.result-item {
+    text-align: center;
+}
+
+.result-label {
+    display: block;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.result-value {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.result-item.success .result-value {
+    color: #28a745;
+}
+
+.result-item.failure .result-value {
+    color: #dc3545;
+}
+
+.failure-details {
+    background: #fff5f5;
+    border: 1px solid #dc3545;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    text-align: left;
+}
+
+.failure-details h4 {
+    color: #dc3545;
+    margin-bottom: 1rem;
+}
+
+.failure-details ul {
+    list-style: none;
+    padding: 0;
+}
+
+.failure-details li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f8d7da;
+}
+
+.failure-details li:last-child {
+    border-bottom: none;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1024px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .students-table {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .students-main {
+        margin-left: 0 !important;
+        padding: 1.5rem 0;
+        padding-top: 72px; /* 햄버거 메뉴 공간 확보 */
+    }
+
+    .page-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+    }
+
+    .search-box {
+        flex-direction: column;
+    }
+
+    .search-input {
+        min-width: 100%;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+    }
+
+    .dropdown-content {
+        min-width: 160px;
+    }
+}

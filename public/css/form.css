@@ -1,0 +1,471 @@
+/* ===========================
+   공통 폼 스타일 시스템
+   ========================== */
+
+/* 폼 컨테이너 - 중앙 정렬 */
+.form-container {
+    max-width: 450px;
+    width: 90%;
+    margin: 0 auto;
+    padding: 40px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.form-container-center {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+}
+
+/* 폼 헤더 */
+.form-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.form-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 8px 0;
+}
+
+.form-subtitle {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+/* 폼 그룹 */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group:last-of-type {
+    margin-bottom: 24px;
+}
+
+/* 레이블 */
+.form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.form-label-required::after {
+    content: ' *';
+    color: #e74c3c;
+}
+
+/* 입력 필드 공통 스타일 */
+.form-input,
+.form-select,
+.form-textarea {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 14px;
+    color: #333;
+    background: white;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    box-sizing: border-box;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-input::placeholder {
+    color: #999;
+}
+
+.form-input:disabled,
+.form-select:disabled,
+.form-textarea:disabled {
+    background: #f5f5f5;
+    cursor: not-allowed;
+}
+
+/* 비밀번호 입력 래퍼 */
+.password-input-wrapper {
+    position: relative;
+}
+
+.password-input-wrapper .form-input {
+    padding-right: 48px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: #999;
+    transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-password:hover {
+    color: #667eea;
+}
+
+.toggle-password:focus {
+    outline: none;
+}
+
+/* 옵션 체크박스 */
+.form-options {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* 로그인/회원가입 페이지의 체크박스는 기본 스타일 사용 */
+.form-options .checkbox-label input[type="checkbox"] {
+    display: inline-block !important;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    min-height: 20px;
+    margin: 0;
+    margin-top: 2px;
+    cursor: pointer;
+    accent-color: #667eea;
+    flex-shrink: 0;
+}
+
+.checkbox-label > div {
+    flex: 1;
+}
+
+.checkbox-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    display: block;
+    line-height: 1.5;
+}
+
+.checkbox-help {
+    display: block;
+    font-size: 12px;
+    color: #999;
+    margin-top: 4px;
+    line-height: 1.4;
+}
+
+/* 에러 메시지 */
+.error-message {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 6px;
+    display: block;
+}
+
+.input-error {
+    border-color: #e74c3c !important;
+}
+
+.input-error:focus {
+    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1) !important;
+}
+
+/* Textarea 특정 스타일 */
+.form-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* 입력 필드 크기 변형 */
+.form-input-sm {
+    padding: 10px 14px;
+    font-size: 13px;
+}
+
+.form-input-lg {
+    padding: 14px 18px;
+    font-size: 16px;
+}
+
+/* 버튼 공통 스타일 */
+.form-btn {
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-sizing: border-box;
+}
+
+.form-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* 버튼 변형 */
+.form-btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+}
+
+.form-btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.form-btn-secondary {
+    background: #f5f5f5;
+    color: #333;
+    border: 1px solid #e0e0e0;
+}
+
+.form-btn-secondary:hover:not(:disabled) {
+    background: #e8e8e8;
+}
+
+.form-btn-block {
+    width: 100%;
+    padding: 14px 24px;
+}
+
+/* 버튼 그룹 */
+.form-btn-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.form-btn-group-end {
+    justify-content: flex-end;
+}
+
+.form-btn-group-center {
+    justify-content: center;
+}
+
+/* 도움말 텍스트 */
+.form-help-text {
+    font-size: 12px;
+    color: #666;
+    margin-top: 6px;
+    display: block;
+}
+
+/* 에러 메시지 */
+.form-error {
+    font-size: 12px;
+    color: #e74c3c;
+    margin-top: 6px;
+    display: block;
+}
+
+.form-input.error,
+.form-select.error,
+.form-textarea.error {
+    border-color: #e74c3c;
+}
+
+.form-input.error:focus,
+.form-select.error:focus,
+.form-textarea.error:focus {
+    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+}
+
+/* 링크 */
+.form-link {
+    color: #667eea;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.2s ease;
+}
+
+.form-link:hover {
+    color: #764ba2;
+    text-decoration: underline;
+}
+
+/* 폼 푸터 */
+.form-footer {
+    text-align: center;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.form-footer-text {
+    font-size: 14px;
+    color: #666;
+}
+
+/* 체크박스/라디오 */
+.form-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.form-check-input {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.form-check-label {
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    margin: 0;
+}
+
+/* 구분선 */
+.form-divider {
+    height: 1px;
+    background: #e0e0e0;
+    margin: 24px 0;
+    border: none;
+}
+
+/* 로딩 상태 */
+.form-loading {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .form-container {
+        padding: 32px 24px;
+    }
+
+    .form-title {
+        font-size: 24px;
+    }
+
+    .form-btn-group {
+        flex-direction: column;
+    }
+
+    .form-btn-group .form-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .form-container {
+        padding: 24px 20px;
+        width: 95%;
+    }
+
+    .form-title {
+        font-size: 22px;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+        padding: 10px 14px;
+        font-size: 14px;
+    }
+}
+
+/* 모달용 폼 컨테이너 */
+.form-modal-container {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+.form-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.form-modal-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+    color: #333;
+}
+
+.form-modal-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #999;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.form-modal-close:hover {
+    background: #f5f5f5;
+    color: #333;
+}
+
+/* 인라인 폼 (검색 등) */
+.form-inline {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.form-inline .form-input,
+.form-inline .form-select {
+    flex: 1;
+    min-width: 200px;
+}
+
+.form-inline .form-btn {
+    flex-shrink: 0;
+}

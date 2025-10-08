@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/students.css">
+    <link rel="stylesheet" href="/css/form.css">
+
+    <!-- 공통 유틸리티 -->
+    <script src="/js/utils/constants.js"></script>
+    <script src="/js/utils/apiClient.js"></script>
+    <script src="/js/utils/errorHandler.js"></script>
+    <script src="/js/components/Modal.js"></script>
+</head>
+<body>
+    <%- include('../components/sidebar-menu', { academyName, page: 'teachers', userName: userName }) %>
+
+    <main class="students-main">
+        <div class="students-container">
+            <!-- 페이지 헤더 -->
+            <div class="page-header">
+                <h1 class="page-title">👨‍🏫 강사관리</h1>
+                <button id="addTeacherBtn" class="btn btn-primary">+ 강사 추가</button>
+            </div>
+
+            <!-- 검색 및 필터 -->
+            <div class="filter-section" style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+                    <!-- 검색 -->
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="강사명, 이메일, 전화번호 검색..."
+                        style="flex: 1; min-width: 200px; padding: 10px 16px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px;"
+                    >
+
+                    <!-- 검색 버튼 -->
+                    <button id="searchBtn" class="btn btn-primary" style="padding: 10px 24px;">검색</button>
+                </div>
+            </div>
+
+            <!-- 강사 목록 테이블 -->
+            <div class="table-container" style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                    <thead style="background: #f8f9fa; border-bottom: 2px solid #e0e0e0;">
+                        <tr>
+                            <th class="sortable" data-sort="name" style="padding: 16px; text-align: left; font-weight: 600; cursor: pointer;">
+                                강사 이름 <span class="sort-icon">⇅</span>
+                            </th>
+                            <th style="padding: 16px; text-align: left; font-weight: 600;">전화번호</th>
+                            <th class="sortable" data-sort="email" style="padding: 16px; text-align: left; font-weight: 600; cursor: pointer;">
+                                이메일 <span class="sort-icon">⇅</span>
+                            </th>
+                            <th style="padding: 16px; text-align: left; font-weight: 600;">주소</th>
+                            <th class="sortable" data-sort="created_at" style="padding: 16px; text-align: center; font-weight: 600; cursor: pointer;">
+                                등록일 <span class="sort-icon">⇅</span>
+                            </th>
+                            <th style="padding: 16px; text-align: center; font-weight: 600;">관리</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teacherTableBody">
+                        <tr>
+                            <td colspan="6" style="padding: 60px; text-align: center; color: #999;">
+                                <div style="font-size: 48px; margin-bottom: 16px;">👨‍🏫</div>
+                                <p style="font-size: 16px; margin-bottom: 8px;">등록된 강사가 없습니다</p>
+                                <p style="font-size: 14px; color: #ccc;">새 강사를 추가해보세요</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 페이지네이션 -->
+            <div id="pagination" class="pagination" style="margin-top: 24px; display: flex; justify-content: center; gap: 8px;">
+                <!-- 페이지네이션 버튼이 여기에 동적으로 추가됩니다 -->
+            </div>
+        </div>
+    </main>
+
+    <!-- 강사 추가/수정 모달 -->
+    <div id="teacherModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="form-modal-container">
+            <div class="form-modal-header">
+                <h2 id="modalTitle" class="form-modal-title">강사 추가</h2>
+                <button id="closeModalBtn" class="form-modal-close" type="button">&times;</button>
+            </div>
+
+            <form id="teacherForm">
+                <input type="hidden" id="teacherId">
+
+                <div class="form-group">
+                    <label for="teacherName" class="form-label form-label-required">이름</label>
+                    <input
+                        type="text"
+                        id="teacherName"
+                        name="name"
+                        class="form-input"
+                        placeholder="강사 이름을 입력하세요"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="teacherPhone" class="form-label form-label-required">전화번호</label>
+                    <input
+                        type="tel"
+                        id="teacherPhone"
+                        name="phone"
+                        class="form-input"
+                        placeholder="010-1234-5678"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="teacherEmail" class="form-label form-label-required">이메일</label>
+                    <input
+                        type="email"
+                        id="teacherEmail"
+                        name="email"
+                        class="form-input"
+                        placeholder="example@email.com"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="teacherAddress" class="form-label">주소</label>
+                    <input
+                        type="text"
+                        id="teacherAddress"
+                        name="address"
+                        class="form-input"
+                        placeholder="주소를 입력하세요"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="teacherNotes" class="form-label">메모</label>
+                    <textarea
+                        id="teacherNotes"
+                        name="notes"
+                        class="form-textarea"
+                        placeholder="메모를 입력하세요"
+                        rows="3"
+                    ></textarea>
+                </div>
+
+                <div class="form-btn-group form-btn-group-end">
+                    <button type="button" id="cancelBtn" class="form-btn form-btn-secondary">취소</button>
+                    <button type="submit" class="form-btn form-btn-primary">저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        let currentFilters = {
+            search: '',
+            sortBy: 'created_at',
+            sortOrder: 'DESC'
+        };
+
+        // 페이지 로드 시 실행
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTeachers();
+
+            // 검색 버튼
+            document.getElementById('searchBtn').addEventListener('click', function() {
+                currentPage = 1;
+                currentFilters.search = document.getElementById('searchInput').value;
+                loadTeachers();
+            });
+
+            // 엔터키로 검색
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('searchBtn').click();
+                }
+            });
+
+            // 정렬 헤더 클릭
+            document.querySelectorAll('.sortable').forEach(th => {
+                th.addEventListener('click', function() {
+                    const sortBy = this.dataset.sort;
+                    if (currentFilters.sortBy === sortBy) {
+                        currentFilters.sortOrder = currentFilters.sortOrder === 'ASC' ? 'DESC' : 'ASC';
+                    } else {
+                        currentFilters.sortBy = sortBy;
+                        currentFilters.sortOrder = 'ASC';
+                    }
+                    loadTeachers();
+                });
+            });
+
+            // 강사 추가 버튼
+            document.getElementById('addTeacherBtn').addEventListener('click', function() {
+                openModal();
+            });
+
+            // 모달 닫기
+            document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+            document.getElementById('cancelBtn').addEventListener('click', closeModal);
+
+            // 모달 외부 클릭 시 닫기
+            document.getElementById('teacherModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+
+            // 폼 제출
+            document.getElementById('teacherForm').addEventListener('submit', handleSubmit);
+        });
+
+        // 강사 목록 로드
+        async function loadTeachers() {
+            try {
+                const params = {
+                    page: currentPage,
+                    limit: 20,
+                    ...currentFilters
+                };
+
+                const data = await APIClient.get(CONSTANTS.API.TEACHERS.LIST, params);
+
+                if (data.success) {
+                    displayTeachers(data.teachers);
+                    displayPagination(data.pagination);
+                } else {
+                    alert(data.error || '강사 목록을 불러오는데 실패했습니다.');
+                }
+            } catch (error) {
+                ErrorHandler.handle(error, '강사 목록을 불러오는 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 강사 목록 표시
+        function displayTeachers(teachers) {
+            const tbody = document.getElementById('teacherTableBody');
+
+            if (teachers.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="padding: 60px; text-align: center; color: #999;">
+                            <div style="font-size: 48px; margin-bottom: 16px;">👨‍🏫</div>
+                            <p style="font-size: 16px; margin-bottom: 8px;">검색 결과가 없습니다</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = teachers.map(teacher => `
+                <tr style="border-bottom: 1px solid #f0f0f0;">
+                    <td style="padding: 16px;">
+                        <div style="font-weight: 600; color: #333;">${teacher.name}</div>
+                    </td>
+                    <td style="padding: 16px; color: #666;">
+                        ${teacher.phone}
+                    </td>
+                    <td style="padding: 16px; color: #666;">
+                        ${teacher.email}
+                    </td>
+                    <td style="padding: 16px; color: #666; font-size: 14px;">
+                        ${teacher.address || '-'}
+                    </td>
+                    <td style="padding: 16px; text-align: center; color: #999; font-size: 14px;">
+                        ${new Date(teacher.created_at).toLocaleDateString('ko-KR')}
+                    </td>
+                    <td style="padding: 16px; text-align: center;">
+                        <div style="display: flex; gap: 8px; justify-content: center;">
+                            <button onclick="editTeacher(${teacher.id})" class="btn btn-sm btn-primary" style="padding: 6px 12px; font-size: 13px;">수정</button>
+                            <button onclick="deleteTeacher(${teacher.id})" class="btn btn-sm btn-danger" style="padding: 6px 12px; font-size: 13px; background: #e74c3c; color: white; border-color: #e74c3c;">삭제</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 페이지네이션 표시
+        function displayPagination(pagination) {
+            const container = document.getElementById('pagination');
+            const { page, totalPages } = pagination;
+
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+
+            // 이전 버튼
+            if (page > 1) {
+                html += `<button onclick="goToPage(${page - 1})" class="btn btn-sm" style="padding: 8px 12px;">이전</button>`;
+            }
+
+            // 페이지 번호
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === page) {
+                    html += `<button class="btn btn-sm btn-primary" style="padding: 8px 12px;">${i}</button>`;
+                } else {
+                    html += `<button onclick="goToPage(${i})" class="btn btn-sm" style="padding: 8px 12px;">${i}</button>`;
+                }
+            }
+
+            // 다음 버튼
+            if (page < totalPages) {
+                html += `<button onclick="goToPage(${page + 1})" class="btn btn-sm" style="padding: 8px 12px;">다음</button>`;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // 페이지 이동
+        function goToPage(page) {
+            currentPage = page;
+            loadTeachers();
+        }
+
+        // 모달 열기
+        function openModal(teacherId = null) {
+            const modal = document.getElementById('teacherModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const form = document.getElementById('teacherForm');
+
+            form.reset();
+            document.getElementById('teacherId').value = '';
+
+            if (teacherId) {
+                modalTitle.textContent = '강사 수정';
+                loadTeacherData(teacherId);
+            } else {
+                modalTitle.textContent = '강사 추가';
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        // 모달 닫기
+        function closeModal() {
+            document.getElementById('teacherModal').style.display = 'none';
+        }
+
+        // 강사 데이터 로드 (수정용)
+        async function loadTeacherData(teacherId) {
+            try {
+                const data = await APIClient.get(CONSTANTS.API.TEACHERS.DETAIL(teacherId));
+
+                if (data.success) {
+                    const teacher = data.teacher;
+                    document.getElementById('teacherId').value = teacher.id;
+                    document.getElementById('teacherName').value = teacher.name;
+                    document.getElementById('teacherPhone').value = teacher.phone;
+                    document.getElementById('teacherEmail').value = teacher.email;
+                    document.getElementById('teacherAddress').value = teacher.address || '';
+                    document.getElementById('teacherNotes').value = teacher.notes || '';
+                } else {
+                    alert(data.error || '강사 정보를 불러오는데 실패했습니다.');
+                    closeModal();
+                }
+            } catch (error) {
+                ErrorHandler.handle(error, '강사 정보를 불러오는 중 오류가 발생했습니다.');
+                closeModal();
+            }
+        }
+
+        // 폼 제출 처리
+        async function handleSubmit(e) {
+            e.preventDefault();
+
+            const teacherId = document.getElementById('teacherId').value;
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const result = teacherId
+                    ? await APIClient.put(CONSTANTS.API.TEACHERS.UPDATE(teacherId), data)
+                    : await APIClient.post(CONSTANTS.API.TEACHERS.CREATE, data);
+
+                if (result.success) {
+                    alert(result.message || CONSTANTS.MESSAGES.SAVE_SUCCESS);
+                    closeModal();
+                    loadTeachers();
+                } else {
+                    alert(result.error || '저장에 실패했습니다.');
+                }
+            } catch (error) {
+                ErrorHandler.handle(error, '저장 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 강사 수정
+        function editTeacher(id) {
+            openModal(id);
+        }
+
+        // 강사 삭제
+        async function deleteTeacher(id) {
+            const confirmed = await Modal.confirm(CONSTANTS.MESSAGES.CONFIRM_DELETE, '강사 삭제');
+            if (!confirmed) return;
+
+            try {
+                const data = await APIClient.delete(CONSTANTS.API.TEACHERS.DELETE(id));
+
+                if (data.success) {
+                    alert(data.message || CONSTANTS.MESSAGES.DELETE_SUCCESS);
+                    loadTeachers();
+                } else {
+                    alert(data.error || '삭제에 실패했습니다.');
+                }
+            } catch (error) {
+                ErrorHandler.handle(error, '삭제 중 오류가 발생했습니다.');
+            }
+        }
+    </script>
+
+    <style>
+        .sort-icon {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .sortable:hover {
+            background: #e9ecef;
+        }
+
+        .btn-sm {
+            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-sm:hover {
+            background: #f8f9fa;
+        }
+
+        .btn-sm.btn-primary {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .btn-sm.btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-sm.btn-danger {
+            background: #e74c3c;
+            color: white;
+            border-color: #e74c3c;
+        }
+
+        .btn-sm.btn-danger:hover {
+            background: #c0392b;
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/students.css">
+</head>
+<body>
+    <%- include('../components/sidebar-menu', { academyName, page: 'students', userName: userName }) %>
+
+    <main class="students-main">
+        <div class="students-container">
+            <!-- 페이지 헤더 -->
+            <div class="page-header">
+                <h1 class="page-title">📋 퇴원생 관리</h1>
+                <a href="/students" class="back-btn">← 재원생으로</a>
+            </div>
+
+            <!-- 검색 및 필터 -->
+            <div class="search-filter-bar">
+                <div class="search-box">
+                    <input type="text" class="search-input" id="searchInput" placeholder="🔍 이름 또는 전화번호로 검색...">
+                    <select class="filter-select" id="schoolFilter">
+                        <option value="">전체 학교</option>
+                    </select>
+                    <select class="filter-select" id="gradeFilter">
+                        <option value="">전체 학년</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 퇴원생 리스트 -->
+            <div class="students-list">
+                <div class="list-header">
+                    <span class="total-count">총 <strong id="totalCount">0</strong>명</span>
+                </div>
+
+                <!-- 데스크톱: 테이블 -->
+                <table class="students-table">
+                    <thead>
+                        <tr>
+                            <th>이름</th>
+                            <th>학교</th>
+                            <th>학년</th>
+                            <th>학부모 번호</th>
+                            <th>가입일</th>
+                            <th>퇴원일</th>
+                            <th>액션</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTableBody">
+                        <!-- 동적으로 채워짐 -->
+                    </tbody>
+                </table>
+
+                <!-- 빈 상태 -->
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <div class="empty-icon">✅</div>
+                    <h3>퇴원생이 없습니다</h3>
+                    <p>현재 퇴원 처리된 학생이 없습니다.</p>
+                    <a href="/students" class="btn btn-primary">재원생 보기</a>
+                </div>
+            </div>
+
+            <!-- 페이지네이션 -->
+            <div class="pagination" id="pagination" style="display: none;">
+                <!-- 동적으로 채워짐 -->
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/navigation.js"></script>
+    <script src="/js/students/withdrawn.js"></script>
+</body>
+</html>

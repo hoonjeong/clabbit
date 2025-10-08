@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/students.css">
+</head>
+<body>
+    <%- include('../components/sidebar-menu', { academyName, page: 'payments', userName: userName }) %>
+
+    <main class="students-main">
+        <div class="students-container">
+            <!-- 페이지 헤더 -->
+            <div class="page-header">
+                <h1 class="page-title">📝 원비 생성</h1>
+            </div>
+
+            <!-- 상단 컨트롤 영역 -->
+            <div class="control-section" style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <!-- 좌측 컨트롤 -->
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; flex: 1;">
+                        <!-- 학생 이름 검색 -->
+                        <input
+                            type="text"
+                            id="searchInput"
+                            placeholder="학생 이름 검색..."
+                            style="min-width: 200px; padding: 10px 16px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px;"
+                        >
+
+                        <!-- 정렬 선택 -->
+                        <select id="sortByFilter" style="padding: 10px 16px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+                            <option value="student_name">학생명순</option>
+                            <option value="class_name">수강반순</option>
+                            <option value="start_date">등록일순</option>
+                        </select>
+
+                        <!-- 선택된 항목 수 -->
+                        <div style="padding: 10px 16px; background: #f8f9fa; border-radius: 8px; font-size: 14px; font-weight: 600; color: #667eea;">
+                            <span id="selectedCount">0</span>명 선택됨
+                        </div>
+                    </div>
+
+                    <!-- 우측 컨트롤 -->
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <!-- 월 선택 -->
+                        <select id="monthSelect" style="padding: 10px 16px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px; min-width: 150px;">
+                            <!-- 동적으로 생성 -->
+                        </select>
+
+                        <!-- 원비 생성 버튼 -->
+                        <button id="generateBtn" class="btn btn-primary" style="padding: 10px 24px; white-space: nowrap;">
+                            💰 원비 생성
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 수강생 목록 테이블 -->
+            <div class="table-container" style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                    <thead style="background: #f8f9fa; border-bottom: 2px solid #e0e0e0;">
+                        <tr>
+                            <th style="padding: 16px; text-align: center; width: 50px;">
+                                <input type="checkbox" id="selectAllCheckbox" style="width: 18px; height: 18px; cursor: pointer;">
+                            </th>
+                            <th style="padding: 16px; text-align: left; font-weight: 600;">학생 이름</th>
+                            <th style="padding: 16px; text-align: left; font-weight: 600;">수강반</th>
+                            <th style="padding: 16px; text-align: center; font-weight: 600;">수강료</th>
+                            <th style="padding: 16px; text-align: center; font-weight: 600;">수강 시작일</th>
+                        </tr>
+                    </thead>
+                    <tbody id="enrollmentsTableBody">
+                        <!-- 로딩 상태 -->
+                        <tr>
+                            <td colspan="5" style="padding: 60px; text-align: center; color: #999;">
+                                <div style="font-size: 48px; margin-bottom: 16px;">⏳</div>
+                                <p style="font-size: 16px;">데이터를 불러오는 중...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 페이지네이션 -->
+            <div id="pagination" class="pagination" style="margin-top: 24px; display: flex; justify-content: center; gap: 8px;">
+                <!-- 페이지네이션 버튼이 여기에 동적으로 추가됩니다 -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentPage = 1;
+        let selectedEnrollments = new Set();
+        let allEnrollments = []; // 현재 페이지의 모든 enrollment
+        let currentFilters = {
+            search: '',
+            sort_by: 'student_name'
+        };
+
+        // 페이지 로드 시 실행
+        document.addEventListener('DOMContentLoaded', function() {
+            generateMonthOptions();
+            loadEnrollments();
+
+            // 검색 입력 (디바운싱)
+            let searchTimeout;
+            document.getElementById('searchInput').addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    currentPage = 1;
+                    currentFilters.search = this.value;
+                    loadEnrollments();
+                }, 300);
+            });
+
+            // 정렬 변경
+            document.getElementById('sortByFilter').addEventListener('change', function() {
+                currentPage = 1;
+                currentFilters.sort_by = this.value;
+                loadEnrollments();
+            });
+
+            // 전체 선택/해제
+            document.getElementById('selectAllCheckbox').addEventListener('change', function() {
+                if (this.checked) {
+                    allEnrollments.forEach(e => selectedEnrollments.add(e.enrollment_id));
+                } else {
+                    allEnrollments.forEach(e => selectedEnrollments.delete(e.enrollment_id));
+                }
+                updateUI();
+            });
+
+            // 원비 생성 버튼
+            document.getElementById('generateBtn').addEventListener('click', generateBillings);
+        });
+
+        // 최근 12개월 옵션 생성
+        function generateMonthOptions() {
+            const monthSelect = document.getElementById('monthSelect');
+            const now = new Date();
+
+            // 현재 월부터 12개월 후까지
+            for (let i = 0; i <= 12; i++) {
+                const date = new Date(now.getFullYear(), now.getMonth() + i, 1);
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const value = `${year}-${month}`;
+                const text = `${year}년 ${month}월`;
+
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = text;
+
+                // 현재 월을 기본 선택
+                if (i === 0) {
+                    option.selected = true;
+                }
+
+                monthSelect.appendChild(option);
+            }
+        }
+
+        // LIVE 수강생 목록 로드
+        async function loadEnrollments() {
+            try {
+                const params = new URLSearchParams({
+                    page: currentPage,
+                    limit: 50,
+                    ...currentFilters
+                });
+
+                const response = await fetch(`/api/enrollments/active?${params}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    allEnrollments = data.enrollments;
+                    displayEnrollments(data.enrollments);
+                    displayPagination(data);
+                } else {
+                    alert(data.error || '수강생 목록을 불러오는데 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('수강생 목록 로드 오류:', error);
+                alert('수강생 목록을 불러오는 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 수강생 목록 표시
+        function displayEnrollments(enrollments) {
+            const tbody = document.getElementById('enrollmentsTableBody');
+
+            if (enrollments.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="padding: 60px; text-align: center; color: #999;">
+                            <div style="font-size: 48px; margin-bottom: 16px;">📚</div>
+                            <p style="font-size: 16px;">LIVE 상태의 수강생이 없습니다</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = enrollments.map(enrollment => {
+                const isSelected = selectedEnrollments.has(enrollment.enrollment_id);
+                const startDate = enrollment.start_date ? enrollment.start_date.split('T')[0] : '-';
+
+                return `
+                <tr style="border-bottom: 1px solid #f0f0f0; ${isSelected ? 'background: #f0f7ff;' : ''}">
+                    <td style="padding: 16px; text-align: center;">
+                        <input
+                            type="checkbox"
+                            class="enrollment-checkbox"
+                            data-enrollment-id="${enrollment.enrollment_id}"
+                            ${isSelected ? 'checked' : ''}
+                            onchange="toggleSelection(${enrollment.enrollment_id})"
+                            style="width: 18px; height: 18px; cursor: pointer;"
+                        >
+                    </td>
+                    <td style="padding: 16px;">
+                        <a href="/students/${enrollment.student_id}" style="color: #667eea; font-weight: 600; text-decoration: none;">
+                            ${enrollment.student_name}
+                        </a>
+                    </td>
+                    <td style="padding: 16px; color: #666;">${enrollment.class_name}</td>
+                    <td style="padding: 16px; text-align: center; font-weight: 600;">
+                        ${Number(enrollment.tuition).toLocaleString()}원
+                    </td>
+                    <td style="padding: 16px; text-align: center; color: #666;">${startDate}</td>
+                </tr>
+                `;
+            }).join('');
+
+            updateSelectAllCheckbox();
+        }
+
+        // 개별 체크박스 토글
+        function toggleSelection(enrollmentId) {
+            if (selectedEnrollments.has(enrollmentId)) {
+                selectedEnrollments.delete(enrollmentId);
+            } else {
+                selectedEnrollments.add(enrollmentId);
+            }
+            updateUI();
+        }
+
+        // UI 업데이트
+        function updateUI() {
+            document.getElementById('selectedCount').textContent = selectedEnrollments.size;
+            updateSelectAllCheckbox();
+
+            // 선택된 행 하이라이트
+            document.querySelectorAll('.enrollment-checkbox').forEach(checkbox => {
+                const enrollmentId = parseInt(checkbox.dataset.enrollmentId);
+                const row = checkbox.closest('tr');
+                if (selectedEnrollments.has(enrollmentId)) {
+                    row.style.background = '#f0f7ff';
+                    checkbox.checked = true;
+                } else {
+                    row.style.background = '';
+                    checkbox.checked = false;
+                }
+            });
+        }
+
+        // 전체 선택 체크박스 상태 업데이트
+        function updateSelectAllCheckbox() {
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            const allIds = allEnrollments.map(e => e.enrollment_id);
+            const selectedInPage = allIds.filter(id => selectedEnrollments.has(id));
+
+            if (selectedInPage.length === 0) {
+                selectAllCheckbox.checked = false;
+                selectAllCheckbox.indeterminate = false;
+            } else if (selectedInPage.length === allIds.length) {
+                selectAllCheckbox.checked = true;
+                selectAllCheckbox.indeterminate = false;
+            } else {
+                selectAllCheckbox.checked = false;
+                selectAllCheckbox.indeterminate = true;
+            }
+        }
+
+        // 페이지네이션 표시
+        function displayPagination(data) {
+            const container = document.getElementById('pagination');
+            const { page, total_pages } = data;
+
+            if (total_pages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+
+            // 이전 버튼
+            if (page > 1) {
+                html += `<button onclick="goToPage(${page - 1})" class="btn btn-sm">이전</button>`;
+            }
+
+            // 페이지 번호
+            for (let i = 1; i <= total_pages; i++) {
+                if (i === page) {
+                    html += `<button class="btn btn-sm btn-primary">${i}</button>`;
+                } else {
+                    html += `<button onclick="goToPage(${i})" class="btn btn-sm">${i}</button>`;
+                }
+            }
+
+            // 다음 버튼
+            if (page < total_pages) {
+                html += `<button onclick="goToPage(${page + 1})" class="btn btn-sm">다음</button>`;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // 페이지 이동
+        function goToPage(page) {
+            currentPage = page;
+            loadEnrollments();
+        }
+
+        // 원비 생성
+        async function generateBillings() {
+            if (selectedEnrollments.size === 0) {
+                alert('원비를 생성할 수강생을 선택해주세요.');
+                return;
+            }
+
+            const month = document.getElementById('monthSelect').value;
+            const monthText = document.getElementById('monthSelect').selectedOptions[0].text;
+
+            if (!confirm(`${monthText} 원비를 ${selectedEnrollments.size}명에게 생성하시겠습니까?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/billings/bulk-generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        enrollment_ids: Array.from(selectedEnrollments),
+                        month: month
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(result.message);
+                    selectedEnrollments.clear();
+                    loadEnrollments();
+                } else {
+                    alert(`원비 생성 실패: ${result.error}`);
+                }
+            } catch (error) {
+                console.error('원비 생성 오류:', error);
+                alert('원비 생성 중 오류가 발생했습니다.');
+            }
+        }
+    </script>
+
+    <style>
+        .btn-sm {
+            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-sm:hover {
+            background: #f8f9fa;
+        }
+
+        .btn-sm.btn-primary {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .btn-sm.btn-primary:hover {
+            background: #0056b3;
+        }
+    </style>
+</body>
+</html>

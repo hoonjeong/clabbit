@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <meta name="description" content="세상에서 가장 쉬운 소규모 학원 학생관리 서비스, 클래빗으로 학원을 성장시키세요.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('components/header') %>
+    
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="container">
+                <div class="hero-content animate-element">
+                    <h1 class="hero-title">클래빗은 아주 쉽고, 유용한<br>무료 학원관리 프로그램입니다.</h1>
+                    <p class="hero-subtitle">또한, 학원 성장에 꼭 필요한 인사이트를 제공합니다.</p>
+                    <div class="hero-buttons">
+                        <a href="/signup" class="btn btn-hero">지금 무료로 시작하기</a>
+                        <a href="#features" class="btn btn-outline-hero">자세히 보기</a>
+                    </div>
+                </div>
+                <div class="hero-image animate-element">
+                    <div class="hero-visual">
+                        <div class="ai-container">
+                            <div class="ai-brain">
+                                <div class="brain-core"></div>
+                                <div class="neural-network">
+                                    <div class="neuron neuron-1"></div>
+                                    <div class="neuron neuron-2"></div>
+                                    <div class="neuron neuron-3"></div>
+                                    <div class="neuron neuron-4"></div>
+                                    <div class="neuron neuron-5"></div>
+                                    <div class="neuron neuron-6"></div>
+                                </div>
+                            </div>
+                            <div class="ai-particles">
+                                <div class="particle particle-1"></div>
+                                <div class="particle particle-2"></div>
+                                <div class="particle particle-3"></div>
+                                <div class="particle particle-4"></div>
+                                <div class="particle particle-5"></div>
+                            </div>
+                            <div class="ai-circles">
+                                <div class="circle circle-1"></div>
+                                <div class="circle circle-2"></div>
+                                <div class="circle circle-3"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Simplicity Section -->
+        <section id="features" class="feature-section section-simplicity">
+            <div class="container">
+                <div class="feature-layout">
+                    <div class="feature-content animate-element">
+                        <h2 class="section-title">클래빗은 아주 쉽습니다</h2>
+                        <p class="feature-description">사용하지도 않는 복잡한 기능은 넣지 않았습니다.</p>
+                        <div class="feature-highlight">
+                            <p class="highlight-text">회원관리, 수강반관리, 출결관리, 수납관리, 고객소통 등 꼭 필요한 기능만 쉽고 편리하게 사용하실 수 있습니다.</p>
+                        </div>
+                        <p class="feature-note">동영상 강의, AI TOOL 등의 고급 기능은 필요시 선택해서 사용하시면 됩니다.</p>
+                        <div class="feature-icons">
+                            <div class="icon-item animate-element">
+                                <span class="icon-emoji">✓</span>
+                                <span class="icon-label">간편한 UI</span>
+                            </div>
+                            <div class="icon-item animate-element">
+                                <span class="icon-emoji">📊</span>
+                                <span class="icon-label">필수 기능</span>
+                            </div>
+                            <div class="icon-item animate-element">
+                                <span class="icon-emoji">⚡</span>
+                                <span class="icon-label">빠른 처리</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feature-visual animate-element">
+                        <div class="visual-card">
+                            <div class="card-header">학원 대시보드</div>
+                            <div class="card-body">
+                                <div class="stat-item">
+                                    <div class="stat-label">전체 원생</div>
+                                    <div class="stat-value">120명</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-label">이번달 신규</div>
+                                    <div class="stat-value">8명</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-label">출석률</div>
+                                    <div class="stat-value">95%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Intelligence Section -->
+        <section class="feature-section section-intelligence bg-light">
+            <div class="container">
+                <div class="feature-layout reverse">
+                    <div class="feature-visual animate-element">
+                        <div class="visual-card insights-card">
+                            <div class="card-header">💡 학원 인사이트</div>
+                            <div class="card-body">
+                                <div class="insight-item alert">
+                                    <span class="insight-icon">⚠️</span>
+                                    <span class="insight-text">장기 결석생 3명 관리 필요</span>
+                                </div>
+                                <div class="insight-item success">
+                                    <span class="insight-icon">⭐</span>
+                                    <span class="insight-text">충성도 높은 학생 12명</span>
+                                </div>
+                                <div class="insight-item info">
+                                    <span class="insight-icon">📈</span>
+                                    <span class="insight-text">재등록률 15% 증가</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feature-content animate-element">
+                        <h2 class="section-title">클래빗은 유용합니다</h2>
+                        <p class="feature-description">단순한 학원관리 프로그램이 아닙니다.</p>
+                        <div class="feature-highlight">
+                            <p class="highlight-text">하루하루 사용하면서 쌓인 데이터를 바탕으로, 학원운영에 필요한 인사이트를 제공합니다.</p>
+                        </div>
+                        <div class="feature-examples">
+                            <div class="example-item animate-element">
+                                <span class="example-icon">🎯</span>
+                                <p>장기 퇴원생, 지각이 잦은 학생, 결석이 잦은 학생 등 이탈이 예상되는 학생들을 미리 알려드립니다.</p>
+                            </div>
+                            <div class="example-item animate-element">
+                                <span class="example-icon">💝</span>
+                                <p>충성도가 높은 학생을 잘 관리하기 위한 팁을 제공합니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Growth Section -->
+        <section class="feature-section section-growth">
+            <div class="container">
+                <div class="feature-layout">
+                    <div class="feature-content animate-element">
+                        <h2 class="section-title">클래빗은 학원의 성장을 돕습니다</h2>
+                        <p class="feature-description">학원의 성장을 돕는 다양한 콘텐츠를 제공합니다.</p>
+                        <div class="feature-highlight">
+                            <p class="highlight-text">학원에 도움이 되는 뉴스, 인사이트 제공 노하우, 학부모님께 제공 가능한 자료 등을 전해드립니다.</p>
+                        </div>
+                        <div class="growth-items">
+                            <div class="growth-item animate-element">
+                                <span class="growth-icon">📰</span>
+                                <div>
+                                    <h4>업계 뉴스</h4>
+                                    <p>교육 트렌드와 업계 소식</p>
+                                </div>
+                            </div>
+                            <div class="growth-item animate-element">
+                                <span class="growth-icon">💡</span>
+                                <div>
+                                    <h4>운영 노하우</h4>
+                                    <p>성공 학원의 인사이트 공유</p>
+                                </div>
+                            </div>
+                            <div class="growth-item animate-element">
+                                <span class="growth-icon">📚</span>
+                                <div>
+                                    <h4>학습 자료</h4>
+                                    <p>학부모에게 제공 가능한 자료</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feature-visual animate-element">
+                        <div class="visual-card growth-card">
+                            <div class="card-header">🚀 성장 지원</div>
+                            <div class="card-body">
+                                <div class="growth-chart">
+                                    <div class="chart-bar" style="height: 40%"></div>
+                                    <div class="chart-bar" style="height: 60%"></div>
+                                    <div class="chart-bar" style="height: 85%"></div>
+                                    <div class="chart-bar" style="height: 100%"></div>
+                                </div>
+                                <p class="chart-label">학원 성장 추이</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section class="pricing-section">
+            <div class="container">
+                <h2 class="section-title animate-element">클래빗은 무료입니다</h2>
+                <div class="pricing-highlight animate-element">
+                    <p class="pricing-subtitle">학원에 안정적인 매출이 발생할 때까지,<br>클래빗은 사용료를 받지 않습니다.</p>
+                </div>
+                <div class="pricing-cards">
+                    <div class="pricing-card animate-element">
+                        <div class="pricing-badge free">무료</div>
+                        <h4 class="pricing-tier">~50명</h4>
+                        <div class="pricing-amount">₩0</div>
+                        <p class="pricing-desc">완전 무료</p>
+                    </div>
+                    <div class="pricing-card animate-element featured">
+                        <div class="pricing-badge">인기</div>
+                        <h4 class="pricing-tier">50명 이후</h4>
+                        <div class="pricing-amount">월 10,000원</div>
+                        <p class="pricing-desc">모든 기본 기능 포함</p>
+                    </div>
+                    <div class="pricing-card animate-element">
+                        <h4 class="pricing-tier">200명 이후</h4>
+                        <div class="pricing-amount">월 30,000원</div>
+                        <p class="pricing-desc">프리미엄 기능 추가</p>
+                    </div>
+                </div>
+                <p class="pricing-note animate-element">사용료를 받지 않는 대신, 원장님께 좋은 프로그램을 소개해드리는 방법으로 수익을 발생시킵니다.</p>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="container">
+                <div class="cta-content animate-element">
+                    <h2 class="cta-title">학원의 성장을 돕기 위한 서비스, 클래빗</h2>
+                    <p class="cta-subtitle">클래빗과 함께 학원을 성장시켜보세요</p>
+                    <a href="/signup" class="btn btn-cta">지금 무료로 시작하기</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="brand-text">클래빗</span>
+                    <p class="footer-tagline">학원 성장의 든든한 파트너</p>
+                </div>
+                <div class="footer-links">
+                    <a href="/privacy" class="footer-link">개인정보처리방침</a>
+                    <a href="/terms" class="footer-link">이용약관</a>
+                    <a href="/contact" class="footer-link">문의하기</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 클래빗. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+</body>
+</html>

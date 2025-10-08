@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/form.css">
+    <style>
+        .items-container {
+            padding: 20px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background: #45a049;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .item-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .item-card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .item-category {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .category-tuition { background: #e3f2fd; color: #1976d2; }
+        .category-material { background: #f3e5f5; color: #7b1fa2; }
+        .category-test { background: #e8f5e9; color: #388e3c; }
+        .category-event { background: #fff3e0; color: #f57c00; }
+        .category-other { background: #f5f5f5; color: #616161; }
+
+        .item-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .item-amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+
+        .item-details {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .item-recurring {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .btn-sm:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-delete {
+            color: #f44336;
+        }
+
+        .inactive-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .inactive-text {
+            background: #f44336;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        /* 모달 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #f44336;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .recurring-fields {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .recurring-fields input[type="checkbox"] {
+            width: auto;
+        }
+
+        .stats-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 30px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../components/sidebar-menu', { academyName, userName, page }) %>
+
+    <div class="items-container">
+        <div class="page-header">
+            <h1>청구 항목 설정</h1>
+            <button class="btn-primary" onclick="openCreateModal()">+ 새 항목 추가</button>
+        </div>
+
+        <!-- 통계 섹션 -->
+        <div class="stats-section">
+            <div class="stat-item">
+                <span class="stat-label">전체 항목:</span>
+                <span class="stat-value" id="totalItems">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">활성 항목:</span>
+                <span class="stat-value" id="activeItems">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">정기 청구:</span>
+                <span class="stat-value" id="recurringItems">0</span>
+            </div>
+        </div>
+
+        <!-- 청구 항목 그리드 -->
+        <div class="items-grid" id="itemsGrid">
+            <!-- 동적으로 로드됨 -->
+        </div>
+    </div>
+
+    <!-- 항목 생성/수정 모달 -->
+    <div id="itemModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">청구 항목 추가</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <form id="itemForm">
+                <input type="hidden" id="itemId">
+
+                <div class="form-group">
+                    <label>항목명 *</label>
+                    <input type="text" id="name" required placeholder="예: 월 수업료, 교재비">
+                </div>
+
+                <div class="form-group">
+                    <label>카테고리 *</label>
+                    <select id="category" required>
+                        <option value="tuition">수업료</option>
+                        <option value="material">교재비</option>
+                        <option value="test">시험/평가</option>
+                        <option value="event">행사/활동</option>
+                        <option value="other">기타</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>기본 금액 *</label>
+                    <input type="number" id="defaultAmount" required min="0" step="1000">
+                </div>
+
+                <div class="form-group">
+                    <label>설명</label>
+                    <textarea id="description" rows="3" placeholder="항목에 대한 설명을 입력하세요"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <div class="recurring-fields">
+                        <label>
+                            <input type="checkbox" id="isRecurring" onchange="toggleRecurringDay()">
+                            정기 청구 항목
+                        </label>
+                        <div id="recurringDayGroup" style="display:none;">
+                            <label>청구일:</label>
+                            <input type="number" id="recurringDay" min="1" max="31" placeholder="1-31">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-buttons">
+                    <button type="submit" class="btn-primary">저장</button>
+                    <button type="button" onclick="closeModal()">취소</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let billingItems = [];
+        let editingItemId = null;
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            loadBillingItems();
+        });
+
+        // 청구 항목 목록 로드
+        async function loadBillingItems() {
+            try {
+                const response = await fetch('/api/billing-items?active_only=false');
+                const result = await response.json();
+
+                if (result.success) {
+                    billingItems = result.data;
+                    displayBillingItems();
+                    updateStats();
+                }
+            } catch (error) {
+                console.error('청구 항목 로드 실패:', error);
+            }
+        }
+
+        // 청구 항목 표시
+        function displayBillingItems() {
+            const grid = document.getElementById('itemsGrid');
+
+            if (billingItems.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #999;">등록된 청구 항목이 없습니다.</div>';
+                return;
+            }
+
+            grid.innerHTML = billingItems.map(item => `
+                <div class="item-card">
+                    <span class="item-category category-${item.category}">${getCategoryText(item.category)}</span>
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-amount">${formatCurrency(item.default_amount)}</div>
+                    <div class="item-details">
+                        ${item.description || ''}
+                    </div>
+                    ${item.is_recurring ? `
+                        <div class="item-recurring">
+                            정기 청구 (매월 ${item.recurring_day}일)
+                        </div>
+                    ` : ''}
+                    <div class="item-actions">
+                        <button class="btn-sm" onclick="editItem(${item.id})">수정</button>
+                        <button class="btn-sm btn-delete" onclick="deleteItem(${item.id})">
+                            ${item.is_active ? '비활성화' : '활성화'}
+                        </button>
+                    </div>
+                    ${!item.is_active ? `
+                        <div class="inactive-overlay">
+                            <div class="inactive-text">비활성</div>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        // 통계 업데이트
+        function updateStats() {
+            const total = billingItems.length;
+            const active = billingItems.filter(item => item.is_active).length;
+            const recurring = billingItems.filter(item => item.is_recurring && item.is_active).length;
+
+            document.getElementById('totalItems').textContent = total;
+            document.getElementById('activeItems').textContent = active;
+            document.getElementById('recurringItems').textContent = recurring;
+        }
+
+        // 모달 열기 (생성)
+        function openCreateModal() {
+            editingItemId = null;
+            document.getElementById('modalTitle').textContent = '청구 항목 추가';
+            document.getElementById('itemForm').reset();
+            document.getElementById('itemModal').style.display = 'block';
+        }
+
+        // 모달 열기 (수정)
+        function editItem(itemId) {
+            editingItemId = itemId;
+            const item = billingItems.find(i => i.id === itemId);
+
+            if (item) {
+                document.getElementById('modalTitle').textContent = '청구 항목 수정';
+                document.getElementById('itemId').value = item.id;
+                document.getElementById('name').value = item.name;
+                document.getElementById('category').value = item.category;
+                document.getElementById('defaultAmount').value = item.default_amount;
+                document.getElementById('description').value = item.description || '';
+                document.getElementById('isRecurring').checked = item.is_recurring;
+
+                if (item.is_recurring) {
+                    document.getElementById('recurringDayGroup').style.display = 'block';
+                    document.getElementById('recurringDay').value = item.recurring_day || '';
+                }
+
+                document.getElementById('itemModal').style.display = 'block';
+            }
+        }
+
+        // 모달 닫기
+        function closeModal() {
+            document.getElementById('itemModal').style.display = 'none';
+            document.getElementById('itemForm').reset();
+            editingItemId = null;
+        }
+
+        // 정기 청구 토글
+        function toggleRecurringDay() {
+            const isRecurring = document.getElementById('isRecurring').checked;
+            document.getElementById('recurringDayGroup').style.display =
+                isRecurring ? 'block' : 'none';
+        }
+
+        // 폼 제출
+        document.getElementById('itemForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const itemData = {
+                name: document.getElementById('name').value,
+                category: document.getElementById('category').value,
+                default_amount: document.getElementById('defaultAmount').value,
+                description: document.getElementById('description').value,
+                is_recurring: document.getElementById('isRecurring').checked
+            };
+
+            if (itemData.is_recurring) {
+                itemData.recurring_day = document.getElementById('recurringDay').value || null;
+            }
+
+            try {
+                let response;
+
+                if (editingItemId) {
+                    // 수정
+                    response = await fetch(`/api/billing-items/${editingItemId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(itemData)
+                    });
+                } else {
+                    // 생성
+                    response = await fetch('/api/billing-items', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(itemData)
+                    });
+                }
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(editingItemId ? '항목이 수정되었습니다.' : '항목이 추가되었습니다.');
+                    closeModal();
+                    loadBillingItems();
+                } else {
+                    alert('저장 실패: ' + result.error);
+                }
+            } catch (error) {
+                console.error('저장 오류:', error);
+                alert('저장 중 오류가 발생했습니다.');
+            }
+        });
+
+        // 항목 삭제(비활성화)
+        async function deleteItem(itemId) {
+            const item = billingItems.find(i => i.id === itemId);
+            const action = item.is_active ? '비활성화' : '활성화';
+
+            if (!confirm(`이 항목을 ${action}하시겠습니까?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/billing-items/${itemId}`, {
+                    method: item.is_active ? 'DELETE' : 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ is_active: !item.is_active })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(`항목이 ${action}되었습니다.`);
+                    loadBillingItems();
+                } else {
+                    alert(`${action} 실패: ` + result.error);
+                }
+            } catch (error) {
+                console.error(`${action} 오류:`, error);
+                alert(`${action} 중 오류가 발생했습니다.`);
+            }
+        }
+
+        // 유틸리티 함수들
+        function getCategoryText(category) {
+            const categoryMap = {
+                'tuition': '수업료',
+                'material': '교재비',
+                'test': '시험/평가',
+                'event': '행사/활동',
+                'other': '기타'
+            };
+            return categoryMap[category] || category;
+        }
+
+        function formatCurrency(amount) {
+            return '₩' + Number(amount).toLocaleString('ko-KR');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <%- include('components/sidebar-menu', { academyName, page: 'dashboard', userName: userName }) %>
+
+    <main class="main-content">
+        <div class="dashboard-container">
+            <!-- 통계 요약 섹션 -->
+            <section class="stats-section">
+                <div class="summary-stats-grid" style="margin-top: 20px;">
+                    <!-- 전체 원생 -->
+                    <div class="stat-card clickable-card total-students" id="totalStudentsCard" data-url="/students?status=active">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-info">
+                            <h3 class="stat-label" style="color: #000; font-size: 20px; font-weight: 600;">전체 원생</h3>
+                            <p class="stat-value" id="totalStudentsValue">0<span class="stat-unit">명</span></p>
+                        </div>
+                    </div>
+
+                    <!-- 이번달 신규 -->
+                    <div class="stat-card clickable-card new-students" id="thisMonthNewCard">
+                        <div class="stat-icon">➕</div>
+                        <div class="stat-info">
+                            <h3 class="stat-label" style="color: #000; font-size: 20px; font-weight: 600;">이번달 신규</h3>
+                            <p class="stat-value" id="thisMonthNewValue">0<span class="stat-unit">명</span></p>
+                        </div>
+                    </div>
+
+                    <!-- 이번달 퇴원 -->
+                    <div class="stat-card clickable-card dropout-students" id="thisMonthWithdrawalCard">
+                        <div class="stat-icon">➖</div>
+                        <div class="stat-info">
+                            <h3 class="stat-label" style="color: #000; font-size: 20px; font-weight: 600;">이번달 퇴원</h3>
+                            <p class="stat-value" id="thisMonthWithdrawalValue">0<span class="stat-unit">명</span></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 시각화 그래프 섹션 -->
+            <section class="charts-section" style="margin-top: 40px;">
+                <!-- 월별 전체 원생 추이 -->
+                <div class="chart-container">
+                    <h3 class="chart-title">📈 전체 원생 월별 변화 추이</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="monthlyTrendChart"></canvas>
+                        <div class="no-data-message" id="monthlyNoData">
+                            <div class="no-data-icon">📊</div>
+                            <p>데이터가 없습니다</p>
+                            <p class="no-data-desc">학생이 등록되면 통계가 표시됩니다.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 신규/퇴원 통합 그래프 -->
+                <div class="chart-container">
+                    <h3 class="chart-title">📊 신규 및 퇴원 추이</h3>
+
+                    <!-- 탭 메뉴 -->
+                    <div class="chart-tabs">
+                        <button class="tab-btn active" data-period="daily">일간</button>
+                        <button class="tab-btn" data-period="weekly">주간</button>
+                        <button class="tab-btn" data-period="monthly">월간</button>
+                    </div>
+
+                    <div class="chart-wrapper">
+                        <canvas id="combinedChart"></canvas>
+                        <div class="no-data-message" id="combinedNoData">
+                            <div class="no-data-icon">📊</div>
+                            <p>데이터가 없습니다</p>
+                            <p class="no-data-desc">학생이 등록되면 통계가 표시됩니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 이슈 알림 섹션 -->
+            <section class="issues-section">
+                <h2 class="section-title">⚠️ 주의가 필요한 학생들</h2>
+                <div class="issues-grid">
+                    <div class="issue-card">
+                        <div class="issue-header">
+                            <div class="issue-icon">📅</div>
+                            <h3 class="issue-title">장기 결석자</h3>
+                        </div>
+                        <p class="issue-desc">7일 이상 결석한 학생</p>
+                        <div class="issue-content">
+                            <p class="no-issue">데이터가 없습니다</p>
+                        </div>
+                    </div>
+
+                    <div class="issue-card">
+                        <div class="issue-header">
+                            <div class="issue-icon">⏰</div>
+                            <h3 class="issue-title">지각 빈도 높은 학생</h3>
+                        </div>
+                        <p class="issue-desc">최근 한 달 내 3회 이상 지각</p>
+                        <div class="issue-content">
+                            <p class="no-issue">데이터가 없습니다</p>
+                        </div>
+                    </div>
+
+                    <div class="issue-card">
+                        <div class="issue-header">
+                            <div class="issue-icon">📉</div>
+                            <h3 class="issue-title">출석률 저조 학생</h3>
+                        </div>
+                        <p class="issue-desc">출석률 70% 미만</p>
+                        <div class="issue-content">
+                            <p class="no-issue">데이터가 없습니다</p>
+                        </div>
+                    </div>
+
+                    <div class="issue-card">
+                        <div class="issue-header">
+                            <div class="issue-icon">💰</div>
+                            <h3 class="issue-title">미수금 발생 학생</h3>
+                        </div>
+                        <p class="issue-desc">수납 기한 초과</p>
+                        <div class="issue-content">
+                            <p class="no-issue">데이터가 없습니다</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 교육 뉴스 섹션 -->
+            <section class="news-section">
+                <div class="section-header">
+                    <h2 class="section-title">📰 교육 업계 소식</h2>
+                    <!-- <button class="add-btn">+ 뉴스 등록</button> -->
+                </div>
+                <div class="sort-options">
+                    <button class="sort-btn active">최신순</button>
+                    <button class="sort-btn">조회순</button>
+                </div>
+                <div class="news-list">
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <p>등록된 뉴스가 없습니다</p>
+                        <p class="empty-desc">관리자가 뉴스를 등록하면 여기에 표시됩니다</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 자료 게시판 섹션 -->
+            <section class="resources-section">
+                <div class="section-header">
+                    <h2 class="section-title">📚 유용한 학원 운영 자료</h2>
+                    <!-- <button class="add-btn">+ 자료 등록</button> -->
+                </div>
+                <div class="category-tabs">
+                    <button class="category-btn active">전체</button>
+                    <button class="category-btn">운영 팁</button>
+                    <button class="category-btn">마케팅</button>
+                    <button class="category-btn">법률</button>
+                </div>
+                <div class="resources-list">
+                    <div class="empty-state">
+                        <div class="empty-icon">📂</div>
+                        <p>등록된 자료가 없습니다</p>
+                        <p class="empty-desc">도움이 되는 자료를 준비 중입니다</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="/js/navigation.js"></script>
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/students.css">
+</head>
+<body>
+    <%- include('../components/sidebar-menu', { academyName, page: 'payments', userName: userName }) %>
+
+    <main class="students-main">
+        <div class="students-container">
+            <!-- 페이지 헤더 -->
+            <div class="page-header">
+                <h1 class="page-title">💰 원비 수납</h1>
+            </div>
+
+            <!-- 검색 및 필터 영역 -->
+            <div class="filter-section" style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+                    <!-- 학생 이름 검색 -->
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="학생 이름 검색..."
+                        style="flex: 1; min-width: 200px; padding: 10px 16px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px;"
+                    >
+
+                    <!-- 청구 월 선택 -->
+                    <select id="monthFilter" style="padding: 10px 16px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px; min-width: 150px;">
+                        <option value="">전체 월</option>
+                    </select>
+
+                    <!-- 수납 상태 필터 -->
+                    <select id="statusFilter" style="padding: 10px 16px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+                        <option value="">전체 상태</option>
+                        <option value="unpaid">미납</option>
+                        <option value="partial">부분납부</option>
+                        <option value="paid">완납</option>
+                    </select>
+
+                    <!-- 검색 버튼 -->
+                    <button id="searchBtn" class="btn btn-primary" style="padding: 10px 24px;">검색</button>
+                </div>
+            </div>
+
+            <!-- 수납 내역 테이블 -->
+            <div class="table-container" style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                    <thead style="background: #f8f9fa; border-bottom: 2px solid #e0e0e0;">
+                        <tr>
+                            <th style="padding: 16px; text-align: left; font-weight: 600;">학생명</th>
+                            <th style="padding: 16px; text-align: left; font-weight: 600;">수강반</th>
+                            <th style="padding: 16px; text-align: center; font-weight: 600;">청구월</th>
+                            <th style="padding: 16px; text-align: right; font-weight: 600;">청구금액</th>
+                            <th style="padding: 16px; text-align: center; font-weight: 600;">수납금액</th>
+                            <th style="padding: 16px; text-align: right; font-weight: 600;">잔액</th>
+                            <th style="padding: 16px; text-align: center; font-weight: 600;">상태</th>
+                            <th style="padding: 16px; text-align: center; font-weight: 600;">액션</th>
+                        </tr>
+                    </thead>
+                    <tbody id="billingsTableBody">
+                        <tr>
+                            <td colspan="8" style="padding: 60px; text-align: center; color: #999;">
+                                <div style="font-size: 48px; margin-bottom: 16px;">💰</div>
+                                <p style="font-size: 16px; margin-bottom: 8px;">청구 내역이 없습니다</p>
+                                <p style="font-size: 14px; color: #ccc;">수강료 청구를 먼저 생성해주세요</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 페이지네이션 -->
+            <div id="pagination" class="pagination" style="margin-top: 24px; display: flex; justify-content: center; gap: 8px;">
+                <!-- 페이지네이션 버튼이 여기에 동적으로 추가됩니다 -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentPage = 1;
+        let currentFilters = {
+            student_name: '',
+            month: '',
+            status: ''
+        };
+
+        // 페이지 로드 시 실행
+        document.addEventListener('DOMContentLoaded', function() {
+            generateMonthOptions();
+            loadBillings();
+
+            // 검색 버튼
+            document.getElementById('searchBtn').addEventListener('click', function() {
+                currentPage = 1;
+                currentFilters.student_name = document.getElementById('searchInput').value;
+                currentFilters.month = document.getElementById('monthFilter').value;
+                currentFilters.status = document.getElementById('statusFilter').value;
+                loadBillings();
+            });
+
+            // 엔터키로 검색
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('searchBtn').click();
+                }
+            });
+        });
+
+        // 최근 12개월 옵션 생성
+        function generateMonthOptions() {
+            const monthFilter = document.getElementById('monthFilter');
+            const now = new Date();
+
+            // 현재 월부터 12개월 전까지
+            for (let i = 0; i < 12; i++) {
+                const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const value = `${year}-${month}`;
+                const text = `${year}년 ${month}월`;
+
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = text;
+
+                // 현재 월을 기본 선택
+                if (i === 0) {
+                    option.selected = true;
+                    currentFilters.month = value;
+                }
+
+                monthFilter.appendChild(option);
+            }
+        }
+
+        // 청구 목록 로드
+        async function loadBillings() {
+            try {
+                const params = new URLSearchParams({
+                    page: currentPage,
+                    limit: 20,
+                    ...currentFilters
+                });
+
+                const response = await fetch(`/api/billings?${params}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    displayBillings(data.billings);
+                    displayPagination(data);
+                } else {
+                    alert(data.error || '청구 목록을 불러오는데 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('청구 목록 로드 오류:', error);
+                alert('청구 목록을 불러오는 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 청구 목록 표시
+        function displayBillings(billings) {
+            const tbody = document.getElementById('billingsTableBody');
+
+            if (billings.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="padding: 60px; text-align: center; color: #999;">
+                            <div style="font-size: 48px; margin-bottom: 16px;">💰</div>
+                            <p style="font-size: 16px; margin-bottom: 8px;">검색 결과가 없습니다</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = billings.map(billing => {
+                const billingMonth = new Date(billing.billing_month);
+                const monthText = `${billingMonth.getFullYear()}년 ${String(billingMonth.getMonth() + 1).padStart(2, '0')}월`;
+
+                // 상태 배지
+                let statusBadge, statusText;
+                switch (billing.status) {
+                    case 'paid':
+                        statusBadge = 'badge-paid';
+                        statusText = '완납';
+                        break;
+                    case 'partial':
+                        statusBadge = 'badge-partial';
+                        statusText = '부분납부';
+                        break;
+                    case 'unpaid':
+                    default:
+                        statusBadge = 'badge-unpaid';
+                        statusText = '미납';
+                        break;
+                }
+
+                // 수납금액 입력 필드 (완납이 아닌 경우만)
+                const paymentInput = billing.status !== 'paid'
+                    ? `<input
+                        type="number"
+                        id="payment-${billing.id}"
+                        value="${Math.floor(billing.remaining_amount)}"
+                        min="0"
+                        max="${Math.floor(billing.remaining_amount)}"
+                        step="1"
+                        style="width: 120px; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; text-align: right;"
+                    >`
+                    : '-';
+
+                // 액션 버튼
+                let actionButtons = '';
+                if (billing.status === 'paid') {
+                    // 완납: 취소, 삭제 버튼
+                    actionButtons = `
+                        <button onclick="cancelPayment(${billing.id}, '${billing.student_name}')" class="btn-small btn-warning" style="margin-right: 4px;">취소</button>
+                        <button onclick="deleteBilling(${billing.id}, '${billing.student_name}', ${billing.amount})" class="btn-small btn-danger">삭제</button>
+                    `;
+                } else if (billing.status === 'partial') {
+                    // 부분납부: 수납, 취소, 삭제 버튼
+                    actionButtons = `
+                        <button onclick="handlePayment(${billing.id}, '${billing.student_name}', ${billing.amount}, ${billing.remaining_amount})" class="btn-small btn-primary" style="margin-right: 4px;">수납</button>
+                        <button onclick="cancelPayment(${billing.id}, '${billing.student_name}')" class="btn-small btn-warning" style="margin-right: 4px;">취소</button>
+                        <button onclick="deleteBilling(${billing.id}, '${billing.student_name}', ${billing.amount})" class="btn-small btn-danger">삭제</button>
+                    `;
+                } else {
+                    // 미납: 수납, 삭제 버튼
+                    actionButtons = `
+                        <button onclick="handlePayment(${billing.id}, '${billing.student_name}', ${billing.amount}, ${billing.remaining_amount})" class="btn-small btn-primary" style="margin-right: 4px;">수납</button>
+                        <button onclick="deleteBilling(${billing.id}, '${billing.student_name}', ${billing.amount})" class="btn-small btn-danger">삭제</button>
+                    `;
+                }
+
+                return `
+                <tr style="border-bottom: 1px solid #f0f0f0;">
+                    <td style="padding: 16px;">
+                        <a href="/students/${billing.student_id}" style="color: #667eea; font-weight: 600; text-decoration: none;">${billing.student_name}</a>
+                    </td>
+                    <td style="padding: 16px; color: #666;">${billing.class_name || '-'}</td>
+                    <td style="padding: 16px; text-align: center; color: #666;">${monthText}</td>
+                    <td style="padding: 16px; text-align: right; font-weight: 600;">${Number(billing.amount).toLocaleString()}원</td>
+                    <td style="padding: 16px; text-align: center;">${paymentInput}</td>
+                    <td style="padding: 16px; text-align: right; font-weight: 600; color: ${billing.remaining_amount > 0 ? '#e74c3c' : '#27ae60'};">${Number(billing.remaining_amount).toLocaleString()}원</td>
+                    <td style="padding: 16px; text-align: center;">
+                        <span class="status-badge ${statusBadge}">${statusText}</span>
+                    </td>
+                    <td style="padding: 16px; text-align: center;">
+                        ${actionButtons}
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        // 페이지네이션 표시
+        function displayPagination(data) {
+            const container = document.getElementById('pagination');
+            const { page, total_pages } = data;
+
+            if (total_pages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+
+            // 이전 버튼
+            if (page > 1) {
+                html += `<button onclick="goToPage(${page - 1})" class="btn btn-sm" style="padding: 8px 12px;">이전</button>`;
+            }
+
+            // 페이지 번호
+            for (let i = 1; i <= total_pages; i++) {
+                if (i === page) {
+                    html += `<button class="btn btn-sm btn-primary" style="padding: 8px 12px;">${i}</button>`;
+                } else {
+                    html += `<button onclick="goToPage(${i})" class="btn btn-sm" style="padding: 8px 12px;">${i}</button>`;
+                }
+            }
+
+            // 다음 버튼
+            if (page < total_pages) {
+                html += `<button onclick="goToPage(${page + 1})" class="btn btn-sm" style="padding: 8px 12px;">다음</button>`;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // 페이지 이동
+        function goToPage(page) {
+            currentPage = page;
+            loadBillings();
+        }
+
+        // 수납 처리
+        async function handlePayment(billingId, studentName, billingAmount, remainingAmount) {
+            const inputEl = document.getElementById(`payment-${billingId}`);
+            const paymentAmount = Math.floor(parseFloat(inputEl.value));
+
+            // 유효성 검증
+            if (!paymentAmount || paymentAmount <= 0) {
+                alert('수납 금액을 입력해주세요.');
+                return;
+            }
+
+            const remaining = Math.floor(remainingAmount);
+            if (paymentAmount > remaining) {
+                alert('수납 금액이 잔액보다 클 수 없습니다.');
+                return;
+            }
+
+            // 확인 다이얼로그
+            const message = paymentAmount === remaining
+                ? `${studentName} 학생의 ${paymentAmount.toLocaleString()}원을 완납 처리하시겠습니까?`
+                : `${studentName} 학생의 ${paymentAmount.toLocaleString()}원을 부분 납부하시겠습니까?\n잔액 ${(remaining - paymentAmount).toLocaleString()}원이 남습니다.`;
+
+            if (!confirm(message)) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/payments', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        billing_id: billingId,
+                        amount: paymentAmount
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(result.message);
+                    loadBillings(); // 목록 새로고침
+                } else {
+                    alert(`수납 실패: ${result.error}`);
+                }
+            } catch (error) {
+                console.error('수납 처리 오류:', error);
+                alert('수납 처리 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 수납 취소
+        async function cancelPayment(billingId, studentName) {
+            if (!confirm(`${studentName} 학생의 가장 최근 수납을 취소하시겠습니까?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/payments/${billingId}/cancel`, {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(result.message);
+                    loadBillings();
+                } else {
+                    alert(`취소 실패: ${result.error}`);
+                }
+            } catch (error) {
+                console.error('수납 취소 오류:', error);
+                alert('수납 취소 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 청구 삭제
+        async function deleteBilling(billingId, studentName, amount) {
+            if (!confirm(`${studentName} 학생의 ${amount.toLocaleString()}원 청구 내역을 삭제하시겠습니까?\n이미 수납된 내역도 함께 삭제됩니다.`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/billings/${billingId}`, {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('삭제되었습니다.');
+                    loadBillings();
+                } else {
+                    alert(`삭제 실패: ${result.error}`);
+                }
+            } catch (error) {
+                console.error('삭제 오류:', error);
+                alert('삭제 중 오류가 발생했습니다.');
+            }
+        }
+    </script>
+
+    <style>
+        /* 상태 배지 스타일 */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-unpaid {
+            background-color: #ffe0e0;
+            color: #ff4444;
+        }
+
+        .badge-paid {
+            background-color: #d4edda;
+            color: #28a745;
+        }
+
+        .badge-partial {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        /* 버튼 스타일 */
+        .btn-small {
+            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-small.btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-small.btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-small.btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-small.btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-small.btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-small.btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .btn-sm {
+            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-sm:hover {
+            background: #f8f9fa;
+        }
+
+        .btn-sm.btn-primary {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .btn-sm.btn-primary:hover {
+            background: #0056b3;
+        }
+    </style>
+</body>
+</html>

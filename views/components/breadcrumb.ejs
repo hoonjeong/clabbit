@@ -1,0 +1,249 @@
+<!-- 브레드크럼 네비게이션 컴포넌트 -->
+<nav aria-label="Breadcrumb" class="breadcrumb-nav">
+    <div class="container">
+        <ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+            <!-- 홈 -->
+            <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                <a href="/dashboard" class="breadcrumb-link" itemprop="item">
+                    <svg class="breadcrumb-icon" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                        <path d="M8.707 1.293a1 1 0 0 0-1.414 0L.646 7.94a.5.5 0 0 0 .708.708L2 8.001V13.5a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5V8.001l.646.647a.5.5 0 0 0 .708-.708l-6.647-6.647zM8 2.707l5 5V13H3V7.707l5-5z"/>
+                    </svg>
+                    <span itemprop="name">홈</span>
+                </a>
+                <meta itemprop="position" content="1" />
+            </li>
+
+            <% if (typeof breadcrumbs !== 'undefined' && breadcrumbs.length > 0) { %>
+                <% breadcrumbs.forEach((crumb, index) => { %>
+                    <li class="breadcrumb-item <%= index === breadcrumbs.length - 1 ? 'active' : '' %>"
+                        itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                        <% if (index === breadcrumbs.length - 1) { %>
+                            <!-- 현재 페이지 -->
+                            <span class="breadcrumb-current" aria-current="page" itemprop="name">
+                                <%= crumb.title %>
+                            </span>
+                        <% } else { %>
+                            <!-- 링크 -->
+                            <a href="<%= crumb.url %>" class="breadcrumb-link" itemprop="item">
+                                <span itemprop="name"><%= crumb.title %></span>
+                            </a>
+                        <% } %>
+                        <meta itemprop="position" content="<%= index + 2 %>" />
+                    </li>
+                <% }) %>
+            <% } %>
+        </ol>
+    </div>
+</nav>
+
+<style>
+.breadcrumb-nav {
+    background-color: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-primary);
+    padding: var(--space-3) 0;
+}
+
+.breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: var(--text-sm);
+}
+
+.breadcrumb-item {
+    display: flex;
+    align-items: center;
+}
+
+.breadcrumb-item::after {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-left: var(--space-2);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236b7280' viewBox='0 0 16 16'%3E%3Cpath d='M6.293 4.293a1 1 0 0 1 1.414 0l3 3a1 1 0 0 1 0 1.414l-3 3a1 1 0 0 1-1.414-1.414L7.586 9H3a1 1 0 0 1 0-2h4.586L6.293 5.707a1 1 0 0 1 0-1.414z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 12px 12px;
+}
+
+.breadcrumb-item:last-child::after {
+    display: none;
+}
+
+.breadcrumb-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--duration-200) var(--ease-out);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-md);
+}
+
+.breadcrumb-link:hover {
+    color: var(--primary-600);
+    background-color: var(--primary-50);
+}
+
+.breadcrumb-link:focus-visible {
+    outline: 2px solid var(--primary-500);
+    outline-offset: 0;
+}
+
+.breadcrumb-icon {
+    flex-shrink: 0;
+}
+
+.breadcrumb-current {
+    color: var(--text-primary);
+    font-weight: var(--font-semibold);
+    padding: var(--space-1) var(--space-2);
+}
+
+/* 모바일 대응 */
+@media (max-width: 640px) {
+    .breadcrumb-nav {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .breadcrumb {
+        flex-wrap: nowrap;
+        padding-bottom: var(--space-1);
+    }
+
+    .breadcrumb-link span {
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+/* 다크 모드 */
+@media (prefers-color-scheme: dark) {
+    .breadcrumb-nav {
+        background-color: var(--bg-secondary);
+    }
+
+    .breadcrumb-item::after {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%239ca3af' viewBox='0 0 16 16'%3E%3Cpath d='M6.293 4.293a1 1 0 0 1 1.414 0l3 3a1 1 0 0 1 0 1.414l-3 3a1 1 0 0 1-1.414-1.414L7.586 9H3a1 1 0 0 1 0-2h4.586L6.293 5.707a1 1 0 0 1 0-1.414z'/%3E%3C/svg%3E");
+    }
+}
+</style>
+
+<script>
+// 브레드크럼 자동 생성 유틸리티
+(function() {
+    const BreadcrumbUtils = {
+        // URL 경로에서 브레드크럼 자동 생성
+        generateFromPath() {
+            const path = window.location.pathname;
+            const segments = path.split('/').filter(s => s);
+
+            const pathMap = {
+                'students': '학생 관리',
+                'new': '신규 등록',
+                'edit': '수정',
+                'detail': '상세 정보',
+                'classes': '수업 관리',
+                'teachers': '강사 관리',
+                'payments': '결제 관리',
+                'attendance': '출석 관리',
+                'settings': '설정',
+                'profile': '프로필'
+            };
+
+            const breadcrumbs = [];
+            let currentPath = '';
+
+            segments.forEach((segment, index) => {
+                currentPath += '/' + segment;
+                const title = pathMap[segment] || segment;
+
+                breadcrumbs.push({
+                    title: title,
+                    url: currentPath,
+                    isLast: index === segments.length - 1
+                });
+            });
+
+            return breadcrumbs;
+        },
+
+        // 브레드크럼 업데이트
+        update(breadcrumbs) {
+            const container = document.querySelector('.breadcrumb');
+            if (!container) return;
+
+            // 홈 이후의 아이템 제거
+            const items = container.querySelectorAll('.breadcrumb-item:not(:first-child)');
+            items.forEach(item => item.remove());
+
+            // 새 브레드크럼 추가
+            breadcrumbs.forEach((crumb, index) => {
+                const li = document.createElement('li');
+                li.className = 'breadcrumb-item';
+                if (crumb.isLast) li.classList.add('active');
+
+                li.setAttribute('itemprop', 'itemListElement');
+                li.setAttribute('itemscope', '');
+                li.setAttribute('itemtype', 'https://schema.org/ListItem');
+
+                if (crumb.isLast) {
+                    li.innerHTML = `
+                        <span class="breadcrumb-current" aria-current="page" itemprop="name">
+                            ${crumb.title}
+                        </span>
+                        <meta itemprop="position" content="${index + 2}" />
+                    `;
+                } else {
+                    li.innerHTML = `
+                        <a href="${crumb.url}" class="breadcrumb-link" itemprop="item">
+                            <span itemprop="name">${crumb.title}</span>
+                        </a>
+                        <meta itemprop="position" content="${index + 2}" />
+                    `;
+                }
+
+                container.appendChild(li);
+            });
+        },
+
+        // 초기화
+        init() {
+            // 페이지 로드 시 자동 생성 (브레드크럼이 정의되지 않은 경우)
+            if (typeof breadcrumbs === 'undefined') {
+                const autoBreadcrumbs = this.generateFromPath();
+                this.update(autoBreadcrumbs);
+            }
+
+            // 브레드크럼 클릭 시 부드러운 전환
+            document.addEventListener('click', (e) => {
+                const link = e.target.closest('.breadcrumb-link');
+                if (link && link.getAttribute('href').startsWith('/')) {
+                    // SPA 스타일 네비게이션 (필요한 경우)
+                    // e.preventDefault();
+                    // navigateTo(link.getAttribute('href'));
+                }
+            });
+        }
+    };
+
+    // DOM 로드 시 초기화
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => BreadcrumbUtils.init());
+    } else {
+        BreadcrumbUtils.init();
+    }
+
+    // 전역으로 내보내기
+    window.BreadcrumbUtils = BreadcrumbUtils;
+})();
+</script>

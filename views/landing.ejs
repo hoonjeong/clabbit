@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>클래빗 - 학원 운영의 모든 것, 이제는 스마트하게</title>
+  <meta name="description" content="학생 관리부터 AI 분석까지, 학원 운영에 필요한 모든 기능을 제공합니다. 50명까지 무료!">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/landing.css">
+</head>
+<body>
+
+  <!-- 헤더/내비게이션 -->
+  <header class="landing-header">
+    <div class="container">
+      <div class="header-content">
+        <a href="/" class="logo">
+          <img src="/image/logo.ico" alt="클래빗">
+          <span class="logo-text">클래빗</span>
+        </a>
+        <nav class="header-nav" id="headerNav">
+          <a href="#features" class="nav-link">기능</a>
+          <a href="#pricing" class="nav-link">가격</a>
+          <a href="#faq" class="nav-link">FAQ</a>
+          <a href="/login" class="btn btn-outline">로그인</a>
+          <a href="/signup" class="btn btn-primary">무료 시작하기</a>
+        </nav>
+        <!-- 모바일 메뉴 버튼 -->
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 히어로 섹션 -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-text">
+          <h1 class="hero-title">
+            학원 운영의 모든 것,<br>
+            이제는 스마트하게
+          </h1>
+          <p class="hero-description">
+            학생 관리부터 AI 학습 분석까지,<br>
+            학원 운영에 필요한 모든 기능을 하나의 플랫폼에서 경험하세요
+          </p>
+          <div class="hero-features">
+            <div class="feature-badge">
+              <svg class="badge-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke-width="2"/>
+                <polyline points="22 4 12 14.01 9 11.01" stroke-width="2"/>
+              </svg>
+              <span>50명까지 무료</span>
+            </div>
+            <div class="feature-badge">
+              <svg class="badge-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke-width="2"/>
+                <polyline points="22 4 12 14.01 9 11.01" stroke-width="2"/>
+              </svg>
+              <span>설치 불필요</span>
+            </div>
+            <div class="feature-badge">
+              <svg class="badge-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke-width="2"/>
+                <polyline points="22 4 12 14.01 9 11.01" stroke-width="2"/>
+              </svg>
+              <span>즉시 사용 가능</span>
+            </div>
+          </div>
+          <div class="hero-cta">
+            <a href="/signup" class="btn btn-primary btn-lg">
+              지금 무료로 시작하기
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M5 12h14M12 5l7 7-7 7" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </a>
+            <a href="#demo" class="btn btn-secondary btn-lg">
+              데모 보기
+            </a>
+          </div>
+          <p class="hero-note">
+            신용카드 등록 없이 바로 시작하세요
+          </p>
+        </div>
+        <div class="hero-image">
+          <div class="dashboard-preview">
+            <div class="preview-header">
+              <div class="preview-dots">
+                <span></span><span></span><span></span>
+              </div>
+              <span class="preview-title">클래빗 대시보드</span>
+            </div>
+            <div class="preview-content">
+              <div class="preview-stat">
+                <span class="stat-label">전체 원생</span>
+                <span class="stat-value">120명</span>
+              </div>
+              <div class="preview-stat">
+                <span class="stat-label">이번달 신규</span>
+                <span class="stat-value highlight">+8명</span>
+              </div>
+              <div class="preview-stat">
+                <span class="stat-label">출석률</span>
+                <span class="stat-value">95%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 기본 기능 섹션 -->
+  <section class="features-section" id="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">기본 기능</span>
+        <h2 class="section-title">
+          학원 운영의 핵심,<br>
+          기본 기능으로 모두 해결하세요
+        </h2>
+        <p class="section-description">
+          학생 50명까지 완전 무료로 사용할 수 있는 강력한 기본 기능
+        </p>
+      </div>
+
+      <div class="features-grid">
+        <!-- 학생 관리 -->
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke-width="2"/>
+              <circle cx="9" cy="7" r="4" stroke-width="2"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke-width="2"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">스마트 학생 관리</h3>
+          <p class="feature-description">
+            학생 등록부터 상세 정보 관리까지<br>
+            한 번에 해결하는 직관적인 인터페이스
+          </p>
+          <ul class="feature-list">
+            <li>빠른 학생 검색 및 필터링</li>
+            <li>출결·수납 이력 통합 조회</li>
+            <li>사진 및 파일 첨부</li>
+            <li>엑셀 일괄 등록 지원</li>
+          </ul>
+        </div>
+
+        <!-- 출결 관리 -->
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <rect x="3" y="4" width="18" height="18" rx="2" stroke-width="2"/>
+              <path d="M16 2v4M8 2v4M3 10h18" stroke-width="2"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">간편한 출결 관리</h3>
+          <p class="feature-description">
+            클릭 한 번으로 출석 체크,<br>
+            실시간으로 확인하는 출석률 통계
+          </p>
+          <ul class="feature-list">
+            <li>원터치 출석 체크</li>
+            <li>출석률 자동 계산</li>
+            <li>지각·결석 사유 기록</li>
+            <li>월별 출결 현황 리포트</li>
+          </ul>
+        </div>
+
+        <!-- 수납 관리 -->
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke-width="2"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">정확한 수납 관리</h3>
+          <p class="feature-description">
+            수강료 관리부터 미수금 추적까지<br>
+            투명하고 정확한 재정 관리
+          </p>
+          <ul class="feature-list">
+            <li>다양한 결제 수단 지원</li>
+            <li>미수금 자동 추적</li>
+            <li>영수증 자동 발행</li>
+            <li>매출 통계 및 분석</li>
+          </ul>
+        </div>
+
+        <!-- 통계 및 리포트 -->
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M18 20V10M12 20V4M6 20v-6" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">시각적인 통계</h3>
+          <p class="feature-description">
+            한눈에 보이는 학원 운영 현황,<br>
+            데이터 기반의 현명한 의사결정
+          </p>
+          <ul class="feature-list">
+            <li>실시간 대시보드</li>
+            <li>학생 증감 추이 분석</li>
+            <li>매출 트렌드 차트</li>
+            <li>커스텀 리포트 생성</li>
+          </ul>
+        </div>
+
+        <!-- 일정 관리 -->
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <circle cx="12" cy="12" r="10" stroke-width="2"/>
+              <path d="M12 6v6l4 2" stroke-width="2"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">효율적인 일정 관리</h3>
+          <p class="feature-description">
+            수업 스케줄부터 이벤트까지<br>
+            체계적으로 관리하는 캘린더
+          </p>
+          <ul class="feature-list">
+            <li>수업 시간표 자동 생성</li>
+            <li>일정 알림 기능</li>
+            <li>강사별 스케줄 관리</li>
+            <li>공휴일 자동 표시</li>
+          </ul>
+        </div>
+
+        <!-- 무료 소통 -->
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke-width="2"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">앱 내 무료 소통</h3>
+          <p class="feature-description">
+            추가 비용 없이 학부모와<br>
+            실시간으로 소통하는 메시징
+          </p>
+          <ul class="feature-list">
+            <li>공지사항 일괄 발송</li>
+            <li>개별 메시지 전송</li>
+            <li>파일 및 사진 공유</li>
+            <li>읽음 확인 기능</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 프리미엄 기능 섹션 -->
+  <section class="premium-features-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge premium">프리미엄 기능</span>
+        <h2 class="section-title">
+          더 강력한 기능이 필요하신가요?<br>
+          프리미엄 기능으로 한 단계 업그레이드하세요
+        </h2>
+        <p class="section-description">
+          필요한 기능만 선택하여 사용하는 합리적인 과금 시스템
+        </p>
+      </div>
+
+      <div class="premium-grid">
+        <!-- AI 학습 분석 -->
+        <div class="premium-card">
+          <div class="premium-badge">AI 기능</div>
+          <div class="premium-icon">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke-width="2"/>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96" stroke-width="2"/>
+              <line x1="12" y1="22.08" x2="12" y2="12" stroke-width="2"/>
+            </svg>
+          </div>
+          <h3 class="premium-title">AI 학습 분석</h3>
+          <p class="premium-description">
+            인공지능이 분석하는 학생별 학습 패턴과<br>
+            맞춤형 학습 전략 제안
+          </p>
+          <ul class="premium-list">
+            <li>학생별 강점·약점 AI 분석</li>
+            <li>학습 성향 및 패턴 파악</li>
+            <li>맞춤 학습 계획 자동 생성</li>
+            <li>성적 향상 예측 리포트</li>
+          </ul>
+          <div class="premium-pricing">
+            <span class="price-label">요금</span>
+            <span class="price-value">건당 500원</span>
+            <span class="price-note">또는 월 정액제 이용 가능</span>
+          </div>
+        </div>
+
+        <!-- 동영상 강의 관리 -->
+        <div class="premium-card">
+          <div class="premium-badge">동영상</div>
+          <div class="premium-icon">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <polygon points="5 3 19 12 5 21 5 3" stroke-width="2"/>
+            </svg>
+          </div>
+          <h3 class="premium-title">동영상 강의 관리</h3>
+          <p class="premium-description">
+            온라인 강의 업로드부터 학생별 시청 관리까지<br>
+            전문 동영상 플랫폼 기능
+          </p>
+          <ul class="premium-list">
+            <li>HD 동영상 스트리밍</li>
+            <li>학생별 시청 이력 추적</li>
+            <li>배속 재생 및 구간 반복</li>
+            <li>자막 및 자료 첨부</li>
+          </ul>
+          <div class="premium-pricing">
+            <span class="price-label">요금</span>
+            <span class="price-value">10GB 월 5,000원</span>
+            <span class="price-note">용량별 추가 요금 선택 가능</span>
+          </div>
+        </div>
+
+        <!-- SMS/카카오톡 발송 -->
+        <div class="premium-card">
+          <div class="premium-badge">메시지</div>
+          <div class="premium-icon">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" stroke-width="2"/>
+            </svg>
+          </div>
+          <h3 class="premium-title">SMS·카카오톡 발송</h3>
+          <p class="premium-description">
+            긴급 공지나 중요 알림은<br>
+            SMS와 카카오톡으로 즉시 전달
+          </p>
+          <ul class="premium-list">
+            <li>SMS 문자 발송</li>
+            <li>카카오톡 알림톡 발송</li>
+            <li>발송 내역 관리</li>
+            <li>예약 발송 기능</li>
+          </ul>
+          <div class="premium-pricing">
+            <span class="price-label">요금</span>
+            <span class="price-value">SMS 15원 / 카톡 20원</span>
+            <span class="price-note">건당 과금, 충전식</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="premium-note">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <circle cx="12" cy="12" r="10" stroke-width="2"/>
+          <path d="M12 16v-4M12 8h.01" stroke-width="2"/>
+        </svg>
+        <p>
+          프리미엄 기능은 필요할 때만 선택하여 사용할 수 있습니다.<br>
+          앱 내 무료 소통 기능은 추가 비용 없이 계속 이용 가능합니다.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 가격 정책 섹션 -->
+  <section class="pricing-section" id="pricing">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">가격 정책</span>
+        <h2 class="section-title">
+          투명하고 합리적인 가격,<br>
+          부담 없이 시작하세요
+        </h2>
+        <p class="section-description">
+          학생 수에 따른 단순 명확한 요금제,<br>
+          숨겨진 비용 없이 안심하고 이용하세요
+        </p>
+      </div>
+
+      <div class="pricing-grid">
+        <!-- 무료 플랜 -->
+        <div class="pricing-card">
+          <div class="plan-header">
+            <h3 class="plan-name">프리</h3>
+            <div class="plan-price">
+              <span class="price-currency">₩</span>
+              <span class="price-amount">0</span>
+              <span class="price-period">/월</span>
+            </div>
+            <p class="plan-description">소규모 학원을 위한 무료 플랜</p>
+          </div>
+          <ul class="plan-features">
+            <li>
+              <svg class="check-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="20 6 9 17 4 12" stroke-width="2"/>
+              </svg>
+              <span>학생 <strong>50명</strong>까지</span>
+            </li>
+            <li>
+              <svg class="check-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="20 6 9 17 4 12" stroke-width="2"/>
+              </svg>
+              <span>모든 기본 기능</span>
+            </li>
+            <li>
+              <svg class="check-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="20 6 9 17 4 12" stroke-width="2"/>
+              </svg>
+              <span>앱 내 무료 소통</span>
+            </li>
+            <li>
+              <svg class="check-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="20 6 9 17 4 12" stroke-width="2"/>
+              </svg>
+              <span>기본 통계 리포트</span>
+            </li>
+            <li>
+              <svg class="check-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="20 6 9 17 4 12" stroke-width="2"/>
+              </svg>
+              <span>이메일 지원</span>
+            </li>
+          </ul>
+          <a href="/signup?plan=free" class="btn btn-outline btn-block">
+            무료로 시작하기
+          </a>
+        </div>
+
+        <!-- 베이직 플랜 -->
+        <div class="pricing-card">
+          <div class="plan-header">
+            <h3 class="plan-name">베이직</h3>
+            <div class="plan-price">
+              <span class="price-currency">₩</span>
+              <span class="price-amount">10,000</span>
+              <span class="price-period">/월</span>
+            </div>
+            <p class="plan-description">성장하는 학원을 위한 플랜</p>
+          </div>
+          <ul class="plan-features">
+            <li>
+              <svg class="check-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="20 6 9 17 4 12" stroke-width="2"/>
+              </svg>
+              <span>학생 <strong>50-200명</strong></span>
+            </li>
+            <li>
+              <svg class="check-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="20 6 9 17 4 12" stroke-width="2"/>
+              </svg>
+              <span>모든 기본 기능</span>
+            </li>
+            <li>
+              <svg class="check-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="20 6 9 17 4 12" stroke-width="2"/>
+              </svg>
+              <span>앱 내 무료 소통</span>
+            </li>
+            <li>
+              <svg class="check-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="20 6 9 17 4 12" stroke-width="2"/>
+              </svg>
+              <span>고급 통계 리포트</span>
+            </li>
+            <li>
+              <svg class="check-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="20 6 9 17 4 12" stroke-width="2"/>
+              </svg>
+              <span>우선 이메일 지원</span>
+            </li>
+            <li>
+              <svg class="check-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="20 6 9 17 4 12" stroke-width="2"/>
+              </svg>
+              <span>데이터 백업</span>
+            </li>
+          </ul>
+          <a href="/signup?plan=basic" class="btn btn-primary btn-block">
+            베이직 시작하기
+          </a>
+        </div>
+
+        <!-- 스탠다드 플랜 (추천) -->
+        <div class="pricing-card recommended">
+          <div class="recommended-badge">추천</div>
+          <div class="plan-header">
+            <h3 class="plan-name">스탠다드</h3>
+            <div class="plan-price">
+              <span class="price-currency">₩</span>
+              <span class="price-amount">30,000</span>
+              <span class="price-period">/월</span>
+            </div>
+            <p class="plan-description">대형 학원을 위한 프로 플랜</p>
+          </div>
+          <ul class="plan-features">
+            <li>
+              <svg class="check-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="20 6 9 17 4 12" stroke-width="2"/>
+              </svg>
+              <span>학생 <strong>200명 이상</strong></span>
+            </li>
+            <li>
+              <svg class="check-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="20 6 9 17 4 12" stroke-width="2"/>
+              </svg>
+              <span>모든 기본 기능</span>
+            </li>
+            <li>
+              <svg class="check-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="20 6 9 17 4 12" stroke-width="2"/>
+              </svg>
+              <span>앱 내 무료 소통 (무제한)</span>
+            </li>
+            <li>
+              <svg class="check-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="20 6 9 17 4 12" stroke-width="2"/>
+              </svg>
+              <span>프리미엄 통계 리포트</span>
+            </li>
+            <li>
+              <svg class="check-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="20 6 9 17 4 12" stroke-width="2"/>
+              </svg>
+              <span>전화 및 채팅 지원</span>
+            </li>
+            <li>
+              <svg class="check-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="20 6 9 17 4 12" stroke-width="2"/>
+              </svg>
+              <span>일일 자동 백업</span>
+            </li>
+            <li>
+              <svg class="check-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="20 6 9 17 4 12" stroke-width="2"/>
+              </svg>
+              <span>전담 계정 관리자</span>
+            </li>
+          </ul>
+          <a href="/signup?plan=standard" class="btn btn-primary btn-block">
+            스탠다드 시작하기
+          </a>
+        </div>
+      </div>
+
+      <!-- 프리미엄 기능 추가 안내 -->
+      <div class="pricing-addons">
+        <h3 class="addons-title">프리미엄 기능 추가하기</h3>
+        <p class="addons-description">
+          모든 요금제에서 필요한 프리미엄 기능을 선택하여 추가할 수 있습니다
+        </p>
+        <div class="addons-grid">
+          <div class="addon-item">
+            <div class="addon-icon">🤖</div>
+            <h4 class="addon-name">AI 학습 분석</h4>
+            <p class="addon-price">건당 500원</p>
+          </div>
+          <div class="addon-item">
+            <div class="addon-icon">🎬</div>
+            <h4 class="addon-name">동영상 스토리지</h4>
+            <p class="addon-price">10GB 월 5,000원</p>
+          </div>
+          <div class="addon-item">
+            <div class="addon-icon">💬</div>
+            <h4 class="addon-name">SMS 발송</h4>
+            <p class="addon-price">건당 15원</p>
+          </div>
+          <div class="addon-item">
+            <div class="addon-icon">📱</div>
+            <h4 class="addon-name">카카오톡 알림</h4>
+            <p class="addon-price">건당 20원</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQ -->
+      <div class="pricing-faq" id="faq">
+        <h3 class="faq-title">자주 묻는 질문</h3>
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>학생 수가 증가하면 자동으로 요금제가 변경되나요?</span>
+              <svg class="faq-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M6 9l6 6 6-6" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <div class="faq-answer">
+              <p>
+                아니요. 학생 수가 증가해도 자동으로 요금제가 변경되지 않습니다.<br>
+                관리자가 직접 요금제를 업그레이드할 때까지 현재 요금제가 유지됩니다.<br>
+                다만, 현재 요금제의 학생 수 제한을 초과하면 신규 학생 등록이 제한됩니다.
+              </p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>중도에 요금제를 변경할 수 있나요?</span>
+              <svg class="faq-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M6 9l6 6 6-6" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <div class="faq-answer">
+              <p>
+                네, 언제든지 요금제를 업그레이드하거나 다운그레이드할 수 있습니다.<br>
+                업그레이드 시에는 즉시 적용되며, 차액은 일할 계산됩니다.<br>
+                다운그레이드는 다음 결제일부터 적용됩니다.
+              </p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>프리미엄 기능은 어떻게 추가하나요?</span>
+              <svg class="faq-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M6 9l6 6 6-6" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <div class="faq-answer">
+              <p>
+                설정 메뉴에서 필요한 프리미엄 기능을 선택하여 활성화할 수 있습니다.<br>
+                AI 분석과 SMS/카카오톡은 사용한 만큼만 과금되며,<br>
+                동영상 스토리지는 월 정액제로 이용하실 수 있습니다.
+              </p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>무료 체험 기간이 있나요?</span>
+              <svg class="faq-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M6 9l6 6 6-6" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <div class="faq-answer">
+              <p>
+                학생 50명까지는 영구적으로 무료로 이용하실 수 있어<br>
+                별도의 체험 기간이 필요하지 않습니다.<br>
+                신용카드 등록 없이 바로 시작하실 수 있습니다.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA 섹션 -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-content">
+        <h2 class="cta-title">
+          지금 바로 시작하세요<br>
+          50명까지 완전 무료입니다
+        </h2>
+        <p class="cta-description">
+          신용카드 등록 없이 1분 만에 시작할 수 있습니다<br>
+          복잡한 설치 과정도, 별도의 교육도 필요 없습니다
+        </p>
+        <div class="cta-buttons">
+          <a href="/signup" class="btn btn-primary btn-lg">
+            무료로 시작하기
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M5 12h14M12 5l7 7-7 7" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </a>
+          <a href="#demo" class="btn btn-secondary btn-lg">
+            데모 보기
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 푸터 -->
+  <footer class="landing-footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-col">
+          <h4 class="footer-title">클래빗</h4>
+          <p class="footer-text">
+            쉽고 강력한 학원 운영 솔루션
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-title">제품</h4>
+          <ul class="footer-links">
+            <li><a href="#features">기능</a></li>
+            <li><a href="#pricing">가격</a></li>
+            <li><a href="/demo">데모</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-title">지원</h4>
+          <ul class="footer-links">
+            <li><a href="/docs">문서</a></li>
+            <li><a href="/faq">FAQ</a></li>
+            <li><a href="/contact">문의하기</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-title">회사</h4>
+          <ul class="footer-links">
+            <li><a href="/about">회사 소개</a></li>
+            <li><a href="/privacy">개인정보처리방침</a></li>
+            <li><a href="/terms">이용약관</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 클래빗. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/landing.js"></script>
+</body>
+</html>

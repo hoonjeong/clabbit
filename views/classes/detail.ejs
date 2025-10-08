@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/students.css">
+</head>
+<body>
+    <%- include('../components/sidebar-menu', { academyName, page: 'classes', userName: userName }) %>
+
+    <main class="students-main">
+        <div class="students-container">
+            <!-- 페이지 헤더 -->
+            <div class="page-header">
+                <h1 class="page-title">📝 수업 상세</h1>
+                <div style="display: flex; gap: 12px;">
+                    <a href="/classes" class="btn btn-secondary">← 목록으로</a>
+                    <button id="enrollStudentsBtn" class="btn btn-primary" onclick="location.href='/classes/<%= classId %>/enroll-students'">👥 학생 일괄 등록</button>
+                    <button id="editBtn" class="btn btn-primary" style="display: none;">수정하기</button>
+                    <button id="saveBtn" class="btn btn-success" style="display: none;">저장하기</button>
+                    <button id="cancelBtn" class="btn btn-secondary" style="display: none;">취소</button>
+                </div>
+            </div>
+
+            <!-- 수업 정보 폼 -->
+            <div class="form-container" style="background: white; padding: 32px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); max-width: 800px;">
+                <form id="classForm">
+                    <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                        <!-- 수업 이름 -->
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">
+                                수업 이름 <span style="color: #e74c3c;">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="class_name"
+                                name="class_name"
+                                required
+                                disabled
+                                placeholder="예: 초등 수학 A반"
+                                style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: #f8f9fa;"
+                            >
+                        </div>
+
+                        <!-- 수강료 -->
+                        <div class="form-group">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">
+                                수강료 (원) <span style="color: #e74c3c;">*</span>
+                            </label>
+                            <input
+                                type="number"
+                                id="tuition"
+                                name="tuition"
+                                required
+                                disabled
+                                min="0"
+                                placeholder="예: 200000"
+                                style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: #f8f9fa;"
+                            >
+                        </div>
+
+                        <!-- 정원 -->
+                        <div class="form-group">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">
+                                정원 (명)
+                            </label>
+                            <input
+                                type="number"
+                                id="capacity"
+                                name="capacity"
+                                disabled
+                                min="1"
+                                placeholder="예: 15"
+                                style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: #f8f9fa;"
+                            >
+                        </div>
+
+                        <!-- 현재 학생 수 (읽기 전용) -->
+                        <div class="form-group">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">
+                                현재 학생 수
+                            </label>
+                            <input
+                                type="number"
+                                id="current_students"
+                                disabled
+                                readonly
+                                style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: #f0f0f0; color: #666;"
+                            >
+                        </div>
+
+                        <!-- 학년 -->
+                        <div class="form-group">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">
+                                학년
+                            </label>
+                            <select
+                                id="grade"
+                                name="grade"
+                                disabled
+                                style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: #f8f9fa;"
+                            >
+                                <option value="">선택하세요</option>
+                                <option value="초1">초1</option>
+                                <option value="초2">초2</option>
+                                <option value="초3">초3</option>
+                                <option value="초4">초4</option>
+                                <option value="초5">초5</option>
+                                <option value="초6">초6</option>
+                                <option value="중1">중1</option>
+                                <option value="중2">중2</option>
+                                <option value="중3">중3</option>
+                                <option value="고1">고1</option>
+                                <option value="고2">고2</option>
+                                <option value="고3">고3</option>
+                                <option value="기타">기타</option>
+                            </select>
+                        </div>
+
+                        <!-- 담당강사 -->
+                        <div class="form-group">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">
+                                담당강사
+                            </label>
+                            <input
+                                type="text"
+                                id="teacher_name"
+                                name="teacher_name"
+                                disabled
+                                placeholder="예: 김철수"
+                                style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: #f8f9fa;"
+                            >
+                        </div>
+
+                        <!-- 시작일 -->
+                        <div class="form-group">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">
+                                시작일 <span style="color: #e74c3c;">*</span>
+                            </label>
+                            <input
+                                type="date"
+                                id="start_date"
+                                name="start_date"
+                                required
+                                disabled
+                                style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: #f8f9fa;"
+                            >
+                        </div>
+
+                        <!-- 종료일 -->
+                        <div class="form-group">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">
+                                종료일
+                            </label>
+                            <input
+                                type="date"
+                                id="end_date"
+                                name="end_date"
+                                disabled
+                                style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: #f8f9fa;"
+                            >
+                        </div>
+
+                        <!-- 상태 -->
+                        <div class="form-group">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">
+                                상태
+                            </label>
+                            <select
+                                id="status"
+                                name="status"
+                                disabled
+                                style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: #f8f9fa;"
+                            >
+                                <option value="active">진행중</option>
+                                <option value="completed">종강</option>
+                            </select>
+                        </div>
+
+                        <!-- 수업 시간 -->
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">
+                                수업 시간
+                            </label>
+                            <div style="display: flex; gap: 12px; align-items: center;">
+                                <!-- 요일 선택 -->
+                                <select
+                                    id="schedule_day"
+                                    name="schedule_day"
+                                    disabled
+                                    style="flex: 1; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: #f8f9fa;"
+                                >
+                                    <option value="">요일</option>
+                                    <option value="월">월요일</option>
+                                    <option value="화">화요일</option>
+                                    <option value="수">수요일</option>
+                                    <option value="목">목요일</option>
+                                    <option value="금">금요일</option>
+                                    <option value="토">토요일</option>
+                                    <option value="일">일요일</option>
+                                </select>
+
+                                <!-- 시간 선택 -->
+                                <select
+                                    id="schedule_hour"
+                                    name="schedule_hour"
+                                    disabled
+                                    style="flex: 1; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: #f8f9fa;"
+                                >
+                                    <option value="">시간</option>
+                                    <option value="9">09시</option>
+                                    <option value="10">10시</option>
+                                    <option value="11">11시</option>
+                                    <option value="12">12시</option>
+                                    <option value="13">13시</option>
+                                    <option value="14">14시</option>
+                                    <option value="15">15시</option>
+                                    <option value="16">16시</option>
+                                    <option value="17">17시</option>
+                                    <option value="18">18시</option>
+                                    <option value="19">19시</option>
+                                    <option value="20">20시</option>
+                                    <option value="21">21시</option>
+                                    <option value="22">22시</option>
+                                </select>
+
+                                <!-- 분 선택 -->
+                                <select
+                                    id="schedule_minute"
+                                    name="schedule_minute"
+                                    disabled
+                                    style="flex: 1; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: #f8f9fa;"
+                                >
+                                    <option value="">분</option>
+                                    <option value="0">00분</option>
+                                    <option value="5">05분</option>
+                                    <option value="10">10분</option>
+                                    <option value="15">15분</option>
+                                    <option value="20">20분</option>
+                                    <option value="25">25분</option>
+                                    <option value="30">30분</option>
+                                    <option value="35">35분</option>
+                                    <option value="40">40분</option>
+                                    <option value="45">45분</option>
+                                    <option value="50">50분</option>
+                                    <option value="55">55분</option>
+                                </select>
+                            </div>
+                            <small style="color: #999; font-size: 12px; margin-top: 4px; display: block;">
+                                수업이 시작되는 요일과 시간을 선택하세요
+                            </small>
+                        </div>
+
+                        <!-- 결제 방식 -->
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">
+                                결제 주기 <span style="color: #e74c3c;">*</span>
+                            </label>
+                            <div style="display: flex; gap: 16px; margin-bottom: 12px;">
+                                <label style="display: flex; align-items: center; cursor: pointer;">
+                                    <input
+                                        type="radio"
+                                        name="payment_cycle"
+                                        value="monthly"
+                                        disabled
+                                        style="margin-right: 6px;"
+                                    >
+                                    <span>월 단위</span>
+                                </label>
+                                <label style="display: flex; align-items: center; cursor: pointer;">
+                                    <input
+                                        type="radio"
+                                        name="payment_cycle"
+                                        value="weekly"
+                                        disabled
+                                        style="margin-right: 6px;"
+                                    >
+                                    <span>주 단위</span>
+                                </label>
+                            </div>
+
+                            <!-- 주 단위 간격 입력 (조건부 표시) -->
+                            <div id="weeklyIntervalContainer" style="display: none; margin-top: 12px;">
+                                <label style="display: block; font-weight: 500; margin-bottom: 8px; color: #555;">
+                                    결제 주기 간격 <span style="color: #e74c3c;">*</span>
+                                </label>
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    <input
+                                        type="number"
+                                        id="payment_week_interval"
+                                        name="payment_week_interval"
+                                        disabled
+                                        min="1"
+                                        placeholder="예: 2"
+                                        style="width: 120px; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: #f8f9fa;"
+                                    >
+                                    <span style="color: #666;">주마다</span>
+                                </div>
+                                <small style="color: #999; font-size: 12px; margin-top: 4px; display: block;">
+                                    예: 2를 입력하면 2주마다 결제
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- 수업 설명 -->
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">
+                                수업 설명
+                            </label>
+                            <textarea
+                                id="description"
+                                name="description"
+                                disabled
+                                rows="4"
+                                placeholder="수업에 대한 설명을 입력하세요"
+                                style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px; resize: vertical; background: #f8f9fa;"
+                            ></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const classId = '<%= classId %>';
+        let isEditMode = false;
+        let originalData = null;
+
+        // 페이지 로드 시 수업 정보 불러오기
+        document.addEventListener('DOMContentLoaded', function() {
+            loadClassData();
+
+            // 수정 버튼
+            document.getElementById('editBtn').addEventListener('click', function() {
+                enableEditMode();
+            });
+
+            // 저장 버튼
+            document.getElementById('saveBtn').addEventListener('click', function() {
+                saveClassData();
+            });
+
+            // 취소 버튼
+            document.getElementById('cancelBtn').addEventListener('click', function() {
+                if (confirm('수정을 취소하시겠습니까? 변경사항이 저장되지 않습니다.')) {
+                    disableEditMode();
+                    loadClassData(); // 원래 데이터로 복원
+                }
+            });
+        });
+
+        // 수업 정보 불러오기
+        async function loadClassData() {
+            try {
+                const response = await fetch(`/api/classes/${classId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const classData = data.data.class;
+                    originalData = classData;
+                    displayClassData(classData);
+                } else {
+                    alert(data.error || '수업 정보를 불러오는데 실패했습니다.');
+                    window.location.href = '/classes';
+                }
+            } catch (error) {
+                console.error('수업 정보 로드 오류:', error);
+                alert('수업 정보를 불러오는 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 수업 정보 표시
+        function displayClassData(classData) {
+            document.getElementById('class_name').value = classData.class_name || '';
+            document.getElementById('tuition').value = classData.tuition || 0;
+            document.getElementById('capacity').value = classData.capacity || '';
+            document.getElementById('current_students').value = classData.current_students || 0;
+            document.getElementById('grade').value = classData.grade || '';
+            document.getElementById('teacher_name').value = classData.teacher_name || '';
+
+            // 날짜 형식 변환 (YYYY-MM-DD)
+            const startDate = classData.start_date ? classData.start_date.split('T')[0] : '';
+            const endDate = classData.end_date ? classData.end_date.split('T')[0] : '';
+            document.getElementById('start_date').value = startDate;
+            document.getElementById('end_date').value = endDate;
+
+            document.getElementById('status').value = classData.status || 'active';
+
+            // 수업 시간 개별 필드 설정
+            document.getElementById('schedule_day').value = classData.schedule_day || '';
+            document.getElementById('schedule_hour').value = classData.schedule_hour || '';
+            document.getElementById('schedule_minute').value = classData.schedule_minute || '';
+
+            // 결제 주기 설정
+            const paymentCycle = classData.payment_cycle || 'monthly';
+            document.querySelector(`input[name="payment_cycle"][value="${paymentCycle}"]`).checked = true;
+
+            // 주 단위 간격 설정
+            const weeklyIntervalContainer = document.getElementById('weeklyIntervalContainer');
+            if (paymentCycle === 'weekly' && classData.payment_week_interval) {
+                weeklyIntervalContainer.style.display = 'block';
+                document.getElementById('payment_week_interval').value = classData.payment_week_interval;
+            } else {
+                weeklyIntervalContainer.style.display = 'none';
+            }
+
+            document.getElementById('description').value = classData.description || '';
+
+            // 종강된 수업은 수정 불가
+            if (classData.status === 'completed') {
+                document.getElementById('editBtn').style.display = 'none';
+            } else {
+                document.getElementById('editBtn').style.display = 'inline-block';
+            }
+        }
+
+        // 결제 주기 라디오 버튼 변경 이벤트
+        const paymentCycleRadios = document.querySelectorAll('input[name="payment_cycle"]');
+        const weeklyIntervalContainer = document.getElementById('weeklyIntervalContainer');
+        const weekIntervalInput = document.getElementById('payment_week_interval');
+
+        paymentCycleRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'weekly') {
+                    weeklyIntervalContainer.style.display = 'block';
+                    weekIntervalInput.required = true;
+                } else {
+                    weeklyIntervalContainer.style.display = 'none';
+                    weekIntervalInput.required = false;
+                    weekIntervalInput.value = '';
+                }
+            });
+        });
+
+        // 수정 모드 활성화
+        function enableEditMode() {
+            isEditMode = true;
+
+            // 모든 입력 필드 활성화 (현재 학생 수 제외)
+            const inputs = document.querySelectorAll('#classForm input:not(#current_students), #classForm select, #classForm textarea');
+            inputs.forEach(input => {
+                input.disabled = false;
+                input.style.background = 'white';
+            });
+
+            // 버튼 표시 변경
+            document.getElementById('editBtn').style.display = 'none';
+            document.getElementById('saveBtn').style.display = 'inline-block';
+            document.getElementById('cancelBtn').style.display = 'inline-block';
+        }
+
+        // 수정 모드 비활성화
+        function disableEditMode() {
+            isEditMode = false;
+
+            // 모든 입력 필드 비활성화
+            const inputs = document.querySelectorAll('#classForm input, #classForm select, #classForm textarea');
+            inputs.forEach(input => {
+                input.disabled = true;
+                input.style.background = '#f8f9fa';
+            });
+            document.getElementById('current_students').style.background = '#f0f0f0';
+
+            // 버튼 표시 변경
+            document.getElementById('editBtn').style.display = 'inline-block';
+            document.getElementById('saveBtn').style.display = 'none';
+            document.getElementById('cancelBtn').style.display = 'none';
+        }
+
+        // 수업 정보 저장
+        async function saveClassData() {
+            const formData = new FormData(document.getElementById('classForm'));
+            const data = {};
+
+            // FormData를 객체로 변환
+            for (let [key, value] of formData.entries()) {
+                data[key] = value.trim() === '' ? null : value;
+            }
+
+            // 숫자 필드 변환
+            if (data.tuition) data.tuition = parseInt(data.tuition);
+            if (data.capacity) data.capacity = parseInt(data.capacity);
+            if (data.schedule_hour) data.schedule_hour = parseInt(data.schedule_hour);
+            if (data.schedule_minute) data.schedule_minute = parseInt(data.schedule_minute);
+            if (data.payment_week_interval) data.payment_week_interval = parseInt(data.payment_week_interval);
+
+            // 수업 시간 문자열 생성 (schedule 필드 - 기존 호환성 유지)
+            if (data.schedule_day && data.schedule_hour !== null && data.schedule_minute !== null) {
+                const hour = String(data.schedule_hour).padStart(2, '0');
+                const minute = String(data.schedule_minute).padStart(2, '0');
+                data.schedule = `${data.schedule_day}요일 ${hour}:${minute}`;
+            }
+
+            // 필수 필드 검증
+            if (!data.class_name || !data.start_date) {
+                alert('수업 이름과 시작일은 필수입니다.');
+                return;
+            }
+
+            // 결제 주기 검증
+            if (data.payment_cycle === 'weekly' && (!data.payment_week_interval || data.payment_week_interval < 1)) {
+                alert('주 단위 결제의 경우 주 간격을 1 이상으로 입력해야 합니다.');
+                return;
+            }
+
+            // monthly인 경우 payment_week_interval 제거
+            if (data.payment_cycle === 'monthly') {
+                data.payment_week_interval = null;
+            }
+
+            try {
+                const response = await fetch(`/api/classes/${classId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('수업 정보가 수정되었습니다.');
+                    disableEditMode();
+                    loadClassData();
+                } else {
+                    alert(result.error || '수업 정보 수정에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('수업 정보 저장 오류:', error);
+                alert('수업 정보 저장 중 오류가 발생했습니다.');
+            }
+        }
+    </script>
+
+    <style>
+        .btn-success {
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            padding: 10px 20px;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            padding: 10px 20px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+    </style>
+</body>
+</html>

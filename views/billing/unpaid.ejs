@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .unpaid-container {
+            padding: 20px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .summary-card.danger {
+            background: linear-gradient(135deg, #ffebee, #f3f4f6);
+        }
+
+        .summary-card.warning {
+            background: linear-gradient(135deg, #fff3e0, #f3f4f6);
+        }
+
+        .card-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .card-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .filter-section {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .filter-section input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .unpaid-table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .unpaid-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .unpaid-table th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .unpaid-table td {
+            padding: 12px;
+            border-top: 1px solid #eee;
+        }
+
+        .unpaid-table tr:hover {
+            background: #fafafa;
+        }
+
+        .student-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .student-name {
+            font-weight: 500;
+        }
+
+        .student-grade {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .amount {
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .amount.danger {
+            color: #f44336;
+        }
+
+        .overdue-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: #f44336;
+            color: white;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin-left: 5px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 0.85rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-sm:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-send {
+            background: #2196F3;
+            color: white;
+            border: none;
+        }
+
+        .btn-send:hover {
+            background: #1976D2;
+        }
+
+        .charge-details {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-export {
+            background: #607D8B;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-export:hover {
+            background: #455A64;
+        }
+
+        /* 알림 모달 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #f44336;
+        }
+
+        .message-template {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            white-space: pre-wrap;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../components/sidebar-menu', { academyName, userName, page }) %>
+
+    <div class="unpaid-container">
+        <div class="page-header">
+            <h1>미납자 관리</h1>
+            <div class="export-buttons">
+                <button class="btn-export" onclick="exportToExcel()">엑셀 다운로드</button>
+                <button class="btn-primary" onclick="sendBulkNotification()">일괄 알림 발송</button>
+            </div>
+        </div>
+
+        <!-- 요약 카드 -->
+        <div class="summary-cards">
+            <div class="summary-card danger">
+                <div class="card-label">총 미납 금액</div>
+                <div class="card-value" id="totalUnpaid">₩0</div>
+            </div>
+            <div class="summary-card warning">
+                <div class="card-label">미납자 수</div>
+                <div class="card-value" id="unpaidCount">0명</div>
+            </div>
+            <div class="summary-card danger">
+                <div class="card-label">연체자 수</div>
+                <div class="card-value" id="overdueCount">0명</div>
+            </div>
+            <div class="summary-card">
+                <div class="card-label">평균 미납 금액</div>
+                <div class="card-value" id="averageUnpaid">₩0</div>
+            </div>
+        </div>
+
+        <!-- 필터 섹션 -->
+        <div class="filter-section">
+            <input type="text" id="searchStudent" placeholder="학생명 검색">
+            <label>
+                <input type="checkbox" id="overdueOnly" onchange="loadUnpaidStudents()">
+                연체자만 보기
+            </label>
+            <button class="btn-primary" onclick="loadUnpaidStudents()">조회</button>
+        </div>
+
+        <!-- 미납자 테이블 -->
+        <div class="unpaid-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                        <th>학생 정보</th>
+                        <th>연락처</th>
+                        <th>미납 건수</th>
+                        <th>총 미납액</th>
+                        <th>최초 납부기한</th>
+                        <th>청구 내역</th>
+                        <th>작업</th>
+                    </tr>
+                </thead>
+                <tbody id="unpaidTableBody">
+                    <!-- 동적으로 로드됨 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 알림 발송 모달 -->
+    <div id="notificationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>미납 알림 발송</h2>
+                <span class="close" onclick="closeNotificationModal()">&times;</span>
+            </div>
+
+            <div id="notificationContent">
+                <p><strong>수신자:</strong> <span id="recipientName"></span></p>
+                <p><strong>연락처:</strong> <span id="recipientPhone"></span></p>
+                <p><strong>미납 금액:</strong> <span id="recipientAmount"></span></p>
+
+                <div class="message-template" id="messageTemplate">
+                    <!-- 메시지 템플릿이 여기에 표시됨 -->
+                </div>
+
+                <div class="form-buttons">
+                    <button class="btn-primary" onclick="confirmSendNotification()">발송</button>
+                    <button onclick="closeNotificationModal()">취소</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let unpaidStudents = [];
+        let selectedStudentIds = [];
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUnpaidStudents();
+        });
+
+        // 미납자 목록 로드
+        async function loadUnpaidStudents() {
+            const search = document.getElementById('searchStudent').value;
+            const overdueOnly = document.getElementById('overdueOnly').checked;
+
+            try {
+                let url = '/api/billing/unpaid-students';
+                if (overdueOnly) {
+                    url += '?overdue_only=true';
+                }
+
+                const response = await fetch(url);
+                const result = await response.json();
+
+                if (result.success) {
+                    unpaidStudents = result.data;
+
+                    // 검색 필터
+                    if (search) {
+                        unpaidStudents = unpaidStudents.filter(s =>
+                            s.student_name.toLowerCase().includes(search.toLowerCase())
+                        );
+                    }
+
+                    displayUnpaidStudents(unpaidStudents);
+                    updateSummary();
+                }
+            } catch (error) {
+                console.error('미납자 목록 로드 실패:', error);
+            }
+        }
+
+        // 미납자 목록 표시
+        function displayUnpaidStudents(students) {
+            const tbody = document.getElementById('unpaidTableBody');
+
+            if (students.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">미납자가 없습니다.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = students.map(student => {
+                const isOverdue = student.earliest_due_date && new Date(student.earliest_due_date) < new Date();
+
+                return `
+                    <tr>
+                        <td><input type="checkbox" class="student-checkbox" value="${student.student_id}"></td>
+                        <td>
+                            <div class="student-info">
+                                <span class="student-name">
+                                    ${student.student_name}
+                                    ${isOverdue ? '<span class="overdue-badge">연체</span>' : ''}
+                                </span>
+                                <span class="student-grade">${student.grade || ''} ${student.school || ''}</span>
+                            </div>
+                        </td>
+                        <td>
+                            ${student.student_phone || '-'}<br>
+                            <small>${student.parent_phone ? '보호자: ' + student.parent_phone : ''}</small>
+                        </td>
+                        <td style="text-align:center;">${student.unpaid_count}건</td>
+                        <td class="amount danger">${formatCurrency(student.total_unpaid)}</td>
+                        <td>${student.earliest_due_date ? formatDate(student.earliest_due_date) : '-'}</td>
+                        <td>
+                            <div class="charge-details">${student.charge_details || '-'}</div>
+                        </td>
+                        <td class="action-buttons">
+                            <button class="btn-sm" onclick="viewStudentCharges(${student.student_id})">상세</button>
+                            <button class="btn-sm btn-send" onclick="sendNotification(${student.student_id})">알림</button>
+                            <button class="btn-sm" onclick="createPayment(${student.student_id})">수납</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // 요약 정보 업데이트
+        function updateSummary() {
+            const totalUnpaid = unpaidStudents.reduce((sum, s) => sum + (s.total_unpaid || 0), 0);
+            const unpaidCount = unpaidStudents.length;
+            const overdueCount = unpaidStudents.filter(s =>
+                s.earliest_due_date && new Date(s.earliest_due_date) < new Date()
+            ).length;
+            const averageUnpaid = unpaidCount > 0 ? totalUnpaid / unpaidCount : 0;
+
+            document.getElementById('totalUnpaid').textContent = formatCurrency(totalUnpaid);
+            document.getElementById('unpaidCount').textContent = unpaidCount + '명';
+            document.getElementById('overdueCount').textContent = overdueCount + '명';
+            document.getElementById('averageUnpaid').textContent = formatCurrency(averageUnpaid);
+        }
+
+        // 전체 선택
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll').checked;
+            document.querySelectorAll('.student-checkbox').forEach(checkbox => {
+                checkbox.checked = selectAll;
+            });
+        }
+
+        // 학생 청구 상세 보기
+        function viewStudentCharges(studentId) {
+            window.location.href = `/billing/charges?student_id=${studentId}`;
+        }
+
+        // 알림 발송
+        function sendNotification(studentId) {
+            const student = unpaidStudents.find(s => s.student_id === studentId);
+            if (!student) return;
+
+            // 모달에 정보 표시
+            document.getElementById('recipientName').textContent = student.student_name;
+            document.getElementById('recipientPhone').textContent =
+                student.parent_phone || student.student_phone || '연락처 없음';
+            document.getElementById('recipientAmount').textContent = formatCurrency(student.total_unpaid);
+
+            // 메시지 템플릿
+            const template = `[${academyName}]
+안녕하세요, ${student.student_name} 학생 보호자님.
+
+${new Date().getMonth() + 1}월 미납 안내드립니다.
+
+▶ 미납 금액: ${formatCurrency(student.total_unpaid)}
+▶ 미납 건수: ${student.unpaid_count}건
+${student.earliest_due_date ? '▶ 납부 기한: ' + formatDate(student.earliest_due_date) : ''}
+
+빠른 납부 부탁드립니다.
+감사합니다.`;
+
+            document.getElementById('messageTemplate').textContent = template;
+            document.getElementById('notificationModal').style.display = 'block';
+
+            // 발송 대상 저장
+            selectedStudentIds = [studentId];
+        }
+
+        // 일괄 알림 발송
+        function sendBulkNotification() {
+            const checkboxes = document.querySelectorAll('.student-checkbox:checked');
+            if (checkboxes.length === 0) {
+                alert('알림을 보낼 학생을 선택해주세요.');
+                return;
+            }
+
+            selectedStudentIds = Array.from(checkboxes).map(cb => cb.value);
+            const count = selectedStudentIds.length;
+
+            if (confirm(`선택한 ${count}명에게 미납 알림을 발송하시겠습니까?`)) {
+                // TODO: 실제 알림 발송 로직 구현
+                alert(`${count}명에게 알림 발송이 예약되었습니다.`);
+            }
+        }
+
+        // 알림 발송 확인
+        function confirmSendNotification() {
+            // TODO: 실제 알림 발송 API 호출
+            alert('알림이 발송되었습니다.');
+            closeNotificationModal();
+        }
+
+        // 알림 모달 닫기
+        function closeNotificationModal() {
+            document.getElementById('notificationModal').style.display = 'none';
+            selectedStudentIds = [];
+        }
+
+        // 수납 등록으로 이동
+        function createPayment(studentId) {
+            window.location.href = `/billing/payments?student_id=${studentId}`;
+        }
+
+        // 엑셀 다운로드
+        function exportToExcel() {
+            // TODO: 엑셀 다운로드 구현
+            alert('엑셀 다운로드 기능은 추후 구현 예정입니다.');
+        }
+
+        // 유틸리티 함수들
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+        }
+
+        function formatCurrency(amount) {
+            return '₩' + Number(amount).toLocaleString('ko-KR');
+        }
+    </script>
+</body>
+</html>

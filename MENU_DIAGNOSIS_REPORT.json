@@ -1,0 +1,457 @@
+{
+  "timestamp": "2025-10-08T03:12:02.281Z",
+  "baseUrl": "http://localhost:3000",
+  "totalPages": 30,
+  "successPages": 1,
+  "errorPages": 29,
+  "pages": [
+    {
+      "name": "대시보드",
+      "url": "/dashboard",
+      "type": "main",
+      "parent": null,
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "학생 목록",
+      "url": "/students",
+      "type": "submenu",
+      "parent": "학생 관리",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "학생 등록",
+      "url": "/students/new",
+      "type": "submenu",
+      "parent": "학생 관리",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "엑셀 일괄등록",
+      "url": "/students/bulk",
+      "type": "submenu",
+      "parent": "학생 관리",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "퇴원생 관리",
+      "url": "/students/withdrawn",
+      "type": "submenu",
+      "parent": "학생 관리",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "수업 목록",
+      "url": "/classes",
+      "type": "submenu",
+      "parent": "수업 관리",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "수업 추가",
+      "url": "/classes/new",
+      "type": "submenu",
+      "parent": "수업 관리",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "강사 관리",
+      "url": "/teachers",
+      "type": "submenu",
+      "parent": "수업 관리",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "수업 일정",
+      "url": "/classes/schedules",
+      "type": "submenu",
+      "parent": "수업 관리",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "학습 자료",
+      "url": "/classes/materials",
+      "type": "submenu",
+      "parent": "수업 관리",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "과제 관리",
+      "url": "/classes/assignments",
+      "type": "submenu",
+      "parent": "수업 관리",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "출결 대시보드",
+      "url": "/attendance/dashboard",
+      "type": "submenu",
+      "parent": "출결 관리",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "출결 현황",
+      "url": "/attendance/records",
+      "type": "submenu",
+      "parent": "출결 관리",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "횟수제 관리",
+      "url": "/attendance/sessions",
+      "type": "submenu",
+      "parent": "출결 관리",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "보강 수업",
+      "url": "/attendance/makeup",
+      "type": "submenu",
+      "parent": "출결 관리",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "출결 통계",
+      "url": "/attendance/statistics",
+      "type": "submenu",
+      "parent": "출결 관리",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "키오스크 모드",
+      "url": "/attendance/kiosk",
+      "type": "submenu",
+      "parent": "출결 관리",
+      "status": "success",
+      "statusCode": 200,
+      "error": null,
+      "errorType": null,
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": []
+    },
+    {
+      "name": "청구/수납 대시보드",
+      "url": "/billing/dashboard",
+      "type": "submenu",
+      "parent": "청구/수납",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "청구 관리",
+      "url": "/billing/charges",
+      "type": "submenu",
+      "parent": "청구/수납",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "수납 관리",
+      "url": "/billing/payments",
+      "type": "submenu",
+      "parent": "청구/수납",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "미납자 관리",
+      "url": "/billing/unpaid",
+      "type": "submenu",
+      "parent": "청구/수납",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "청구 항목 설정",
+      "url": "/billing/items",
+      "type": "submenu",
+      "parent": "청구/수납",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "청구/수납 통계",
+      "url": "/billing/statistics",
+      "type": "submenu",
+      "parent": "청구/수납",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "성적 관리",
+      "url": "/performance/exams",
+      "type": "submenu",
+      "parent": "학습 관리",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "상담 관리",
+      "url": "/consultation/records",
+      "type": "submenu",
+      "parent": "학습 관리",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "AI 학습 분석",
+      "url": "/ai/analysis",
+      "type": "submenu",
+      "parent": "학습 관리",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "공지사항",
+      "url": "/communications/announcements",
+      "type": "submenu",
+      "parent": "소통 관리",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "메시지",
+      "url": "/communications/messages",
+      "type": "submenu",
+      "parent": "소통 관리",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "알림 설정",
+      "url": "/communications/notifications",
+      "type": "submenu",
+      "parent": "소통 관리",
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    },
+    {
+      "name": "보고서",
+      "url": "/reports",
+      "type": "main",
+      "parent": null,
+      "status": "warning",
+      "statusCode": 302,
+      "error": "인증 필요 (로그인 리다이렉트)",
+      "errorType": "AUTH_REQUIRED",
+      "errorDetails": null,
+      "missingVariables": [],
+      "recommendations": [
+        "로그인 후 접근 가능"
+      ]
+    }
+  ]
+}

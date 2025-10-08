@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/students.css">
+</head>
+<body>
+    <%- include('../components/sidebar-menu', { academyName, page: 'classes', userName: userName }) %>
+
+    <main class="students-main">
+        <div class="students-container">
+            <!-- 페이지 헤더 -->
+            <div class="page-header">
+                <h1 class="page-title">📚 수업관리</h1>
+                <a href="/classes/new" class="btn btn-primary">+ 수업 추가</a>
+            </div>
+
+            <!-- 검색 및 필터 -->
+            <div class="filter-section" style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+                    <!-- 검색 -->
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="수업명, 강사명 검색..."
+                        style="flex: 1; min-width: 200px; padding: 10px 16px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px;"
+                    >
+
+                    <!-- 상태 필터 -->
+                    <select id="statusFilter" style="padding: 10px 16px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+                        <option value="">전체보기</option>
+                        <option value="active">진행중</option>
+                        <option value="completed">종강</option>
+                    </select>
+
+                    <!-- 학년 필터 -->
+                    <select id="gradeFilter" style="padding: 10px 16px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+                        <option value="">학년 전체</option>
+                    </select>
+
+                    <!-- 검색 버튼 -->
+                    <button id="searchBtn" class="btn btn-primary" style="padding: 10px 24px;">검색</button>
+                </div>
+            </div>
+
+            <!-- 수업 목록 테이블 -->
+            <div class="table-container" style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                    <thead style="background: #f8f9fa; border-bottom: 2px solid #e0e0e0;">
+                        <tr>
+                            <th class="sortable" data-sort="class_name" style="padding: 16px; text-align: left; font-weight: 600; cursor: pointer;">
+                                수업 이름 <span class="sort-icon">⇅</span>
+                            </th>
+                            <th class="sortable" data-sort="current_students" style="padding: 16px; text-align: center; font-weight: 600; cursor: pointer;">
+                                학생 수 <span class="sort-icon">⇅</span>
+                            </th>
+                            <th class="sortable" data-sort="tuition" style="padding: 16px; text-align: right; font-weight: 600; cursor: pointer;">
+                                수강료 <span class="sort-icon">⇅</span>
+                            </th>
+                            <th style="padding: 16px; text-align: left; font-weight: 600;">수업 시간</th>
+                            <th style="padding: 16px; text-align: left; font-weight: 600;">담당강사</th>
+                            <th style="padding: 16px; text-align: center; font-weight: 600;">상태</th>
+                            <th style="padding: 16px; text-align: center; font-weight: 600;">관리</th>
+                        </tr>
+                    </thead>
+                    <tbody id="classTableBody">
+                        <tr>
+                            <td colspan="7" style="padding: 60px; text-align: center; color: #999;">
+                                <div style="font-size: 48px; margin-bottom: 16px;">📚</div>
+                                <p style="font-size: 16px; margin-bottom: 8px;">등록된 수업이 없습니다</p>
+                                <p style="font-size: 14px; color: #ccc;">새 수업을 추가해보세요</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 페이지네이션 -->
+            <div id="pagination" class="pagination" style="margin-top: 24px; display: flex; justify-content: center; gap: 8px;">
+                <!-- 페이지네이션 버튼이 여기에 동적으로 추가됩니다 -->
+            </div>
+        </div>
+    </main>
+
+    <!-- 공통 유틸리티 -->
+    <script src="/js/utils/constants.js"></script>
+    <script src="/js/utils/apiClient.js"></script>
+    <script src="/js/utils/errorHandler.js"></script>
+    <script src="/js/components/Modal.js"></script>
+
+    <!-- 수업 관리 스크립트 -->
+    <script src="/js/classes/index.js"></script>
+
+    <script>
+        let currentPage = 1;
+        let currentFilters = {
+            search: '',
+            status: '',
+            grade: '',
+            sortBy: 'created_at',
+            sortOrder: 'DESC'
+        };
+
+        // 페이지 로드 시 실행
+        document.addEventListener('DOMContentLoaded', function() {
+            loadGrades();
+            loadClasses();
+
+            // 검색 버튼
+            document.getElementById('searchBtn').addEventListener('click', function() {
+                currentPage = 1;
+                currentFilters.search = document.getElementById('searchInput').value;
+                currentFilters.status = document.getElementById('statusFilter').value;
+                currentFilters.grade = document.getElementById('gradeFilter').value;
+                loadClasses();
+            });
+
+            // 엔터키로 검색
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('searchBtn').click();
+                }
+            });
+
+            // 정렬 헤더 클릭
+            document.querySelectorAll('.sortable').forEach(th => {
+                th.addEventListener('click', function() {
+                    const sortBy = this.dataset.sort;
+                    if (currentFilters.sortBy === sortBy) {
+                        currentFilters.sortOrder = currentFilters.sortOrder === 'ASC' ? 'DESC' : 'ASC';
+                    } else {
+                        currentFilters.sortBy = sortBy;
+                        currentFilters.sortOrder = 'ASC';
+                    }
+                    loadClasses();
+                });
+            });
+        });
+
+        // 학년 목록 로드
+        async function loadGrades() {
+            try {
+                const response = await fetch('/api/classes/grades');
+                const data = await response.json();
+
+                if (data.success && data.grades) {
+                    const gradeFilter = document.getElementById('gradeFilter');
+                    data.grades.forEach(grade => {
+                        const option = document.createElement('option');
+                        option.value = grade;
+                        option.textContent = grade;
+                        gradeFilter.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('학년 목록 로드 오류:', error);
+            }
+        }
+
+        // 수업 목록 로드
+        async function loadClasses() {
+            try {
+                const params = new URLSearchParams({
+                    page: currentPage,
+                    limit: 20,
+                    ...currentFilters
+                });
+
+                const response = await fetch(`/api/classes?${params}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    displayClasses(data.classes);
+                    displayPagination(data.pagination);
+                } else {
+                    alert(data.error || '수업 목록을 불러오는데 실패했습니다.');
+                }
+            } catch (error) {
+                alert('수업 목록을 불러오는 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 수업 목록 표시
+        function displayClasses(classes) {
+            const tbody = document.getElementById('classTableBody');
+
+            if (classes.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="padding: 60px; text-align: center; color: #999;">
+                            <div style="font-size: 48px; margin-bottom: 16px;">📚</div>
+                            <p style="font-size: 16px; margin-bottom: 8px;">검색 결과가 없습니다</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = classes.map(cls => `
+                <tr style="border-bottom: 1px solid #f0f0f0;">
+                    <td style="padding: 16px;">
+                        <a href="/classes/${cls.id}/students" style="text-decoration: none;">
+                            <div style="font-weight: 600; color: #667eea; margin-bottom: 4px; cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#5568d3'" onmouseout="this.style.color='#667eea'">${cls.class_name}</div>
+                        </a>
+                        ${cls.grade ? `<div style="font-size: 12px; color: #999;">${cls.grade}</div>` : ''}
+                    </td>
+                    <td style="padding: 16px; text-align: center;">
+                        <span style="color: ${cls.current_students >= cls.capacity ? '#e74c3c' : '#3498db'}; font-weight: 600;">
+                            ${cls.current_students || 0}
+                        </span>
+                        ${cls.capacity ? `<span style="color: #999;"> / ${cls.capacity}명</span>` : ''}
+                    </td>
+                    <td style="padding: 16px; text-align: right; font-weight: 600;">
+                        ${Number(cls.tuition).toLocaleString()}원
+                    </td>
+                    <td style="padding: 16px; color: #666; font-size: 14px;">
+                        ${cls.schedule || '-'}
+                    </td>
+                    <td style="padding: 16px;">
+                        ${cls.teacher_name || '-'}
+                    </td>
+                    <td style="padding: 16px; text-align: center;">
+                        <span class="badge ${cls.status === 'active' ? 'badge-success' : 'badge-secondary'}" style="padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                            ${cls.status === 'active' ? '진행중' : '종강'}
+                        </span>
+                    </td>
+                    <td style="padding: 16px; text-align: center;">
+                        <div style="display: flex; gap: 8px; justify-content: center;">
+                            <button onclick="editClass(${cls.id})" class="btn btn-sm btn-primary" style="padding: 6px 12px; font-size: 13px;">수정</button>
+                            ${cls.status === 'active' ?
+                                `<button onclick="enrollStudents(${cls.id})" class="btn btn-sm btn-secondary" style="padding: 6px 12px; font-size: 13px;">학생 등록</button>` :
+                                ''
+                            }
+                            ${cls.status === 'active' ?
+                                `<button onclick="completeClass(${cls.id})" class="btn btn-sm btn-warning" style="padding: 6px 12px; font-size: 13px;">종강</button>` :
+                                ''
+                            }
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 페이지네이션 표시
+        function displayPagination(pagination) {
+            const container = document.getElementById('pagination');
+            const { page, totalPages } = pagination;
+
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+
+            // 이전 버튼
+            if (page > 1) {
+                html += `<button onclick="goToPage(${page - 1})" class="btn btn-sm" style="padding: 8px 12px;">이전</button>`;
+            }
+
+            // 페이지 번호
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === page) {
+                    html += `<button class="btn btn-sm btn-primary" style="padding: 8px 12px;">${i}</button>`;
+                } else {
+                    html += `<button onclick="goToPage(${i})" class="btn btn-sm" style="padding: 8px 12px;">${i}</button>`;
+                }
+            }
+
+            // 다음 버튼
+            if (page < totalPages) {
+                html += `<button onclick="goToPage(${page + 1})" class="btn btn-sm" style="padding: 8px 12px;">다음</button>`;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // 페이지 이동
+        function goToPage(page) {
+            currentPage = page;
+            loadClasses();
+        }
+
+        // 수업 수정
+        function editClass(id) {
+            window.location.href = `/classes/${id}`;
+        }
+
+        // 학생 일괄 등록
+        function enrollStudents(id) {
+            window.location.href = `/classes/${id}/enroll-students`;
+        }
+
+        // 수업 종강
+        async function completeClass(id) {
+            if (!confirm('이 수업을 종강 처리하시겠습니까?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/classes/${id}/complete`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('수업이 종강되었습니다.');
+                    loadClasses();
+                } else {
+                    alert(data.error || '종강 처리에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('종강 처리 오류:', error);
+                alert('종강 처리 중 오류가 발생했습니다.');
+            }
+        }
+    </script>
+
+    <style>
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-secondary {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+
+        .btn-sm {
+            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-sm:hover {
+            background: #f8f9fa;
+        }
+
+        .btn-sm.btn-primary {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .btn-sm.btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-sm.btn-warning {
+            background: #ffc107;
+            color: #212529;
+            border-color: #ffc107;
+        }
+
+        .btn-sm.btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .sort-icon {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .sortable:hover {
+            background: #e9ecef;
+        }
+    </style>
+</body>
+</html>

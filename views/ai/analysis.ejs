@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 성적 분석 - 클래빗</title>
+  <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .ai-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .analysis-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+    }
+
+    .student-selector {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .analysis-card {
+      background: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .analysis-card h3 {
+      margin-top: 0;
+      color: #333;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #667eea;
+    }
+
+    .stat-label {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .trend-indicator {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .trend-improving {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .trend-declining {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .trend-stable {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 300px;
+      margin-top: 1rem;
+    }
+
+    .recommendations-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .recommendations-list li {
+      padding: 1rem;
+      margin-bottom: 0.5rem;
+      background: #f8f9fa;
+      border-left: 4px solid #667eea;
+      border-radius: 4px;
+    }
+
+    .ai-insights {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-top: 2rem;
+    }
+
+    .study-plan-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .study-plan-table th,
+    .study-plan-table td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .study-plan-table th {
+      background: #f8f9fa;
+      font-weight: 600;
+    }
+
+    .loading-spinner {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .loading-spinner.active {
+      display: block;
+    }
+
+    .btn-ai {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: transform 0.2s;
+    }
+
+    .btn-ai:hover {
+      transform: translateY(-2px);
+    }
+
+    .strength-badge {
+      background: #28a745;
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.875rem;
+    }
+
+    .weakness-badge {
+      background: #dc3545;
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+  <%- include('../components/sidebar-menu', { academyName, page, userName }) %>
+
+  <div class="ai-container">
+    <div class="analysis-header">
+      <h1>🤖 AI 성적 분석 시스템</h1>
+      <p>Google Gemini AI와 머신러닝을 활용한 맞춤형 학습 분석</p>
+    </div>
+
+    <!-- 학생 선택 -->
+    <div class="student-selector">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="studentSelect">학생 선택</label>
+          <select id="studentSelect" class="form-control">
+            <option value="">학생을 선택하세요</option>
+          </select>
+        </div>
+        <button onclick="analyzeStudent()" class="btn-ai">
+          <i class="fas fa-brain"></i> AI 분석 시작
+        </button>
+      </div>
+    </div>
+
+    <!-- 로딩 스피너 -->
+    <div class="loading-spinner" id="loadingSpinner">
+      <i class="fas fa-spinner fa-spin fa-3x"></i>
+      <p>AI가 학생 데이터를 분석중입니다...</p>
+    </div>
+
+    <!-- 분석 결과 -->
+    <div id="analysisResults" style="display: none;">
+      <!-- 기본 통계 -->
+      <div class="analysis-grid">
+        <div class="analysis-card">
+          <h3><i class="fas fa-chart-line"></i> 성적 통계</h3>
+          <div class="stat-value" id="avgScore">-</div>
+          <div class="stat-label">평균 점수</div>
+          <div style="margin-top: 1rem;">
+            <small>최근 평균: <span id="recentAvg">-</span></small>
+          </div>
+        </div>
+
+        <div class="analysis-card">
+          <h3><i class="fas fa-trending-up"></i> 성적 추이</h3>
+          <div id="trendBadge" class="trend-indicator">-</div>
+          <div style="margin-top: 1rem;">
+            <small>예측 정확도: <span id="confidence">-</span>%</small>
+          </div>
+        </div>
+
+        <div class="analysis-card">
+          <h3><i class="fas fa-bullseye"></i> 다음 예측</h3>
+          <div class="stat-value" id="predictedScore">-</div>
+          <div class="stat-label">예상 점수</div>
+          <div style="margin-top: 1rem;">
+            <small>범위: <span id="predictionRange">-</span></small>
+          </div>
+        </div>
+      </div>
+
+      <!-- 차트 영역 -->
+      <div class="analysis-grid">
+        <div class="analysis-card">
+          <h3><i class="fas fa-chart-area"></i> 성적 예측 차트</h3>
+          <div class="chart-container">
+            <canvas id="predictionChart"></canvas>
+          </div>
+        </div>
+
+        <div class="analysis-card">
+          <h3><i class="fas fa-chart-radar"></i> 과목별 강점/약점</h3>
+          <div class="chart-container">
+            <canvas id="strengthsChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- 강점과 약점 -->
+      <div class="analysis-card">
+        <h3><i class="fas fa-balance-scale"></i> 강점과 약점 분석</h3>
+        <div class="analysis-grid">
+          <div>
+            <h4>강점 과목</h4>
+            <div id="strengthsList"></div>
+          </div>
+          <div>
+            <h4>약점 과목</h4>
+            <div id="weaknessesList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI 인사이트 -->
+      <div class="ai-insights">
+        <h3><i class="fas fa-lightbulb"></i> Gemini AI 인사이트</h3>
+        <div id="aiInsights">
+          <p id="learningPattern"></p>
+          <h4>개선 필요 영역</h4>
+          <ul id="improvementAreas"></ul>
+          <h4>학습 전략</h4>
+          <ul id="strategies"></ul>
+          <div style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.2); border-radius: 4px;">
+            <strong>동기부여 메시지:</strong>
+            <p id="motivation"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 맞춤형 학습 계획 -->
+      <div class="analysis-card">
+        <h3><i class="fas fa-calendar-alt"></i> 주간 학습 계획</h3>
+        <table class="study-plan-table">
+          <thead>
+            <tr>
+              <th>요일</th>
+              <th>과목</th>
+              <th>시간</th>
+              <th>학습 내용</th>
+            </tr>
+          </thead>
+          <tbody id="weeklyPlan">
+            <!-- 동적 생성 -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 추천 자료 -->
+      <div class="analysis-card">
+        <h3><i class="fas fa-book"></i> 추천 학습 자료</h3>
+        <ul class="recommendations-list" id="resourcesList">
+          <!-- 동적 생성 -->
+        </ul>
+      </div>
+
+      <!-- 액션 버튼 -->
+      <div style="text-align: center; margin-top: 2rem;">
+        <button onclick="generateParentReport()" class="btn-ai">
+          <i class="fas fa-file-pdf"></i> 학부모 리포트 생성
+        </button>
+        <button onclick="showMotivation()" class="btn-ai">
+          <i class="fas fa-trophy"></i> 동기부여 콘텐츠
+        </button>
+        <button onclick="generateStudyPlan()" class="btn-ai">
+          <i class="fas fa-tasks"></i> 상세 학습 계획
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    let currentStudentId = null;
+    let predictionChart = null;
+    let strengthsChart = null;
+
+    // 페이지 로드 시 학생 목록 불러오기
+    document.addEventListener('DOMContentLoaded', async function() {
+      try {
+        const response = await fetch('/api/students?status=active');
+        const result = await response.json();
+
+        if (result.success && result.students) {
+          const select = document.getElementById('studentSelect');
+          result.students.forEach(student => {
+            const option = document.createElement('option');
+            option.value = student.id;
+            option.textContent = `${student.name} (${student.grade}, ${student.school})`;
+            select.appendChild(option);
+          });
+        }
+      } catch (error) {
+        console.error('학생 목록 로드 실패:', error);
+      }
+    });
+
+    // AI 분석 실행
+    async function analyzeStudent() {
+      const studentId = document.getElementById('studentSelect').value;
+      if (!studentId) {
+        alert('학생을 선택해주세요.');
+        return;
+      }
+
+      currentStudentId = studentId;
+
+      // 로딩 표시
+      document.getElementById('loadingSpinner').classList.add('active');
+      document.getElementById('analysisResults').style.display = 'none';
+
+      try {
+        // AI 분석 요청
+        const response = await fetch(`/api/ai/students/${studentId}/analysis`);
+        const result = await response.json();
+
+        if (result.success) {
+          displayAnalysisResults(result.data);
+
+          // 차트 데이터 로드
+          await loadCharts(studentId);
+
+          // 학습 계획 로드
+          await loadStudyPlan(studentId);
+        } else {
+          alert('분석에 실패했습니다: ' + result.error);
+        }
+      } catch (error) {
+        console.error('AI 분석 오류:', error);
+        alert('분석 중 오류가 발생했습니다.');
+      } finally {
+        document.getElementById('loadingSpinner').classList.remove('active');
+        document.getElementById('analysisResults').style.display = 'block';
+      }
+    }
+
+    // 분석 결과 표시
+    function displayAnalysisResults(data) {
+      // 기본 통계
+      document.getElementById('avgScore').textContent = data.statistics.mean.toFixed(1);
+      document.getElementById('recentAvg').textContent = data.statistics.recentAverage.toFixed(1);
+
+      // 추이
+      const trendBadge = document.getElementById('trendBadge');
+      trendBadge.textContent = getTrendText(data.trend.trend);
+      trendBadge.className = `trend-indicator trend-${data.trend.trend}`;
+      document.getElementById('confidence').textContent = data.trend.confidence;
+
+      // 예측
+      if (data.prediction.available) {
+        document.getElementById('predictedScore').textContent = data.prediction.nextExam.predicted;
+        document.getElementById('predictionRange').textContent =
+          `${data.prediction.nextExam.range.min} ~ ${data.prediction.nextExam.range.max}`;
+      } else {
+        document.getElementById('predictedScore').textContent = 'N/A';
+        document.getElementById('predictionRange').textContent = data.prediction.message;
+      }
+
+      // 강점과 약점
+      const strengthsList = document.getElementById('strengthsList');
+      strengthsList.innerHTML = '';
+      data.strengthsWeaknesses.strengths.forEach(s => {
+        strengthsList.innerHTML += `
+          <div style="margin-bottom: 0.5rem;">
+            <span class="strength-badge">${s.subject}</span>
+            <small> 평균 ${s.average}점</small>
+          </div>
+        `;
+      });
+
+      const weaknessesList = document.getElementById('weaknessesList');
+      weaknessesList.innerHTML = '';
+      data.strengthsWeaknesses.weaknesses.forEach(w => {
+        weaknessesList.innerHTML += `
+          <div style="margin-bottom: 0.5rem;">
+            <span class="weakness-badge">${w.subject}</span>
+            <small> 평균 ${w.average}점</small>
+          </div>
+        `;
+      });
+
+      // AI 인사이트
+      if (data.aiInsights) {
+        document.getElementById('learningPattern').textContent =
+          data.aiInsights.learningPattern || '분석 중...';
+
+        const improvementAreas = document.getElementById('improvementAreas');
+        improvementAreas.innerHTML = '';
+        (data.aiInsights.improvementAreas || []).forEach(area => {
+          improvementAreas.innerHTML += `<li>${area}</li>`;
+        });
+
+        const strategies = document.getElementById('strategies');
+        strategies.innerHTML = '';
+        (data.aiInsights.strategies || []).forEach(strategy => {
+          strategies.innerHTML += `<li>${strategy}</li>`;
+        });
+
+        document.getElementById('motivation').textContent =
+          data.aiInsights.motivation || '계속 노력하세요!';
+      }
+    }
+
+    // 차트 로드
+    async function loadCharts(studentId) {
+      // 예측 차트
+      const predResponse = await fetch(`/api/ai/students/${studentId}/charts/prediction`);
+      const predData = await predResponse.json();
+
+      if (predData.success) {
+        const ctx = document.getElementById('predictionChart').getContext('2d');
+
+        if (predictionChart) {
+          predictionChart.destroy();
+        }
+
+        predictionChart = new Chart(ctx, {
+          type: 'line',
+          data: predData.data,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: false,
+                min: 0,
+                max: 100
+              }
+            }
+          }
+        });
+      }
+
+      // 강점 차트
+      const strengthResponse = await fetch(`/api/ai/students/${studentId}/charts/strengths`);
+      const strengthData = await strengthResponse.json();
+
+      if (strengthData.success) {
+        const ctx = document.getElementById('strengthsChart').getContext('2d');
+
+        if (strengthsChart) {
+          strengthsChart.destroy();
+        }
+
+        strengthsChart = new Chart(ctx, {
+          type: 'radar',
+          data: strengthData.data,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              r: {
+                beginAtZero: true,
+                max: 100
+              }
+            }
+          }
+        });
+      }
+    }
+
+    // 학습 계획 로드
+    async function loadStudyPlan(studentId) {
+      const response = await fetch(`/api/ai/students/${studentId}/study-plan`);
+      const result = await response.json();
+
+      if (result.success) {
+        const weeklyPlan = document.getElementById('weeklyPlan');
+        weeklyPlan.innerHTML = '';
+
+        const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+        const dayNames = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'];
+
+        days.forEach((day, index) => {
+          const dayPlan = result.data.weekly[day];
+          if (dayPlan && dayPlan.length > 0) {
+            dayPlan.forEach(plan => {
+              weeklyPlan.innerHTML += `
+                <tr>
+                  <td>${dayNames[index]}</td>
+                  <td>${plan.subject}</td>
+                  <td>${plan.duration}</td>
+                  <td>${plan.content}</td>
+                </tr>
+              `;
+            });
+          }
+        });
+
+        // 추천 자료
+        const resourcesList = document.getElementById('resourcesList');
+        resourcesList.innerHTML = '';
+
+        if (result.data.resources) {
+          result.data.resources.textbooks.forEach(book => {
+            resourcesList.innerHTML += `
+              <li>
+                <strong>📚 ${book.title}</strong> - ${book.subject}
+                <br><small>${book.publisher} | ${book.level} | ${book.estimatedTime}</small>
+              </li>
+            `;
+          });
+        }
+      }
+    }
+
+    // 학부모 리포트 생성
+    async function generateParentReport() {
+      if (!currentStudentId) {
+        alert('먼저 학생을 선택하고 분석을 실행해주세요.');
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/ai/students/${currentStudentId}/parent-report`);
+        const result = await response.json();
+
+        if (result.success) {
+          // PDF 다운로드 또는 화면 표시
+          alert('학부모 리포트가 생성되었습니다.');
+          console.log('Parent Report:', result.data);
+        }
+      } catch (error) {
+        console.error('리포트 생성 오류:', error);
+      }
+    }
+
+    // 동기부여 콘텐츠
+    async function showMotivation() {
+      if (!currentStudentId) {
+        alert('먼저 학생을 선택하고 분석을 실행해주세요.');
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/ai/students/${currentStudentId}/motivation`);
+        const result = await response.json();
+
+        if (result.success) {
+          // 모달로 표시
+          alert(result.data.personalMessage);
+          console.log('Motivation:', result.data);
+        }
+      } catch (error) {
+        console.error('동기부여 콘텐츠 오류:', error);
+      }
+    }
+
+    // 상세 학습 계획
+    async function generateStudyPlan() {
+      if (!currentStudentId) {
+        alert('먼저 학생을 선택하고 분석을 실행해주세요.');
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/ai/students/${currentStudentId}/habits`);
+        const result = await response.json();
+
+        if (result.success) {
+          alert('상세 학습 계획이 생성되었습니다.');
+          console.log('Study Plan:', result.data);
+        }
+      } catch (error) {
+        console.error('학습 계획 오류:', error);
+      }
+    }
+
+    // 추이 텍스트 변환
+    function getTrendText(trend) {
+      const trendMap = {
+        'improving': '상승 추세 ↑',
+        'slightly_improving': '소폭 상승 ↗',
+        'stable': '안정적 →',
+        'slightly_declining': '소폭 하락 ↘',
+        'declining': '하락 추세 ↓',
+        'insufficient_data': '데이터 부족'
+      };
+      return trendMap[trend] || trend;
+    }
+  </script>
+</body>
+</html>

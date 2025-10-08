@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>학습 자료 관리 - 클래빗</title>
+    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/class-management.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../components/sidebar-menu', { academyName, page, userName }) %>
+
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-folder-open"></i> 학습 자료 관리</h1>
+            <div class="header-actions">
+                <button id="uploadBtn" class="btn btn-primary">
+                    <i class="fas fa-upload"></i> 자료 업로드
+                </button>
+                <button id="createFolderBtn" class="btn btn-secondary">
+                    <i class="fas fa-folder-plus"></i> 폴더 생성
+                </button>
+            </div>
+        </div>
+
+        <!-- 필터 및 검색 -->
+        <div class="filter-section">
+            <div class="filter-group">
+                <select id="classFilter" class="form-control">
+                    <option value="">전체 반</option>
+                </select>
+                <select id="subjectFilter" class="form-control">
+                    <option value="">전체 과목</option>
+                    <option value="korean">국어</option>
+                    <option value="english">영어</option>
+                    <option value="math">수학</option>
+                    <option value="science">과학</option>
+                    <option value="social">사회</option>
+                </select>
+                <select id="typeFilter" class="form-control">
+                    <option value="">전체 유형</option>
+                    <option value="document">문서</option>
+                    <option value="presentation">프레젠테이션</option>
+                    <option value="video">동영상</option>
+                    <option value="image">이미지</option>
+                    <option value="audio">오디오</option>
+                    <option value="archive">압축파일</option>
+                </select>
+            </div>
+            <div class="search-group">
+                <div class="input-group">
+                    <input type="text" id="searchInput" class="form-control" placeholder="파일명 검색...">
+                    <button id="searchBtn" class="btn btn-secondary">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 뷰 전환 및 정렬 -->
+        <div class="view-controls">
+            <div class="view-toggle">
+                <button class="view-btn active" data-view="grid">
+                    <i class="fas fa-th-large"></i>
+                </button>
+                <button class="view-btn" data-view="list">
+                    <i class="fas fa-list"></i>
+                </button>
+            </div>
+            <div class="sort-controls">
+                <select id="sortBy" class="form-control">
+                    <option value="name">이름순</option>
+                    <option value="date">날짜순</option>
+                    <option value="size">크기순</option>
+                    <option value="downloads">다운로드순</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 경로 네비게이션 -->
+        <div class="breadcrumb">
+            <span class="breadcrumb-item" data-path="/">
+                <i class="fas fa-home"></i> 홈
+            </span>
+            <span id="currentPath"></span>
+        </div>
+
+        <!-- 자료 목록 -->
+        <div id="materialsContainer" class="materials-grid">
+            <!-- JavaScript로 동적 생성 -->
+        </div>
+
+        <!-- 페이지네이션 -->
+        <div class="pagination" id="pagination"></div>
+    </div>
+
+    <!-- 업로드 모달 -->
+    <div id="uploadModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>학습 자료 업로드</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadForm">
+                    <div class="upload-area" id="uploadArea">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>파일을 드래그하여 업로드하거나 클릭하여 선택하세요</p>
+                        <input type="file" id="fileInput" multiple style="display: none;">
+                    </div>
+
+                    <div id="fileList" class="file-list"></div>
+
+                    <div class="form-group">
+                        <label for="targetClass">대상 반</label>
+                        <select id="targetClass" class="form-control" multiple>
+                            <!-- 동적 생성 -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subject">과목</label>
+                        <select id="subject" class="form-control">
+                            <option value="">선택하세요</option>
+                            <option value="korean">국어</option>
+                            <option value="english">영어</option>
+                            <option value="math">수학</option>
+                            <option value="science">과학</option>
+                            <option value="social">사회</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">설명</label>
+                        <textarea id="description" class="form-control" rows="3"
+                                  placeholder="자료에 대한 설명을 입력하세요"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="shareWithParents">
+                            학부모와 공유
+                        </label>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">취소</button>
+                        <button type="submit" class="btn btn-primary">업로드</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 미리보기 모달 -->
+    <div id="previewModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="previewTitle">파일 미리보기</h2>
+                <div class="preview-actions">
+                    <button id="downloadBtn" class="btn btn-sm">
+                        <i class="fas fa-download"></i> 다운로드
+                    </button>
+                    <button id="shareBtn" class="btn btn-sm">
+                        <i class="fas fa-share"></i> 공유
+                    </button>
+                    <button class="close-btn">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div id="previewContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 폴더 생성 모달 -->
+    <div id="folderModal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>새 폴더 만들기</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="folderForm">
+                    <div class="form-group">
+                        <label for="folderName">폴더명</label>
+                        <input type="text" id="folderName" class="form-control" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">취소</button>
+                        <button type="submit" class="btn btn-primary">생성</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 업로드 진행 표시 -->
+    <div id="uploadProgress" class="upload-progress">
+        <div class="progress-header">
+            <span>업로드 중...</span>
+            <button class="minimize-btn">_</button>
+        </div>
+        <div class="progress-items"></div>
+    </div>
+
+    <script src="/js/common.js"></script>
+    <script src="/js/class-management/materials.js"></script>
+</body>
+</html>

@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <style>
+        .attendance-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* 탭 메뉴 */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.2s;
+        }
+
+        .tab-btn:hover {
+            color: #667eea;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #667eea;
+        }
+
+        /* 탭 컨텐츠 */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* 필터 섹션 */
+        .filter-section {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .filter-group {
+            flex: 1;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .btn-search {
+            padding: 10px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        /* 수정 폼 */
+        .edit-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            padding: 24px;
+        }
+
+        .attendance-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .attendance-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            gap: 16px;
+        }
+
+        .attendance-item:hover {
+            background: #f8f9fa;
+        }
+
+        .student-info {
+            flex: 1;
+        }
+
+        .student-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .class-info {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .date-info {
+            font-size: 14px;
+            color: #666;
+            margin-right: 16px;
+        }
+
+        .status-select {
+            padding: 8px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .btn-edit {
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .btn-edit:hover {
+            background: #5a67d8;
+        }
+
+        /* 수정 이력 테이블 */
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .history-table th {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .history-table td {
+            padding: 12px;
+            font-size: 14px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        /* 상태 뱃지 */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.present { background: #d4edda; color: #155724; }
+        .status-badge.absent { background: #f8d7da; color: #721c24; }
+        .status-badge.late { background: #fff3cd; color: #856404; }
+        .status-badge.early { background: #ffe4b5; color: #ff6600; }
+        .status-badge.sick { background: #e2e3e5; color: #383d41; }
+        .status-badge.official { background: #d1ecf1; color: #0c5460; }
+
+        /* 모달 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .modal-body {
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn-cancel {
+            padding: 10px 20px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-save {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../components/sidebar-menu', { academyName, page, userName }) %>
+
+    <div class="attendance-container">
+        <div class="page-header">
+            <h1>✏️ 출석 정정/수정</h1>
+            <p>출석 기록을 수정하고 변경 이력을 관리하세요</p>
+        </div>
+
+        <!-- 탭 메뉴 -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('edit')">출석 수정</button>
+            <button class="tab-btn" onclick="switchTab('history')">수정 이력</button>
+        </div>
+
+        <!-- 출석 수정 탭 -->
+        <div class="tab-content active" id="editTab">
+            <div class="filter-section">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="editDate">날짜</label>
+                        <input type="date" id="editDate" />
+                    </div>
+                    <div class="filter-group">
+                        <label for="editClass">수업</label>
+                        <select id="editClass">
+                            <option value="">전체</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="editStudent">학생</label>
+                        <input type="text" id="editStudent" placeholder="학생 이름으로 검색" />
+                    </div>
+                    <div class="filter-group" style="flex: 0; padding-top: 24px;">
+                        <button class="btn-search" onclick="loadAttendanceForEdit()">조회</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="edit-section">
+                <div id="attendanceEditList">
+                    <div class="empty-state">
+                        <p>조회 조건을 선택하고 조회 버튼을 클릭하세요</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 수정 이력 탭 -->
+        <div class="tab-content" id="historyTab">
+            <div class="filter-section">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="historyStartDate">시작일</label>
+                        <input type="date" id="historyStartDate" />
+                    </div>
+                    <div class="filter-group">
+                        <label for="historyEndDate">종료일</label>
+                        <input type="date" id="historyEndDate" />
+                    </div>
+                    <div class="filter-group" style="flex: 0; padding-top: 24px;">
+                        <button class="btn-search" onclick="loadHistory()">조회</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="edit-section">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>수정일시</th>
+                            <th>학생명</th>
+                            <th>수업명</th>
+                            <th>출석일</th>
+                            <th>변경 전</th>
+                            <th>변경 후</th>
+                            <th>수정 사유</th>
+                            <th>수정자</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyBody">
+                        <tr>
+                            <td colspan="8" class="empty-state">
+                                <p>조회 기간을 선택하고 조회 버튼을 클릭하세요</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 수정 모달 -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">출석 정정</div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>학생</label>
+                    <input type="text" id="modalStudentName" readonly />
+                </div>
+                <div class="form-group">
+                    <label>날짜</label>
+                    <input type="text" id="modalDate" readonly />
+                </div>
+                <div class="form-group">
+                    <label>출석 상태</label>
+                    <select id="modalStatus">
+                        <option value="출석">출석</option>
+                        <option value="결석">결석</option>
+                        <option value="지각">지각</option>
+                        <option value="조퇴">조퇴</option>
+                        <option value="병결">병결</option>
+                        <option value="공결">공결</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>체크인 시간</label>
+                    <input type="time" id="modalCheckIn" />
+                </div>
+                <div class="form-group">
+                    <label>체크아웃 시간</label>
+                    <input type="time" id="modalCheckOut" />
+                </div>
+                <div class="form-group">
+                    <label>정정 사유 (필수)</label>
+                    <textarea id="modalReason" placeholder="정정 사유를 입력하세요" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>비고</label>
+                    <input type="text" id="modalNote" placeholder="추가 메모" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeModal()">취소</button>
+                <button class="btn-save" onclick="saveEdit()">저장</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentEditData = null;
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            // 오늘 날짜로 초기화
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('editDate').value = today;
+            document.getElementById('historyEndDate').value = today;
+
+            // 7일 전 날짜로 시작일 설정
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            document.getElementById('historyStartDate').value = weekAgo.toISOString().split('T')[0];
+
+            // 수업 목록 로드
+            await loadClasses();
+        });
+
+        // 수업 목록 로드
+        async function loadClasses() {
+            try {
+                const response = await fetch('/api/attendance/classes');
+                const data = await response.json();
+
+                if (data.success && data.classes) {
+                    const select = document.getElementById('editClass');
+                    select.innerHTML = '<option value="">전체</option>';
+
+                    data.classes.forEach(cls => {
+                        const option = document.createElement('option');
+                        option.value = cls.id;
+                        option.textContent = `${cls.class_name} (${cls.teacher_name || '강사 미지정'})`;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('수업 목록 로드 오류:', error);
+            }
+        }
+
+        // 탭 전환
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            event.target.classList.add('active');
+            document.getElementById(tab + 'Tab').classList.add('active');
+        }
+
+        // 수정할 출석 조회
+        async function loadAttendanceForEdit() {
+            const date = document.getElementById('editDate').value;
+            const classId = document.getElementById('editClass').value;
+            const studentName = document.getElementById('editStudent').value;
+
+            if (!date) {
+                alert('날짜를 선택해주세요.');
+                return;
+            }
+
+            try {
+                let url = `/api/attendance/monthly?month=${date.substring(0, 7)}`;
+                if (classId) url += `&class_id=${classId}`;
+
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.success) {
+                    // 선택한 날짜와 학생명으로 필터링
+                    let filtered = data.attendance.filter(a => a.attendance_date.startsWith(date));
+                    if (studentName) {
+                        filtered = filtered.filter(a => a.student_name.includes(studentName));
+                    }
+
+                    displayEditableAttendance(filtered);
+                }
+            } catch (error) {
+                console.error('출석 조회 오류:', error);
+                alert('출석 기록을 불러오는 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 수정 가능한 출석 목록 표시
+        function displayEditableAttendance(attendance) {
+            const container = document.getElementById('attendanceEditList');
+
+            if (attendance.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>조회된 출석 기록이 없습니다</p></div>';
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="attendance-list">
+                    ${attendance.map(record => `
+                        <div class="attendance-item">
+                            <div class="student-info">
+                                <div class="student-name">${record.student_name}</div>
+                                <div class="class-info">${record.class_name}</div>
+                            </div>
+                            <div class="date-info">
+                                ${new Date(record.attendance_date).toLocaleDateString('ko-KR')}
+                            </div>
+                            <span class="status-badge ${getStatusClass(record.status)}">
+                                ${record.status}
+                            </span>
+                            <button class="btn-edit" onclick='openEditModal(${JSON.stringify(record)})'>
+                                수정
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // 수정 모달 열기
+        function openEditModal(record) {
+            currentEditData = record;
+
+            document.getElementById('modalStudentName').value = record.student_name;
+            document.getElementById('modalDate').value = new Date(record.attendance_date).toLocaleDateString('ko-KR');
+            document.getElementById('modalStatus').value = record.status;
+            document.getElementById('modalCheckIn').value = record.check_in_time || '';
+            document.getElementById('modalCheckOut').value = record.check_out_time || '';
+            document.getElementById('modalNote').value = record.note || '';
+            document.getElementById('modalReason').value = '';
+
+            document.getElementById('editModal').classList.add('show');
+        }
+
+        // 모달 닫기
+        function closeModal() {
+            document.getElementById('editModal').classList.remove('show');
+            currentEditData = null;
+        }
+
+        // 수정 저장
+        async function saveEdit() {
+            const reason = document.getElementById('modalReason').value.trim();
+            if (!reason) {
+                alert('정정 사유를 입력해주세요.');
+                return;
+            }
+
+            const updateData = {
+                student_id: currentEditData.student_id,
+                class_id: currentEditData.class_id,
+                attendance_date: currentEditData.attendance_date.split('T')[0],
+                status: document.getElementById('modalStatus').value,
+                check_in_time: document.getElementById('modalCheckIn').value || null,
+                check_out_time: document.getElementById('modalCheckOut').value || null,
+                note: document.getElementById('modalNote').value || null
+            };
+
+            try {
+                const response = await fetch('/api/attendance', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('출석이 정정되었습니다.');
+                    closeModal();
+                    loadAttendanceForEdit();
+                } else {
+                    alert(result.error || '출석 정정 중 오류가 발생했습니다.');
+                }
+            } catch (error) {
+                console.error('출석 정정 오류:', error);
+                alert('출석 정정 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 수정 이력 조회
+        async function loadHistory() {
+            const startDate = document.getElementById('historyStartDate').value;
+            const endDate = document.getElementById('historyEndDate').value;
+
+            if (!startDate || !endDate) {
+                alert('조회 기간을 선택해주세요.');
+                return;
+            }
+
+            try {
+                const url = `/api/attendance/history?start_date=${startDate}&end_date=${endDate}`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.success) {
+                    displayHistory(data.history);
+                }
+            } catch (error) {
+                console.error('수정 이력 조회 오류:', error);
+                alert('수정 이력을 불러오는 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 수정 이력 표시
+        function displayHistory(history) {
+            const tbody = document.getElementById('historyBody');
+
+            if (history.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><p>조회된 수정 이력이 없습니다</p></td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = history.map(record => `
+                <tr>
+                    <td>${new Date(record.modified_at).toLocaleString('ko-KR')}</td>
+                    <td>${record.student_name}</td>
+                    <td>${record.class_name}</td>
+                    <td>${new Date(record.attendance_date).toLocaleDateString('ko-KR')}</td>
+                    <td>
+                        <span class="status-badge ${getStatusClass(record.old_status)}">
+                            ${record.old_status || '-'}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-badge ${getStatusClass(record.new_status)}">
+                            ${record.new_status}
+                        </span>
+                    </td>
+                    <td>${record.reason}</td>
+                    <td>${record.modified_by_name || '-'}</td>
+                </tr>
+            `).join('');
+        }
+
+        // 상태별 클래스 반환
+        function getStatusClass(status) {
+            const statusMap = {
+                '출석': 'present',
+                '결석': 'absent',
+                '지각': 'late',
+                '조퇴': 'early',
+                '병결': 'sick',
+                '공결': 'official'
+            };
+            return statusMap[status] || '';
+        }
+    </script>
+</body>
+</html>

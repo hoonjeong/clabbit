@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>메시지 - 클래빗</title>
+    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/communications.css">
+</head>
+<body>
+    <%- include('../components/sidebar-menu', { academyName, page, userName }) %>
+
+    <div class="container messages-container">
+        <div class="messages-layout">
+            <!-- 대화방 목록 -->
+            <div class="conversations-sidebar">
+                <div class="sidebar-header">
+                    <h2>대화목록</h2>
+                    <button id="newConversationBtn" class="btn btn-sm btn-primary">+</button>
+                </div>
+                <div class="search-box">
+                    <input type="text" id="conversationSearch" class="form-control" placeholder="대화 검색">
+                </div>
+                <div id="conversationsList" class="conversations-list">
+                    <!-- 대화방 목록이 동적으로 로드됩니다 -->
+                </div>
+            </div>
+
+            <!-- 메시지 영역 -->
+            <div class="messages-main">
+                <div id="emptyState" class="empty-state">
+                    <div class="empty-icon">💬</div>
+                    <p>대화를 선택하세요</p>
+                </div>
+
+                <div id="chatContainer" class="chat-container" style="display: none;">
+                    <!-- 대화방 헤더 -->
+                    <div class="chat-header">
+                        <div class="chat-info">
+                            <h3 id="chatTitle"></h3>
+                            <span id="chatStatus" class="chat-status"></span>
+                        </div>
+                        <div class="chat-actions">
+                            <button id="chatMenuBtn" class="btn btn-icon">⋮</button>
+                        </div>
+                    </div>
+
+                    <!-- 메시지 목록 -->
+                    <div id="messagesList" class="messages-list">
+                        <!-- 메시지들이 동적으로 로드됩니다 -->
+                    </div>
+
+                    <!-- 입력 영역 -->
+                    <div class="message-input-container">
+                        <div id="typingIndicator" class="typing-indicator" style="display: none;">
+                            <span></span> 입력 중...
+                        </div>
+                        <form id="messageForm" class="message-input-form">
+                            <button type="button" id="attachBtn" class="btn btn-icon">📎</button>
+                            <input type="file" id="messageAttachment" style="display: none;" multiple>
+                            <textarea id="messageInput" class="form-control" placeholder="메시지를 입력하세요" rows="1"></textarea>
+                            <button type="submit" class="btn btn-primary">전송</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 새 대화 시작 모달 -->
+    <div id="newConversationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>새 대화 시작</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="studentSelect">학생 선택</label>
+                    <select id="studentSelect" class="form-control">
+                        <option value="">학생을 선택하세요</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-close">취소</button>
+                <button type="button" id="startConversationBtn" class="btn btn-primary">시작</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/communications/messages.js"></script>
+</body>
+</html>

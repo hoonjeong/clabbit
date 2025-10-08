@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/form.css">
+    <style>
+        .charges-container {
+            padding: 20px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .filter-section {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .filter-section select, .filter-section input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .charges-table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .charges-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .charges-table th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .charges-table td {
+            padding: 12px;
+            border-top: 1px solid #eee;
+        }
+
+        .charges-table tr:hover {
+            background: #fafafa;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+
+        .status-pending { background: #fff3e0; color: #f57c00; }
+        .status-paid { background: #e8f5e9; color: #2e7d32; }
+        .status-partial { background: #e3f2fd; color: #1565c0; }
+        .status-overdue { background: #ffebee; color: #c62828; }
+        .status-cancelled { background: #f5f5f5; color: #757575; }
+
+        .amount { text-align: right; font-weight: 500; }
+        .action-buttons { display: flex; gap: 5px; }
+
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 0.85rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-sm:hover { background: #f5f5f5; }
+
+        /* 모달 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover { color: #f44336; }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .student-select-container {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+        }
+
+        .student-checkbox {
+            display: flex;
+            align-items: center;
+            padding: 5px;
+        }
+
+        .student-checkbox input {
+            margin-right: 8px;
+            width: auto;
+        }
+
+        .select-all-btn {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../components/sidebar-menu', { academyName, userName, page }) %>
+
+    <div class="charges-container">
+        <div class="page-header">
+            <h1>청구 관리</h1>
+            <button class="btn-primary" onclick="openCreateModal()">+ 청구 생성</button>
+        </div>
+
+        <!-- 필터 섹션 -->
+        <div class="filter-section">
+            <input type="month" id="filterMonth" value="<%= new Date().toISOString().slice(0,7) %>">
+            <select id="filterStatus">
+                <option value="">전체 상태</option>
+                <option value="pending">미납</option>
+                <option value="partial">부분납</option>
+                <option value="paid">완납</option>
+                <option value="overdue">연체</option>
+                <option value="cancelled">취소</option>
+            </select>
+            <input type="text" id="searchStudent" placeholder="학생명 검색">
+            <button class="btn-primary" onclick="loadCharges()">조회</button>
+        </div>
+
+        <!-- 청구 목록 테이블 -->
+        <div class="charges-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>청구일</th>
+                        <th>학생명</th>
+                        <th>청구항목</th>
+                        <th>청구액</th>
+                        <th>수납액</th>
+                        <th>잔액</th>
+                        <th>상태</th>
+                        <th>납부기한</th>
+                        <th>작업</th>
+                    </tr>
+                </thead>
+                <tbody id="chargesTableBody">
+                    <!-- 동적으로 로드됨 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 청구 생성 모달 -->
+    <div id="createChargeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>청구 생성</h2>
+                <span class="close" onclick="closeCreateModal()">&times;</span>
+            </div>
+            <form id="createChargeForm">
+                <div class="form-group">
+                    <label>청구 유형</label>
+                    <select id="chargeType" onchange="toggleChargeType()">
+                        <option value="individual">개별 청구</option>
+                        <option value="bulk">일괄 청구</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="individualStudentGroup">
+                    <label>학생 선택</label>
+                    <select id="studentId" required>
+                        <option value="">학생을 선택하세요</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="bulkStudentGroup" style="display:none;">
+                    <label>학생 선택</label>
+                    <button type="button" class="btn-sm select-all-btn" onclick="selectAllStudents()">전체 선택</button>
+                    <div class="student-select-container" id="studentCheckboxList">
+                        <!-- 동적으로 로드됨 -->
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>청구 항목</label>
+                    <select id="billingItemId" onchange="updateDefaultAmount()">
+                        <option value="">직접 입력</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>청구 금액</label>
+                    <input type="number" id="amount" required>
+                </div>
+
+                <div class="form-group">
+                    <label>할인 금액</label>
+                    <input type="number" id="discountAmount" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label>할인 사유</label>
+                    <input type="text" id="discountReason">
+                </div>
+
+                <div class="form-group">
+                    <label>청구일</label>
+                    <input type="date" id="chargeDate" required value="<%= new Date().toISOString().slice(0,10) %>">
+                </div>
+
+                <div class="form-group">
+                    <label>납부 기한</label>
+                    <input type="date" id="dueDate">
+                </div>
+
+                <div class="form-group">
+                    <label>메모</label>
+                    <textarea id="notes" rows="3"></textarea>
+                </div>
+
+                <div class="form-buttons">
+                    <button type="submit" class="btn-primary">생성</button>
+                    <button type="button" onclick="closeCreateModal()">취소</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let students = [];
+        let billingItems = [];
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCharges();
+            loadStudents();
+            loadBillingItems();
+        });
+
+        // 청구 목록 로드
+        async function loadCharges() {
+            const month = document.getElementById('filterMonth').value;
+            const status = document.getElementById('filterStatus').value;
+            const search = document.getElementById('searchStudent').value;
+
+            try {
+                const response = await fetch(`/api/charges/monthly/${month}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    let charges = result.data;
+
+                    // 필터링
+                    if (status) {
+                        charges = charges.filter(c => c.status === status);
+                    }
+                    if (search) {
+                        charges = charges.filter(c =>
+                            c.student_name.toLowerCase().includes(search.toLowerCase())
+                        );
+                    }
+
+                    displayCharges(charges);
+                }
+            } catch (error) {
+                console.error('청구 목록 로드 실패:', error);
+            }
+        }
+
+        // 청구 목록 표시
+        function displayCharges(charges) {
+            const tbody = document.getElementById('chargesTableBody');
+
+            if (charges.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">청구 내역이 없습니다.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = charges.map(charge => `
+                <tr>
+                    <td>${formatDate(charge.charge_date)}</td>
+                    <td>${charge.student_name}</td>
+                    <td>${charge.item_name || '-'}</td>
+                    <td class="amount">${formatCurrency(charge.amount)}</td>
+                    <td class="amount">${formatCurrency(charge.paid_amount || 0)}</td>
+                    <td class="amount">${formatCurrency(charge.remaining_amount || charge.final_amount)}</td>
+                    <td><span class="status-badge status-${charge.status}">${getStatusText(charge.status)}</span></td>
+                    <td>${charge.due_date ? formatDate(charge.due_date) : '-'}</td>
+                    <td class="action-buttons">
+                        <button class="btn-sm" onclick="viewCharge(${charge.id})">상세</button>
+                        ${charge.status === 'pending' || charge.status === 'partial' ?
+                            `<button class="btn-sm" onclick="createPayment(${charge.id}, ${charge.student_id})">수납</button>` : ''}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 학생 목록 로드
+        async function loadStudents() {
+            try {
+                const response = await fetch('/api/students?status=active');
+                const result = await response.json();
+
+                if (result.success) {
+                    students = result.data;
+
+                    // 개별 선택 드롭다운
+                    const select = document.getElementById('studentId');
+                    select.innerHTML = '<option value="">학생을 선택하세요</option>' +
+                        students.map(s => `<option value="${s.id}">${s.name} (${s.grade || ''})</option>`).join('');
+
+                    // 일괄 선택 체크박스
+                    const checkboxList = document.getElementById('studentCheckboxList');
+                    checkboxList.innerHTML = students.map(s => `
+                        <div class="student-checkbox">
+                            <input type="checkbox" id="student_${s.id}" value="${s.id}">
+                            <label for="student_${s.id}">${s.name} (${s.grade || ''})</label>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('학생 목록 로드 실패:', error);
+            }
+        }
+
+        // 청구 항목 로드
+        async function loadBillingItems() {
+            try {
+                const response = await fetch('/api/billing-items');
+                const result = await response.json();
+
+                if (result.success) {
+                    billingItems = result.data;
+
+                    const select = document.getElementById('billingItemId');
+                    select.innerHTML = '<option value="">직접 입력</option>' +
+                        billingItems.map(item =>
+                            `<option value="${item.id}" data-amount="${item.default_amount}">${item.name} (${formatCurrency(item.default_amount)})</option>`
+                        ).join('');
+                }
+            } catch (error) {
+                console.error('청구 항목 로드 실패:', error);
+            }
+        }
+
+        // 청구 생성 모달 열기
+        function openCreateModal() {
+            document.getElementById('createChargeModal').style.display = 'block';
+        }
+
+        // 청구 생성 모달 닫기
+        function closeCreateModal() {
+            document.getElementById('createChargeModal').style.display = 'none';
+            document.getElementById('createChargeForm').reset();
+        }
+
+        // 청구 유형 변경
+        function toggleChargeType() {
+            const type = document.getElementById('chargeType').value;
+            document.getElementById('individualStudentGroup').style.display =
+                type === 'individual' ? 'block' : 'none';
+            document.getElementById('bulkStudentGroup').style.display =
+                type === 'bulk' ? 'block' : 'none';
+        }
+
+        // 전체 학생 선택
+        function selectAllStudents() {
+            const checkboxes = document.querySelectorAll('#studentCheckboxList input[type="checkbox"]');
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            checkboxes.forEach(cb => cb.checked = !allChecked);
+        }
+
+        // 기본 금액 업데이트
+        function updateDefaultAmount() {
+            const select = document.getElementById('billingItemId');
+            const selectedOption = select.options[select.selectedIndex];
+            const defaultAmount = selectedOption.dataset.amount;
+
+            if (defaultAmount) {
+                document.getElementById('amount').value = defaultAmount;
+            }
+        }
+
+        // 청구 생성 폼 제출
+        document.getElementById('createChargeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const chargeType = document.getElementById('chargeType').value;
+            const chargeData = {
+                billing_item_id: document.getElementById('billingItemId').value || null,
+                charge_date: document.getElementById('chargeDate').value,
+                amount: document.getElementById('amount').value,
+                discount_amount: document.getElementById('discountAmount').value || 0,
+                discount_reason: document.getElementById('discountReason').value,
+                due_date: document.getElementById('dueDate').value || null,
+                notes: document.getElementById('notes').value
+            };
+
+            try {
+                let response;
+
+                if (chargeType === 'individual') {
+                    // 개별 청구
+                    chargeData.student_id = document.getElementById('studentId').value;
+                    response = await fetch('/api/charges', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(chargeData)
+                    });
+                } else {
+                    // 일괄 청구
+                    const selectedStudents = Array.from(
+                        document.querySelectorAll('#studentCheckboxList input:checked')
+                    ).map(cb => parseInt(cb.value));
+
+                    if (selectedStudents.length === 0) {
+                        alert('학생을 선택해주세요.');
+                        return;
+                    }
+
+                    response = await fetch('/api/charges/bulk', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            student_ids: selectedStudents,
+                            ...chargeData
+                        })
+                    });
+                }
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(result.message || '청구가 생성되었습니다.');
+                    closeCreateModal();
+                    loadCharges();
+                } else {
+                    alert('청구 생성 실패: ' + result.error);
+                }
+            } catch (error) {
+                console.error('청구 생성 오류:', error);
+                alert('청구 생성 중 오류가 발생했습니다.');
+            }
+        });
+
+        // 청구 상세 보기
+        function viewCharge(chargeId) {
+            // TODO: 청구 상세 모달 구현
+            console.log('청구 상세:', chargeId);
+        }
+
+        // 수납 등록으로 이동
+        function createPayment(chargeId, studentId) {
+            window.location.href = `/billing/payments?charge_id=${chargeId}&student_id=${studentId}`;
+        }
+
+        // 유틸리티 함수들
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return `${date.getMonth() + 1}/${date.getDate()}`;
+        }
+
+        function formatCurrency(amount) {
+            return '₩' + Number(amount).toLocaleString('ko-KR');
+        }
+
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': '미납',
+                'partial': '부분납',
+                'paid': '완납',
+                'overdue': '연체',
+                'cancelled': '취소'
+            };
+            return statusMap[status] || status;
+        }
+    </script>
+</body>
+</html>

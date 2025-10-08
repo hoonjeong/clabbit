@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공지사항 - 클래빗</title>
+    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/communications.css">
+</head>
+<body>
+    <%- include('../components/sidebar-menu', { academyName, page, userName }) %>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>공지사항</h1>
+            <div class="page-actions">
+                <button id="createAnnouncementBtn" class="btn btn-primary">
+                    <span>+</span> 공지사항 작성
+                </button>
+            </div>
+        </div>
+
+        <!-- 필터 영역 -->
+        <div class="filter-section">
+            <div class="filter-group">
+                <select id="priorityFilter" class="form-control">
+                    <option value="">모든 우선순위</option>
+                    <option value="urgent">긴급</option>
+                    <option value="high">높음</option>
+                    <option value="normal">보통</option>
+                </select>
+
+                <select id="targetFilter" class="form-control">
+                    <option value="">모든 대상</option>
+                    <option value="all">전체</option>
+                    <option value="students">학생</option>
+                    <option value="teachers">선생님</option>
+                    <option value="parents">학부모</option>
+                </select>
+
+                <input type="text" id="searchInput" class="form-control" placeholder="제목 또는 내용 검색">
+                <button id="searchBtn" class="btn btn-secondary">검색</button>
+            </div>
+        </div>
+
+        <!-- 공지사항 목록 -->
+        <div id="announcementsList" class="announcements-list">
+            <!-- 공지사항 항목들이 동적으로 로드됩니다 -->
+        </div>
+
+        <!-- 페이지네이션 -->
+        <div id="pagination" class="pagination">
+            <!-- 페이지네이션이 동적으로 로드됩니다 -->
+        </div>
+    </div>
+
+    <!-- 공지사항 작성 모달 -->
+    <div id="announcementModal" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2 id="modalTitle">공지사항 작성</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="announcementForm">
+                    <input type="hidden" id="announcementId">
+
+                    <div class="form-group">
+                        <label for="title">제목 *</label>
+                        <input type="text" id="title" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="content">내용 *</label>
+                        <textarea id="content" class="form-control" rows="8" required></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="priority">우선순위</label>
+                            <select id="priority" class="form-control">
+                                <option value="normal">보통</option>
+                                <option value="high">높음</option>
+                                <option value="urgent">긴급</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="target_type">대상</label>
+                            <select id="target_type" class="form-control">
+                                <option value="all">전체</option>
+                                <option value="students">학생</option>
+                                <option value="teachers">선생님</option>
+                                <option value="parents">학부모</option>
+                                <option value="custom">맞춤 선택</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="is_pinned">
+                            상단 고정
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="attachments">첨부파일</label>
+                        <input type="file" id="attachments" class="form-control" multiple>
+                        <small class="form-text">최대 10MB, 여러 파일 선택 가능</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-close">취소</button>
+                <button type="button" id="saveAnnouncementBtn" class="btn btn-primary">발행</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 공지사항 상세 모달 -->
+    <div id="announcementDetailModal" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2 id="detailTitle"></h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="announcement-meta">
+                    <span class="author"></span>
+                    <span class="date"></span>
+                    <span class="views"></span>
+                    <span class="priority-badge"></span>
+                </div>
+                <div class="announcement-content" id="detailContent"></div>
+                <div id="detailAttachments" class="attachments-list"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-close">닫기</button>
+                <button type="button" id="editAnnouncementBtn" class="btn btn-primary">수정</button>
+                <button type="button" id="deleteAnnouncementBtn" class="btn btn-danger">삭제</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/common.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/communications/announcements.js"></script>
+</body>
+</html>

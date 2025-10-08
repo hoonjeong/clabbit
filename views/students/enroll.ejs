@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/form.css">
+</head>
+<body>
+    <%- include('../components/sidebar-menu', { academyName, page: 'students', userName: userName }) %>
+
+    <main class="students-main">
+        <div class="students-container" style="max-width: 800px; margin: 0 auto;">
+            <!-- 페이지 헤더 -->
+            <div class="page-header">
+                <h1 class="page-title">📚 수업 등록</h1>
+                <a href="/students/<%= studentId %>" class="btn btn-secondary">← 뒤로가기</a>
+            </div>
+
+            <!-- 학생 정보 요약 -->
+            <div class="info-card" id="studentInfoCard" style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 24px; display: none;">
+                <h3 style="margin: 0 0 12px 0; color: #333;">학생 정보</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div>
+                        <span style="color: #666; font-size: 14px;">이름</span>
+                        <p style="margin: 4px 0 0 0; font-weight: 600;" id="studentName">-</p>
+                    </div>
+                    <div>
+                        <span style="color: #666; font-size: 14px;">학년</span>
+                        <p style="margin: 4px 0 0 0; font-weight: 600;" id="studentGrade">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 수업 등록 폼 -->
+            <div class="form-container" style="background: white; padding: 32px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <form id="enrollForm">
+                    <!-- 수업 선택 -->
+                    <div class="form-group" style="margin-bottom: 24px;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">
+                            수업 선택 <span style="color: #e74c3c;">*</span>
+                        </label>
+                        <select
+                            id="classSelect"
+                            name="class_id"
+                            required
+                            style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px;"
+                        >
+                            <option value="">수업을 선택하세요</option>
+                        </select>
+                        <small style="color: #999; font-size: 12px; margin-top: 4px; display: block;">
+                            진행 중인 수업만 표시됩니다
+                        </small>
+                    </div>
+
+                    <!-- 시작일 -->
+                    <div class="form-group" style="margin-bottom: 24px;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">
+                            수강 시작일 <span style="color: #e74c3c;">*</span>
+                        </label>
+                        <input
+                            type="date"
+                            id="startDate"
+                            name="start_date"
+                            required
+                            style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px;"
+                        >
+                    </div>
+
+                    <!-- 첫 달 원비 -->
+                    <div class="form-group" style="margin-bottom: 24px;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">
+                            첫 달 원비 (원) <span style="color: #e74c3c;">*</span>
+                        </label>
+                        <input
+                            type="number"
+                            id="firstMonthFee"
+                            name="first_month_fee"
+                            required
+                            min="0"
+                            step="1000"
+                            placeholder="예: 200000"
+                            style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px;"
+                        >
+                        <small style="color: #999; font-size: 12px; margin-top: 4px; display: block;">
+                            수업료와 다른 경우 입력하세요
+                        </small>
+                    </div>
+
+                    <!-- 원비 수정 사유 -->
+                    <div class="form-group" style="margin-bottom: 24px;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">
+                            원비 수정 사유 (선택사항)
+                        </label>
+                        <input
+                            type="text"
+                            id="feeAdjustmentReason"
+                            name="fee_adjustment_reason"
+                            maxlength="500"
+                            placeholder="예: 장학금 적용, 형제 할인, 프로모션 등"
+                            style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px;"
+                        >
+                        <small style="color: #999; font-size: 12px; margin-top: 4px; display: block;">
+                            수업료와 다른 금액인 경우 사유를 입력해주세요
+                        </small>
+                    </div>
+
+                    <!-- 버튼 -->
+                    <div class="form-actions" style="margin-top: 32px; display: flex; gap: 12px; justify-content: center;">
+                        <a href="/students/<%= studentId %>" class="btn btn-secondary" style="padding: 12px 24px; text-decoration: none;">취소</a>
+                        <button type="submit" class="btn btn-primary" style="padding: 12px 24px;">등록하기</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const studentId = '<%= studentId %>';
+        const enrollForm = document.getElementById('enrollForm');
+        const classSelect = document.getElementById('classSelect');
+        const firstMonthFee = document.getElementById('firstMonthFee');
+        const startDate = document.getElementById('startDate');
+
+        // 오늘 날짜를 기본값으로 설정
+        startDate.valueAsDate = new Date();
+
+        // 학생 정보 로드
+        async function loadStudentInfo() {
+            try {
+                const response = await fetch(`/api/students/${studentId}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('studentName').textContent = result.student.name;
+                    document.getElementById('studentGrade').textContent = result.student.grade || '-';
+                    document.getElementById('studentInfoCard').style.display = 'block';
+                } else {
+                    alert('학생 정보를 불러오는데 실패했습니다.');
+                    window.location.href = '/students';
+                }
+            } catch (error) {
+                console.error('학생 정보 로드 오류:', error);
+                alert('학생 정보를 불러오는 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 수업 목록 로드 (active 상태만)
+        async function loadClasses() {
+            try {
+                const response = await fetch('/api/classes?status=active');
+                const result = await response.json();
+
+                if (result.success) {
+                    result.classes.forEach(classItem => {
+                        const option = document.createElement('option');
+                        option.value = classItem.id;
+                        option.textContent = `${classItem.class_name} (${classItem.teacher_name || '강사 미정'})`;
+                        option.dataset.tuition = classItem.tuition;
+                        classSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('수업 목록 로드 오류:', error);
+            }
+        }
+
+        // 수업 선택 시 수강료 자동 입력
+        classSelect.addEventListener('change', function() {
+            const selectedOption = classSelect.options[classSelect.selectedIndex];
+            if (selectedOption.value) {
+                const tuition = selectedOption.dataset.tuition;
+                firstMonthFee.value = tuition || '';
+            }
+        });
+
+        // 폼 제출
+        enrollForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(enrollForm);
+            const data = {
+                student_id: parseInt(studentId),
+                class_id: parseInt(formData.get('class_id')),
+                start_date: formData.get('start_date'),
+                first_month_fee: parseFloat(formData.get('first_month_fee')),
+                fee_adjustment_reason: formData.get('fee_adjustment_reason') || null
+            };
+
+            // 유효성 검사
+            if (!data.class_id || !data.start_date || !data.first_month_fee) {
+                alert('모든 필수 항목을 입력해주세요.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/enrollments', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('수업 등록이 완료되었습니다.');
+                    window.location.href = `/students/${studentId}`;
+                } else {
+                    alert(result.error || '수업 등록에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('수업 등록 오류:', error);
+                alert('수업 등록 중 오류가 발생했습니다.');
+            }
+        });
+
+        // 페이지 로드 시 실행
+        loadStudentInfo();
+        loadClasses();
+    </script>
+
+    <style>
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+    </style>
+</body>
+</html>

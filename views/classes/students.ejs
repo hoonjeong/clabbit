@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/students.css">
+</head>
+<body>
+    <%- include('../components/sidebar-menu', { academyName, page: 'classes', userName: userName }) %>
+
+    <main class="students-main">
+        <div class="students-container">
+            <!-- 페이지 헤더 -->
+            <div class="page-header">
+                <h1 class="page-title" id="pageTitle">📚 수강생 명단</h1>
+                <a href="/classes" class="btn btn-secondary">← 수업 관리로</a>
+            </div>
+
+            <!-- 수업 정보 카드 -->
+            <div class="info-card" id="classInfoCard" style="display: none; background: #e8f4fd; border-left: 4px solid #667eea; margin-bottom: 2rem;">
+                <h3 style="margin: 0 0 12px 0; color: #333;" id="className">수업명</h3>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                    <div>
+                        <span style="color: #666; font-size: 14px;">강사</span>
+                        <p style="margin: 4px 0 0 0; font-weight: 600;" id="teacherName">-</p>
+                    </div>
+                    <div>
+                        <span style="color: #666; font-size: 14px;">수강료</span>
+                        <p style="margin: 4px 0 0 0; font-weight: 600;" id="tuition">-</p>
+                    </div>
+                    <div>
+                        <span style="color: #666; font-size: 14px;">현재 수강 인원</span>
+                        <p style="margin: 4px 0 0 0; font-weight: 600; color: #667eea;" id="currentStudents">0명</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 필터 -->
+            <div class="search-filter-bar">
+                <div class="search-box">
+                    <select class="filter-select" id="statusFilter">
+                        <option value="">전체 상태</option>
+                        <option value="active" selected>수강중</option>
+                        <option value="completed">종강</option>
+                        <option value="withdrawn">퇴원</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 수강생 목록 -->
+            <div class="students-list">
+                <div class="list-header">
+                    <span class="total-count">총 <strong id="totalCount">0</strong>명</span>
+                </div>
+
+                <!-- 학생 테이블 -->
+                <table class="students-table">
+                    <thead>
+                        <tr>
+                            <th>학생 이름</th>
+                            <th>학년</th>
+                            <th>연락처</th>
+                            <th>수업 시작일</th>
+                            <th>상태</th>
+                            <th>액션</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTableBody">
+                        <!-- 동적으로 채워짐 -->
+                    </tbody>
+                </table>
+
+                <!-- 빈 상태 -->
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <div class="empty-icon">📚</div>
+                    <h3>수강생이 없습니다</h3>
+                    <p>아직 등록된 학생이 없습니다.</p>
+                </div>
+
+                <!-- 로딩 상태 -->
+                <div class="loading-state" id="loadingState">
+                    <div class="loading-spinner"></div>
+                    <p>수강생 목록을 불러오는 중...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const classId = '<%= classId %>';
+
+        // 수업 정보 로드
+        async function loadClassInfo() {
+            try {
+                const response = await fetch(`/api/classes/${classId}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    const classData = result.class;
+                    document.getElementById('className').textContent = classData.class_name;
+                    document.getElementById('teacherName').textContent = classData.teacher_name || '강사 미정';
+                    document.getElementById('tuition').textContent = classData.tuition ? `${classData.tuition.toLocaleString()}원` : '-';
+                    document.getElementById('currentStudents').textContent = `${classData.current_students || 0}명`;
+                    document.getElementById('classInfoCard').style.display = 'block';
+                    document.getElementById('pageTitle').textContent = `📚 ${classData.class_name} 수강생 명단`;
+                } else {
+                    alert('수업 정보를 불러오는데 실패했습니다.');
+                    window.location.href = '/classes';
+                }
+            } catch (error) {
+                console.error('수업 정보 로드 오류:', error);
+            }
+        }
+
+        // 수강생 목록 로드
+        async function loadStudents() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const params = new URLSearchParams();
+            if (statusFilter) {
+                params.append('status', statusFilter);
+            }
+
+            try {
+                const response = await fetch(`/api/classes/${classId}/students?${params}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    displayStudents(result.students);
+                } else {
+                    console.error('수강생 목록 로드 실패:', result.error);
+                }
+            } catch (error) {
+                console.error('수강생 목록 로드 오류:', error);
+            } finally {
+                document.getElementById('loadingState').style.display = 'none';
+            }
+        }
+
+        // 수강생 목록 표시
+        function displayStudents(students) {
+            const tableBody = document.getElementById('studentsTableBody');
+            const emptyState = document.getElementById('emptyState');
+            const totalCount = document.getElementById('totalCount');
+
+            totalCount.textContent = students.length;
+
+            if (students.length === 0) {
+                tableBody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+
+            tableBody.innerHTML = students.map(student => {
+                const startDate = student.start_date ? student.start_date.split('T')[0] : '-';
+
+                let statusText, statusColor, statusClass;
+                switch (student.status) {
+                    case 'active':
+                        statusText = '수강중';
+                        statusColor = '#28a745';
+                        statusClass = 'status-active';
+                        break;
+                    case 'completed':
+                        statusText = '종강';
+                        statusColor = '#6c757d';
+                        statusClass = 'status-completed';
+                        break;
+                    case 'withdrawn':
+                        statusText = '퇴원';
+                        statusColor = '#dc3545';
+                        statusClass = 'status-withdrawn';
+                        break;
+                    default:
+                        statusText = student.status;
+                        statusColor = '#999';
+                        statusClass = '';
+                }
+
+                const contactInfo = student.student_phone || student.parent_phone || '-';
+
+                return `
+                <tr>
+                    <td><a href="/students/${student.student_id}" style="color: #667eea; font-weight: 600; text-decoration: none;">${student.student_name}</a></td>
+                    <td>${student.grade || '-'}</td>
+                    <td>${contactInfo}</td>
+                    <td>${startDate}</td>
+                    <td><span class="status-badge ${statusClass}" style="background: ${statusColor}20; color: ${statusColor}; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.85rem; font-weight: 600;">${statusText}</span></td>
+                    <td>
+                        ${student.status === 'active' ? `<button class="btn-small btn-secondary" onclick="completeEnrollment(${student.enrollment_id}, '${student.student_name}')">종강</button>` : '-'}
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        // 종강 처리
+        async function completeEnrollment(enrollmentId, studentName) {
+            if (!confirm(`'${studentName}' 학생을 종강 처리하시겠습니까?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/enrollments/${enrollmentId}/complete`, {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('종강 처리가 완료되었습니다.');
+                    loadStudents();
+                    loadClassInfo(); // 수강 인원 수 갱신
+                } else {
+                    alert(result.error || '종강 처리에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('종강 처리 오류:', error);
+                alert('종강 처리 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 필터 이벤트 리스너
+        document.getElementById('statusFilter').addEventListener('change', loadStudents);
+
+        // 초기 로드
+        loadClassInfo();
+        loadStudents();
+    </script>
+
+    <style>
+        .status-badge {
+            display: inline-block;
+        }
+    </style>
+</body>
+</html>

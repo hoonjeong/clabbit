@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <style>
+        /* Body padding for fixed header */
+        body {
+            padding-top: 70px;
+        }
+
+        .makeup-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .makeup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 10px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-group label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .btn-search {
+            padding: 8px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            align-self: flex-end;
+        }
+
+        .btn-search:hover {
+            background: #0056b3;
+        }
+
+        .btn-add-makeup {
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .btn-add-makeup:hover {
+            background: #218838;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h4 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .makeup-table {
+            width: 100%;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .makeup-table thead {
+            background: #f8f9fa;
+        }
+
+        .makeup-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .makeup-table td {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .makeup-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-action {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .btn-complete {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-complete:hover {
+            background: #218838;
+        }
+
+        .btn-edit {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-edit:hover {
+            background: #e0a800;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+
+        /* 모달 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 500px;
+            max-width: 90%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .close {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+
+        .btn-submit {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-submit:hover {
+            background: #0056b3;
+        }
+
+        .btn-cancel {
+            padding: 10px 20px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            background: #545b62;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .student-search {
+            position: relative;
+        }
+
+        .student-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            z-index: 10;
+        }
+
+        .student-suggestions.active {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .suggestion-item:hover {
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../components/sidebar-menu', { academyName, page, userName }) %>
+
+    <div class="makeup-container">
+        <div class="makeup-header">
+            <h1 class="page-title">보강 수업 관리</h1>
+            <button class="btn-add-makeup" onclick="openAddModal()">+ 보강 수업 등록</button>
+        </div>
+
+        <!-- 통계 카드 -->
+        <div class="stats-cards">
+            <div class="stat-card">
+                <h4>예정된 보강</h4>
+                <div class="stat-value" id="pendingCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>완료된 보강</h4>
+                <div class="stat-value" id="completedCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>이번 주 보강</h4>
+                <div class="stat-value" id="weekCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>이번 달 보강</h4>
+                <div class="stat-value" id="monthCount">0</div>
+            </div>
+        </div>
+
+        <!-- 필터 영역 -->
+        <div class="filters">
+            <div class="filter-group">
+                <label>시작 날짜</label>
+                <input type="date" id="dateStart">
+            </div>
+            <div class="filter-group">
+                <label>종료 날짜</label>
+                <input type="date" id="dateEnd">
+            </div>
+            <div class="filter-group">
+                <label>상태</label>
+                <select id="statusFilter">
+                    <option value="">전체</option>
+                    <option value="pending">예정</option>
+                    <option value="completed">완료</option>
+                    <option value="cancelled">취소</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>학생 검색</label>
+                <input type="text" id="studentSearch" placeholder="이름으로 검색">
+            </div>
+            <button class="btn-search" onclick="loadMakeupClasses()">검색</button>
+        </div>
+
+        <!-- 보강 수업 테이블 -->
+        <table class="makeup-table">
+            <thead>
+                <tr>
+                    <th>학생명</th>
+                    <th>원래 수업일</th>
+                    <th>보강 예정일</th>
+                    <th>보강 시간</th>
+                    <th>사유</th>
+                    <th>상태</th>
+                    <th>작업</th>
+                </tr>
+            </thead>
+            <tbody id="makeupList">
+                <tr>
+                    <td colspan="7" class="loading">데이터를 불러오는 중...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 보강 수업 등록/수정 모달 -->
+    <div id="makeupModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">보강 수업 등록</h2>
+                <span class="close" onclick="closeMakeupModal()">&times;</span>
+            </div>
+            <form id="makeupForm">
+                <input type="hidden" id="makeupId">
+                <div class="form-group student-search">
+                    <label>학생 <span style="color: red;">*</span></label>
+                    <input type="text" id="studentName" placeholder="학생 이름 입력" required>
+                    <input type="hidden" id="studentId">
+                    <div class="student-suggestions" id="studentSuggestions"></div>
+                </div>
+                <div class="form-group">
+                    <label>원래 수업일</label>
+                    <input type="date" id="originalDate">
+                </div>
+                <div class="form-group">
+                    <label>보강 예정일 <span style="color: red;">*</span></label>
+                    <input type="date" id="scheduledDate" required>
+                </div>
+                <div class="form-group">
+                    <label>보강 시간</label>
+                    <input type="time" id="scheduledTime">
+                </div>
+                <div class="form-group">
+                    <label>보강 사유 <span style="color: red;">*</span></label>
+                    <select id="reason" required>
+                        <option value="">선택하세요</option>
+                        <option value="absence">결석</option>
+                        <option value="personal">개인사정</option>
+                        <option value="academy">학원사정</option>
+                        <option value="holiday">공휴일</option>
+                        <option value="other">기타</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>메모</label>
+                    <textarea id="notes" placeholder="추가 메모사항을 입력하세요"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeMakeupModal()">취소</button>
+                    <button type="submit" class="btn-submit">저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 보강 완료 처리 모달 -->
+    <div id="completeModal" class="modal">
+        <div class="modal-content" style="width: 400px;">
+            <div class="modal-header">
+                <h2 class="modal-title">보강 수업 완료</h2>
+                <span class="close" onclick="closeCompleteModal()">&times;</span>
+            </div>
+            <form id="completeForm">
+                <input type="hidden" id="completeMakeupId">
+                <div class="form-group">
+                    <label>출석 시간</label>
+                    <input type="time" id="attendanceTime" value="">
+                </div>
+                <div class="form-group">
+                    <p>이 보강 수업을 완료 처리하시겠습니까?</p>
+                    <p style="color: #666; font-size: 14px;">완료 처리 시 출결 기록이 생성됩니다.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeCompleteModal()">취소</button>
+                    <button type="submit" class="btn-submit">완료 처리</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let allMakeupClasses = [];
+        let allStudents = [];
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            // 오늘 날짜 설정
+            const today = new Date();
+            const nextMonth = new Date(today);
+            nextMonth.setMonth(nextMonth.getMonth() + 1);
+
+            document.getElementById('dateStart').value = formatDate(new Date(today.getFullYear(), today.getMonth(), 1));
+            document.getElementById('dateEnd').value = formatDate(new Date(nextMonth.getFullYear(), nextMonth.getMonth(), 0));
+
+            // 현재 시간 설정
+            const now = new Date();
+            const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            document.getElementById('attendanceTime').value = currentTime;
+
+            loadMakeupClasses();
+            loadStudents();
+        });
+
+        // 날짜 포맷 함수
+        function formatDate(date) {
+            if (!date) return '';
+            if (typeof date === 'string') {
+                date = new Date(date);
+            }
+            return date.toISOString().split('T')[0];
+        }
+
+        // 시간 포맷 함수
+        function formatTime(time) {
+            if (!time) return '-';
+            if (time.includes('T')) {
+                time = time.split('T')[1];
+            }
+            return time.substring(0, 5);
+        }
+
+        // 학생 목록 로드
+        async function loadStudents() {
+            try {
+                const response = await fetch('/api/students?status=active');
+                const data = await response.json();
+                if (data.success) {
+                    allStudents = data.data;
+                }
+            } catch (error) {
+                console.error('학생 목록 로드 오류:', error);
+            }
+        }
+
+        // 학생 검색 자동완성
+        document.getElementById('studentName').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const suggestions = document.getElementById('studentSuggestions');
+
+            if (searchTerm.length < 1) {
+                suggestions.classList.remove('active');
+                return;
+            }
+
+            const filtered = allStudents.filter(student =>
+                student.name.toLowerCase().includes(searchTerm)
+            );
+
+            if (filtered.length > 0) {
+                suggestions.innerHTML = filtered.map(student => `
+                    <div class="suggestion-item" onclick="selectStudent(${student.id}, '${student.name}')">
+                        ${student.name} (${student.phone || '전화번호 없음'})
+                    </div>
+                `).join('');
+                suggestions.classList.add('active');
+            } else {
+                suggestions.classList.remove('active');
+            }
+        });
+
+        // 학생 선택
+        function selectStudent(id, name) {
+            document.getElementById('studentId').value = id;
+            document.getElementById('studentName').value = name;
+            document.getElementById('studentSuggestions').classList.remove('active');
+        }
+
+        // 보강 수업 목록 로드
+        async function loadMakeupClasses() {
+            const dateStart = document.getElementById('dateStart').value;
+            const dateEnd = document.getElementById('dateEnd').value;
+            const status = document.getElementById('statusFilter').value;
+
+            try {
+                let url = '/api/attendance/makeup?';
+                if (dateStart && dateEnd) {
+                    url += `date_start=${dateStart}&date_end=${dateEnd}&`;
+                }
+                if (status) {
+                    url += `status=${status}&`;
+                }
+
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.success) {
+                    allMakeupClasses = data.data;
+                    displayMakeupClasses(data.data);
+                    updateStatistics(data.data);
+                }
+            } catch (error) {
+                console.error('보강 수업 로드 오류:', error);
+                document.getElementById('makeupList').innerHTML = `
+                    <tr><td colspan="7" class="no-data">데이터 로드 중 오류가 발생했습니다.</td></tr>
+                `;
+            }
+        }
+
+        // 보강 수업 목록 표시
+        function displayMakeupClasses(classes) {
+            const tbody = document.getElementById('makeupList');
+
+            if (classes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="no-data">보강 수업이 없습니다.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = classes.map(item => `
+                <tr>
+                    <td>${item.student_name}</td>
+                    <td>${item.original_date ? formatDate(item.original_date) : '-'}</td>
+                    <td>${formatDate(item.scheduled_date)}</td>
+                    <td>${formatTime(item.scheduled_time)}</td>
+                    <td>${getReasonText(item.reason)}</td>
+                    <td><span class="status-badge status-${item.status}">${getStatusText(item.status)}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            ${item.status === 'pending' ? `
+                                <button class="btn-action btn-complete" onclick="openCompleteModal(${item.id})">완료</button>
+                                <button class="btn-action btn-edit" onclick="editMakeup(${item.id})">수정</button>
+                                <button class="btn-action btn-delete" onclick="deleteMakeup(${item.id})">삭제</button>
+                            ` : ''}
+                            ${item.status === 'completed' ? '<span style="color: #28a745;">✓ 완료</span>' : ''}
+                            ${item.status === 'cancelled' ? '<span style="color: #dc3545;">✗ 취소</span>' : ''}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 통계 업데이트
+        function updateStatistics(classes) {
+            const today = new Date();
+            const weekStart = new Date(today);
+            weekStart.setDate(today.getDate() - today.getDay());
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekStart.getDate() + 6);
+
+            const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+            const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+            const stats = {
+                pending: 0,
+                completed: 0,
+                week: 0,
+                month: 0
+            };
+
+            classes.forEach(item => {
+                const date = new Date(item.scheduled_date);
+
+                if (item.status === 'pending') stats.pending++;
+                if (item.status === 'completed') stats.completed++;
+
+                if (date >= weekStart && date <= weekEnd) stats.week++;
+                if (date >= monthStart && date <= monthEnd) stats.month++;
+            });
+
+            document.getElementById('pendingCount').textContent = stats.pending;
+            document.getElementById('completedCount').textContent = stats.completed;
+            document.getElementById('weekCount').textContent = stats.week;
+            document.getElementById('monthCount').textContent = stats.month;
+        }
+
+        // 사유 텍스트 변환
+        function getReasonText(reason) {
+            const reasons = {
+                'absence': '결석',
+                'personal': '개인사정',
+                'academy': '학원사정',
+                'holiday': '공휴일',
+                'other': '기타'
+            };
+            return reasons[reason] || reason || '-';
+        }
+
+        // 상태 텍스트 변환
+        function getStatusText(status) {
+            const statuses = {
+                'pending': '예정',
+                'completed': '완료',
+                'cancelled': '취소'
+            };
+            return statuses[status] || status;
+        }
+
+        // 보강 수업 등록 모달 열기
+        function openAddModal() {
+            document.getElementById('modalTitle').textContent = '보강 수업 등록';
+            document.getElementById('makeupForm').reset();
+            document.getElementById('makeupId').value = '';
+            document.getElementById('makeupModal').style.display = 'block';
+        }
+
+        // 보강 수업 수정 모달 열기
+        function editMakeup(id) {
+            const makeup = allMakeupClasses.find(m => m.id === id);
+            if (!makeup) return;
+
+            document.getElementById('modalTitle').textContent = '보강 수업 수정';
+            document.getElementById('makeupId').value = makeup.id;
+            document.getElementById('studentId').value = makeup.student_id;
+            document.getElementById('studentName').value = makeup.student_name;
+            document.getElementById('originalDate').value = formatDate(makeup.original_date);
+            document.getElementById('scheduledDate').value = formatDate(makeup.scheduled_date);
+            document.getElementById('scheduledTime').value = formatTime(makeup.scheduled_time);
+            document.getElementById('reason').value = makeup.reason || '';
+            document.getElementById('notes').value = makeup.notes || '';
+
+            document.getElementById('makeupModal').style.display = 'block';
+        }
+
+        // 모달 닫기
+        function closeMakeupModal() {
+            document.getElementById('makeupModal').style.display = 'none';
+            document.getElementById('studentSuggestions').classList.remove('active');
+        }
+
+        // 보강 수업 저장
+        document.getElementById('makeupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const makeupId = document.getElementById('makeupId').value;
+            const studentId = document.getElementById('studentId').value;
+
+            if (!studentId) {
+                alert('학생을 선택해주세요.');
+                return;
+            }
+
+            const formData = {
+                student_id: studentId,
+                original_attendance_id: null,
+                scheduled_date: document.getElementById('scheduledDate').value,
+                scheduled_time: document.getElementById('scheduledTime').value || null,
+                reason: document.getElementById('reason').value,
+                notes: document.getElementById('notes').value
+            };
+
+            try {
+                const url = makeupId ? `/api/attendance/makeup/${makeupId}` : '/api/attendance/makeup';
+                const method = makeupId ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(makeupId ? '보강 수업이 수정되었습니다.' : '보강 수업이 등록되었습니다.');
+                    closeMakeupModal();
+                    loadMakeupClasses();
+                } else {
+                    alert(data.message || '저장 실패');
+                }
+            } catch (error) {
+                console.error('저장 오류:', error);
+                alert('저장 중 오류가 발생했습니다.');
+            }
+        });
+
+        // 보강 수업 삭제
+        async function deleteMakeup(id) {
+            if (!confirm('이 보강 수업을 삭제하시겠습니까?')) return;
+
+            try {
+                const response = await fetch(`/api/attendance/makeup/${id}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('보강 수업이 삭제되었습니다.');
+                    loadMakeupClasses();
+                } else {
+                    alert(data.message || '삭제 실패');
+                }
+            } catch (error) {
+                console.error('삭제 오류:', error);
+                alert('삭제 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 보강 완료 모달 열기
+        function openCompleteModal(id) {
+            document.getElementById('completeMakeupId').value = id;
+            document.getElementById('completeModal').style.display = 'block';
+        }
+
+        // 보강 완료 모달 닫기
+        function closeCompleteModal() {
+            document.getElementById('completeModal').style.display = 'none';
+        }
+
+        // 보강 수업 완료 처리
+        document.getElementById('completeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const id = document.getElementById('completeMakeupId').value;
+            const attendanceTime = document.getElementById('attendanceTime').value;
+
+            try {
+                const response = await fetch(`/api/attendance/makeup/${id}/complete`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        attendance_time: attendanceTime ? new Date().toISOString().split('T')[0] + ' ' + attendanceTime : null
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('보강 수업이 완료 처리되었습니다.');
+                    closeCompleteModal();
+                    loadMakeupClasses();
+                } else {
+                    alert(data.message || '완료 처리 실패');
+                }
+            } catch (error) {
+                console.error('완료 처리 오류:', error);
+                alert('완료 처리 중 오류가 발생했습니다.');
+            }
+        });
+
+        // 모달 외부 클릭 시 닫기
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                event.target.style.display = 'none';
+                document.getElementById('studentSuggestions').classList.remove('active');
+            }
+        }
+
+        // 학생 검색 필터
+        document.getElementById('studentSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+
+            if (searchTerm) {
+                const filtered = allMakeupClasses.filter(item =>
+                    item.student_name.toLowerCase().includes(searchTerm)
+                );
+                displayMakeupClasses(filtered);
+            } else {
+                displayMakeupClasses(allMakeupClasses);
+            }
+        });
+    </script>
+</body>
+</html>

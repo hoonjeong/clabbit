@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/students.css">
+</head>
+<body>
+    <%- include('../components/sidebar-menu', { academyName, page: 'classes', userName: userName }) %>
+
+    <main class="students-main">
+        <div class="students-container">
+            <!-- 페이지 헤더 -->
+            <div class="page-header">
+                <h1 class="page-title" id="pageTitle">📚 수업에 학생 등록</h1>
+                <a href="/classes/<%= classId %>" class="btn btn-secondary">← 뒤로가기</a>
+            </div>
+
+            <!-- 수업 정보 카드 -->
+            <div class="info-card" id="classInfoCard" style="display: none; background: #e8f4fd; border-left: 4px solid #667eea;">
+                <h3 style="margin: 0 0 12px 0; color: #333;">수업 정보</h3>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                    <div>
+                        <span style="color: #666; font-size: 14px;">수업명</span>
+                        <p style="margin: 4px 0 0 0; font-weight: 600;" id="className">-</p>
+                    </div>
+                    <div>
+                        <span style="color: #666; font-size: 14px;">강사</span>
+                        <p style="margin: 4px 0 0 0; font-weight: 600;" id="teacherName">-</p>
+                    </div>
+                    <div>
+                        <span style="color: #666; font-size: 14px;">수강료</span>
+                        <p style="margin: 4px 0 0 0; font-weight: 600;" id="tuition">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 선택된 학생 표시 -->
+            <div class="form-section" id="selectedSection" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 style="margin: 0;">✨ 선택된 학생 (<span id="selectedCount">0</span>명)</h3>
+                    <button class="btn btn-outline" onclick="clearAllSelections()" style="padding: 0.5rem 1rem; font-size: 0.9rem;">전체 해제</button>
+                </div>
+                <div id="selectedTags" style="display: flex; flex-wrap: wrap; gap: 0.5rem; min-height: 40px;">
+                    <!-- 선택된 학생 태그가 여기 표시됨 -->
+                </div>
+            </div>
+
+            <!-- 검색 및 필터 -->
+            <div class="search-filter-bar">
+                <div class="search-box">
+                    <input type="text" class="search-input" id="searchInput" placeholder="🔍 이름으로 검색...">
+                    <select class="filter-select" id="gradeFilter">
+                        <option value="">전체 학년</option>
+                        <option value="초등 1학년">초등 1학년</option>
+                        <option value="초등 2학년">초등 2학년</option>
+                        <option value="초등 3학년">초등 3학년</option>
+                        <option value="초등 4학년">초등 4학년</option>
+                        <option value="초등 5학년">초등 5학년</option>
+                        <option value="초등 6학년">초등 6학년</option>
+                        <option value="중학교 1학년">중학교 1학년</option>
+                        <option value="중학교 2학년">중학교 2학년</option>
+                        <option value="중학교 3학년">중학교 3학년</option>
+                        <option value="고등학교 1학년">고등학교 1학년</option>
+                        <option value="고등학교 2학년">고등학교 2학년</option>
+                        <option value="고등학교 3학년">고등학교 3학년</option>
+                        <option value="재수생">재수생</option>
+                        <option value="기타">기타</option>
+                    </select>
+                    <select class="filter-select" id="statusFilter">
+                        <option value="available">등록 가능</option>
+                        <option value="all">전체</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 학생 목록 -->
+            <div class="students-list">
+                <div class="list-header">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" id="selectAllCheckbox" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span style="font-weight: 600;">전체선택</span>
+                    </label>
+                    <span class="total-count">총 <strong id="totalCount">0</strong>명</span>
+                </div>
+
+                <!-- 학생 테이블 -->
+                <table class="students-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">선택</th>
+                            <th>이름</th>
+                            <th>학교</th>
+                            <th>학년</th>
+                            <th>학생 번호</th>
+                            <th>학부모 번호</th>
+                            <th>상태</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTableBody">
+                        <!-- 동적으로 채워짐 -->
+                    </tbody>
+                </table>
+
+                <!-- 빈 상태 -->
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <div class="empty-icon">📚</div>
+                    <h3>등록 가능한 학생이 없습니다</h3>
+                    <p>모든 학생이 이미 이 수업에 등록되어 있거나, 등록된 학생이 없습니다.</p>
+                </div>
+
+                <!-- 로딩 상태 -->
+                <div class="loading-state" id="loadingState">
+                    <div class="loading-spinner"></div>
+                    <p>학생 목록을 불러오는 중...</p>
+                </div>
+            </div>
+
+            <!-- 등록 폼 -->
+            <div class="form-section" id="enrollForm" style="display: none;">
+                <h3 style="margin-bottom: 1.5rem;">등록 정보</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label required">수강 시작일</label>
+                        <input type="date" id="startDate" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required">첫 달 원비 (원)</label>
+                        <input type="number" id="firstMonthFee" class="form-input" min="0" step="1000" placeholder="예: 200000" required>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label class="form-label">원비 수정 사유 (선택사항)</label>
+                    <input type="text" id="feeAdjustmentReason" class="form-input" maxlength="500" placeholder="예: 장학금 적용, 형제 할인, 프로모션 등">
+                    <small style="color: #999; font-size: 12px; margin-top: 4px; display: block;">
+                        모든 선택된 학생에게 동일하게 적용됩니다.
+                    </small>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="submitBulkEnrollment()" style="padding: 1rem 2rem; font-size: 1.1rem;">
+                        선택한 <span id="submitCount">0</span>명 일괄 등록
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const classId = '<%= classId %>';
+        let allStudents = [];
+        let filteredStudents = [];
+        let selectedStudents = new Set();
+        let classData = null;
+
+        // 수업 정보 로드
+        async function loadClassInfo() {
+            try {
+                const response = await fetch(`/api/classes/${classId}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    classData = result.class;
+                    document.getElementById('className').textContent = classData.class_name;
+                    document.getElementById('teacherName').textContent = classData.teacher_name || '강사 미정';
+                    document.getElementById('tuition').textContent = classData.tuition ? `${classData.tuition.toLocaleString()}원` : '-';
+                    document.getElementById('classInfoCard').style.display = 'block';
+                    document.getElementById('pageTitle').textContent = `📚 ${classData.class_name} - 학생 등록`;
+
+                    // 첫 달 원비 기본값 설정
+                    if (classData.tuition) {
+                        document.getElementById('firstMonthFee').value = classData.tuition;
+                    }
+                } else {
+                    alert('수업 정보를 불러오는데 실패했습니다.');
+                    window.location.href = '/classes';
+                }
+            } catch (error) {
+                console.error('수업 정보 로드 오류:', error);
+                alert('수업 정보를 불러오는 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 학생 목록 로드
+        async function loadStudents() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const endpoint = statusFilter === 'available'
+                ? `/api/classes/${classId}/available-students`
+                : `/api/students?status=active`;
+
+            try {
+                const response = await fetch(endpoint);
+                const result = await response.json();
+
+                if (result.success) {
+                    allStudents = result.students || [];
+                    applyFilters();
+                } else {
+                    console.error('학생 목록 로드 실패:', result.error);
+                }
+            } catch (error) {
+                console.error('학생 목록 로드 오류:', error);
+            } finally {
+                document.getElementById('loadingState').style.display = 'none';
+            }
+        }
+
+        // 필터 적용
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const gradeFilter = document.getElementById('gradeFilter').value;
+
+            filteredStudents = allStudents.filter(student => {
+                const matchSearch = !searchTerm || student.name.toLowerCase().includes(searchTerm);
+                const matchGrade = !gradeFilter || student.grade === gradeFilter;
+                return matchSearch && matchGrade;
+            });
+
+            displayStudents();
+        }
+
+        // 학생 목록 표시
+        function displayStudents() {
+            const tableBody = document.getElementById('studentsTableBody');
+            const emptyState = document.getElementById('emptyState');
+            const totalCount = document.getElementById('totalCount');
+
+            totalCount.textContent = filteredStudents.length;
+
+            if (filteredStudents.length === 0) {
+                tableBody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+
+            tableBody.innerHTML = filteredStudents.map(student => {
+                const isSelected = selectedStudents.has(student.id);
+                const isDisabled = student.status === 'withdrawn' || student.already_enrolled;
+                const statusText = student.status === 'withdrawn' ? '퇴원' :
+                                  student.already_enrolled ? '이미 등록됨' : '등록 가능';
+                const statusColor = student.status === 'withdrawn' ? '#999' :
+                                   student.already_enrolled ? '#f39c12' : '#28a745';
+
+                return `
+                <tr style="${isDisabled ? 'opacity: 0.5;' : ''}">
+                    <td style="text-align: center;">
+                        <input type="checkbox"
+                               class="student-checkbox"
+                               data-student-id="${student.id}"
+                               ${isSelected ? 'checked' : ''}
+                               ${isDisabled ? 'disabled' : ''}
+                               onchange="toggleStudent(${student.id}, '${student.name}')"
+                               style="width: 18px; height: 18px; cursor: ${isDisabled ? 'not-allowed' : 'pointer'};">
+                    </td>
+                    <td><strong>${student.name}</strong></td>
+                    <td>${student.school || '-'}</td>
+                    <td>${student.grade || '-'}</td>
+                    <td>${student.student_phone || '-'}</td>
+                    <td>${student.parent_phone}</td>
+                    <td><span style="color: ${statusColor}; font-weight: 600;">${statusText}</span></td>
+                </tr>
+                `;
+            }).join('');
+
+            updateSelectAllCheckbox();
+        }
+
+        // 학생 선택/해제
+        function toggleStudent(studentId, studentName) {
+            if (selectedStudents.has(studentId)) {
+                selectedStudents.delete(studentId);
+            } else {
+                selectedStudents.add(studentId);
+            }
+            updateSelectedTags();
+            updateSelectAllCheckbox();
+        }
+
+        // 선택된 학생 태그 업데이트
+        function updateSelectedTags() {
+            const tagsContainer = document.getElementById('selectedTags');
+            const selectedSection = document.getElementById('selectedSection');
+            const enrollForm = document.getElementById('enrollForm');
+            const count = selectedStudents.size;
+
+            document.getElementById('selectedCount').textContent = count;
+            document.getElementById('submitCount').textContent = count;
+
+            if (count === 0) {
+                selectedSection.style.display = 'none';
+                enrollForm.style.display = 'none';
+                tagsContainer.innerHTML = '<p style="color: #999; margin: 0;">선택된 학생이 없습니다</p>';
+                return;
+            }
+
+            selectedSection.style.display = 'block';
+            enrollForm.style.display = 'block';
+
+            const selectedStudentData = allStudents.filter(s => selectedStudents.has(s.id));
+            tagsContainer.innerHTML = selectedStudentData.map(student => `
+                <span style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: #667eea; color: white; border-radius: 20px; font-size: 0.9rem;">
+                    ${student.name}
+                    <button onclick="toggleStudent(${student.id}, '${student.name}')" style="background: none; border: none; color: white; cursor: pointer; font-size: 1.2rem; line-height: 1; padding: 0;">×</button>
+                </span>
+            `).join('');
+        }
+
+        // 전체 선택/해제
+        function updateSelectAllCheckbox() {
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            const availableStudents = filteredStudents.filter(s => s.status === 'active' && !s.already_enrolled);
+            const selectedAvailable = availableStudents.filter(s => selectedStudents.has(s.id));
+
+            if (availableStudents.length === 0) {
+                selectAllCheckbox.checked = false;
+                selectAllCheckbox.indeterminate = false;
+            } else if (selectedAvailable.length === availableStudents.length) {
+                selectAllCheckbox.checked = true;
+                selectAllCheckbox.indeterminate = false;
+            } else if (selectedAvailable.length > 0) {
+                selectAllCheckbox.checked = false;
+                selectAllCheckbox.indeterminate = true;
+            } else {
+                selectAllCheckbox.checked = false;
+                selectAllCheckbox.indeterminate = false;
+            }
+        }
+
+        document.getElementById('selectAllCheckbox').addEventListener('change', function() {
+            const availableStudents = filteredStudents.filter(s => s.status === 'active' && !s.already_enrolled);
+
+            if (this.checked) {
+                availableStudents.forEach(s => selectedStudents.add(s.id));
+            } else {
+                availableStudents.forEach(s => selectedStudents.delete(s.id));
+            }
+
+            displayStudents();
+            updateSelectedTags();
+        });
+
+        // 전체 해제
+        function clearAllSelections() {
+            selectedStudents.clear();
+            displayStudents();
+            updateSelectedTags();
+        }
+
+        // 일괄 등록 제출
+        async function submitBulkEnrollment() {
+            const startDate = document.getElementById('startDate').value;
+            const firstMonthFee = document.getElementById('firstMonthFee').value;
+            const feeAdjustmentReason = document.getElementById('feeAdjustmentReason').value;
+
+            if (!startDate || !firstMonthFee) {
+                alert('시작일과 첫 달 원비를 입력해주세요.');
+                return;
+            }
+
+            if (selectedStudents.size === 0) {
+                alert('최소 1명 이상의 학생을 선택해주세요.');
+                return;
+            }
+
+            if (!confirm(`선택한 ${selectedStudents.size}명의 학생을 이 수업에 등록하시겠습니까?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/enrollments/bulk', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        student_ids: Array.from(selectedStudents),
+                        class_id: parseInt(classId),
+                        start_date: startDate,
+                        first_month_fee: parseFloat(firstMonthFee),
+                        fee_adjustment_reason: feeAdjustmentReason || null
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(`${result.count}명의 학생이 성공적으로 등록되었습니다.`);
+                    window.location.href = `/classes/${classId}/students`;
+                } else {
+                    alert(result.error || '일괄 등록에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('일괄 등록 오류:', error);
+                alert('일괄 등록 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 필터 이벤트 리스너
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('gradeFilter').addEventListener('change', applyFilters);
+        document.getElementById('statusFilter').addEventListener('change', function() {
+            document.getElementById('loadingState').style.display = 'block';
+            selectedStudents.clear();
+            updateSelectedTags();
+            loadStudents();
+        });
+
+        // 시작일 기본값 설정 (오늘)
+        document.getElementById('startDate').valueAsDate = new Date();
+
+        // 초기 로드
+        loadClassInfo();
+        loadStudents();
+    </script>
+</body>
+</html>

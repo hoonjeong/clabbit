@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <style>
+        .attendance-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* 필터 섹션 */
+        .filter-section {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .filter-group {
+            flex: 1;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .filter-group select,
+        .filter-group input[type="date"] {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .filter-group select:focus,
+        .filter-group input[type="date"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* 통계 카드 */
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .stat-card .label {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .stat-card .value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .stat-card.present .value { color: #28a745; }
+        .stat-card.absent .value { color: #dc3545; }
+        .stat-card.late .value { color: #ffc107; }
+        .stat-card.early .value { color: #ff9800; }
+        .stat-card.sick .value { color: #6c757d; }
+        .stat-card.official .value { color: #17a2b8; }
+
+        /* 학생 목록 */
+        .students-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .btn-save {
+            padding: 10px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-save:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .students-list {
+            padding: 24px;
+        }
+
+        .student-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border: 1px solid #f0f0f0;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            transition: all 0.3s;
+        }
+
+        .student-item:hover {
+            background: #f8f9fa;
+        }
+
+        .student-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .profile-image {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .profile-image img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .student-info {
+            flex: 1;
+        }
+
+        .student-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .student-grade {
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* 출석 버튼 그룹 */
+        .attendance-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-status {
+            padding: 8px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            color: #666;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 70px;
+        }
+
+        .btn-status:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .btn-status.active {
+            color: white;
+            border-color: transparent;
+        }
+
+        .btn-status.present.active {
+            background: #28a745;
+        }
+
+        .btn-status.absent.active {
+            background: #dc3545;
+        }
+
+        .btn-status.late.active {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-status.early.active {
+            background: #ff9800;
+        }
+
+        .btn-status.sick.active {
+            background: #6c757d;
+        }
+
+        .btn-status.official.active {
+            background: #17a2b8;
+        }
+
+        /* 빈 상태 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../components/sidebar-menu', { academyName, page, userName }) %>
+
+    <div class="attendance-container">
+        <div class="page-header">
+            <h1>📋 일일 출석 체크</h1>
+            <p>오늘 날짜 기준으로 수업별 학생들의 출석을 체크하세요</p>
+        </div>
+
+        <!-- 필터 섹션 -->
+        <div class="filter-section">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="attendanceDate">날짜</label>
+                    <input type="date" id="attendanceDate" />
+                </div>
+                <div class="filter-group" style="flex: 2;">
+                    <label for="classSelect">수업 선택</label>
+                    <select id="classSelect">
+                        <option value="">수업을 선택하세요</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 통계 섹션 -->
+        <div class="stats-section" id="statsSection" style="display: none;">
+            <div class="stat-card present">
+                <div class="label">출석</div>
+                <div class="value" id="presentCount">0</div>
+            </div>
+            <div class="stat-card absent">
+                <div class="label">결석</div>
+                <div class="value" id="absentCount">0</div>
+            </div>
+            <div class="stat-card late">
+                <div class="label">지각</div>
+                <div class="value" id="lateCount">0</div>
+            </div>
+            <div class="stat-card early">
+                <div class="label">조퇴</div>
+                <div class="value" id="earlyCount">0</div>
+            </div>
+            <div class="stat-card sick">
+                <div class="label">병결</div>
+                <div class="value" id="sickCount">0</div>
+            </div>
+            <div class="stat-card official">
+                <div class="label">공결</div>
+                <div class="value" id="officialCount">0</div>
+            </div>
+        </div>
+
+        <!-- 학생 목록 -->
+        <div class="students-section">
+            <div class="section-header">
+                <h2>학생 목록</h2>
+                <button class="btn-save" id="btnSave" style="display: none;">저장</button>
+            </div>
+            <div class="students-list" id="studentsList">
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <p>날짜와 수업을 선택하면<br>학생 목록이 표시됩니다</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStudents = [];
+        let attendanceChanges = new Map();
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            // 오늘 날짜로 초기화
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('attendanceDate').value = today;
+
+            // 수업 목록 로드
+            await loadClasses();
+
+            // 이벤트 리스너
+            document.getElementById('attendanceDate').addEventListener('change', async function() {
+                await loadClasses(); // 날짜 변경 시 수업 목록 다시 로드
+                showEmptyState(); // 학생 목록 초기화
+            });
+            document.getElementById('classSelect').addEventListener('change', loadStudents);
+            document.getElementById('btnSave').addEventListener('click', saveAttendance);
+        });
+
+        // 수업 목록 로드
+        async function loadClasses() {
+            try {
+                const date = document.getElementById('attendanceDate').value;
+                const url = date ? `/api/attendance/classes?date=${date}` : '/api/attendance/classes';
+
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.success && data.classes) {
+                    const select = document.getElementById('classSelect');
+                    const currentValue = select.value; // 현재 선택값 저장
+                    select.innerHTML = '<option value="">수업을 선택하세요</option>';
+
+                    if (data.classes.length === 0) {
+                        const option = document.createElement('option');
+                        option.value = '';
+                        option.textContent = '해당 요일에 진행되는 수업이 없습니다';
+                        option.disabled = true;
+                        select.appendChild(option);
+                    } else {
+                        data.classes.forEach(cls => {
+                            const option = document.createElement('option');
+                            option.value = cls.id;
+                            option.textContent = `${cls.class_name} (${cls.teacher_name || '강사 미지정'}) - 학생 ${cls.student_count}명`;
+                            select.appendChild(option);
+                        });
+
+                        // 이전 선택값이 여전히 목록에 있으면 복원
+                        if (currentValue && Array.from(select.options).some(opt => opt.value === currentValue)) {
+                            select.value = currentValue;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('수업 목록 로드 오류:', error);
+                alert('수업 목록을 불러오는 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 학생 목록 및 출석 현황 로드
+        async function loadStudents() {
+            const classId = document.getElementById('classSelect').value;
+            const date = document.getElementById('attendanceDate').value;
+
+            if (!classId || !date) {
+                showEmptyState();
+                return;
+            }
+
+            showLoadingState();
+
+            try {
+                const response = await fetch(`/api/attendance/students?class_id=${classId}&date=${date}`);
+                const data = await response.json();
+
+                if (data.success && data.students) {
+                    currentStudents = data.students;
+                    attendanceChanges.clear();
+                    displayStudents(data.students);
+                    updateStats(data.stats);
+                    document.getElementById('statsSection').style.display = 'grid';
+                    document.getElementById('btnSave').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('학생 목록 로드 오류:', error);
+                alert('학생 목록을 불러오는 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 학생 목록 표시
+        function displayStudents(students) {
+            const container = document.getElementById('studentsList');
+
+            if (students.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p>이 수업에 등록된 학생이 없습니다</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = students.map(student => `
+                <div class="student-item" data-student-id="${student.student_id}">
+                    <div class="student-profile">
+                        <div class="profile-image">
+                            ${student.student_name.charAt(0)}
+                        </div>
+                        <div class="student-info">
+                            <div class="student-name">${student.student_name}</div>
+                            <div class="student-grade">${student.grade || '-'}</div>
+                        </div>
+                    </div>
+                    <div class="attendance-buttons">
+                        <button class="btn-status present ${student.status === '출석' ? 'active' : ''}"
+                                onclick="setAttendanceStatus(${student.student_id}, '출석')">출석</button>
+                        <button class="btn-status absent ${student.status === '결석' ? 'active' : ''}"
+                                onclick="setAttendanceStatus(${student.student_id}, '결석')">결석</button>
+                        <button class="btn-status late ${student.status === '지각' ? 'active' : ''}"
+                                onclick="setAttendanceStatus(${student.student_id}, '지각')">지각</button>
+                        <button class="btn-status early ${student.status === '조퇴' ? 'active' : ''}"
+                                onclick="setAttendanceStatus(${student.student_id}, '조퇴')">조퇴</button>
+                        <button class="btn-status sick ${student.status === '병결' ? 'active' : ''}"
+                                onclick="setAttendanceStatus(${student.student_id}, '병결')">병결</button>
+                        <button class="btn-status official ${student.status === '공결' ? 'active' : ''}"
+                                onclick="setAttendanceStatus(${student.student_id}, '공결')">공결</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 출석 상태 설정
+        function setAttendanceStatus(studentId, status) {
+            const studentItem = document.querySelector(`[data-student-id="${studentId}"]`);
+            const buttons = studentItem.querySelectorAll('.btn-status');
+
+            // 모든 버튼 비활성화
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            // 선택된 버튼 활성화
+            const selectedBtn = Array.from(buttons).find(btn => btn.textContent.trim() === status);
+            if (selectedBtn) {
+                selectedBtn.classList.add('active');
+            }
+
+            // 변경 사항 기록
+            const classId = parseInt(document.getElementById('classSelect').value);
+            const date = document.getElementById('attendanceDate').value;
+
+            attendanceChanges.set(studentId, {
+                student_id: studentId,
+                class_id: classId,
+                attendance_date: date,
+                status: status
+            });
+
+            // 통계 업데이트
+            updateStatsFromChanges();
+        }
+
+        // 변경사항 기반 통계 업데이트
+        function updateStatsFromChanges() {
+            const stats = {
+                present_count: 0,
+                absent_count: 0,
+                late_count: 0,
+                early_leave_count: 0,
+                sick_count: 0,
+                official_count: 0
+            };
+
+            currentStudents.forEach(student => {
+                const change = attendanceChanges.get(student.student_id);
+                const status = change ? change.status : student.status;
+
+                if (status === '출석') stats.present_count++;
+                else if (status === '결석') stats.absent_count++;
+                else if (status === '지각') stats.late_count++;
+                else if (status === '조퇴') stats.early_leave_count++;
+                else if (status === '병결') stats.sick_count++;
+                else if (status === '공결') stats.official_count++;
+            });
+
+            updateStats(stats);
+        }
+
+        // 통계 업데이트
+        function updateStats(stats) {
+            document.getElementById('presentCount').textContent = stats.present_count || 0;
+            document.getElementById('absentCount').textContent = stats.absent_count || 0;
+            document.getElementById('lateCount').textContent = stats.late_count || 0;
+            document.getElementById('earlyCount').textContent = stats.early_leave_count || 0;
+            document.getElementById('sickCount').textContent = stats.sick_count || 0;
+            document.getElementById('officialCount').textContent = stats.official_count || 0;
+        }
+
+        // 출석 저장
+        async function saveAttendance() {
+            if (attendanceChanges.size === 0) {
+                alert('변경된 출석 정보가 없습니다.');
+                return;
+            }
+
+            const confirmMsg = `${attendanceChanges.size}명의 출석 정보를 저장하시겠습니까?`;
+            if (!confirm(confirmMsg)) {
+                return;
+            }
+
+            const btnSave = document.getElementById('btnSave');
+            btnSave.disabled = true;
+            btnSave.textContent = '저장 중...';
+
+            try {
+                const attendanceRecords = Array.from(attendanceChanges.values());
+
+                const response = await fetch('/api/attendance/bulk-save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ attendanceRecords })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(result.message || '출석이 저장되었습니다.');
+                    attendanceChanges.clear();
+                    await loadStudents(); // 새로고침
+                } else {
+                    alert(result.error || '출석 저장 중 오류가 발생했습니다.');
+                }
+            } catch (error) {
+                console.error('출석 저장 오류:', error);
+                alert('출석 저장 중 오류가 발생했습니다.');
+            } finally {
+                btnSave.disabled = false;
+                btnSave.textContent = '저장';
+            }
+        }
+
+        // 빈 상태 표시
+        function showEmptyState() {
+            document.getElementById('studentsList').innerHTML = `
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <p>날짜와 수업을 선택하면<br>학생 목록이 표시됩니다</p>
+                </div>
+            `;
+            document.getElementById('statsSection').style.display = 'none';
+            document.getElementById('btnSave').style.display = 'none';
+        }
+
+        // 로딩 상태 표시
+        function showLoadingState() {
+            document.getElementById('studentsList').innerHTML = `
+                <div class="loading-state">
+                    <p>학생 목록을 불러오는 중...</p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,440 @@
+<!-- 대시보드 네비게이션 -->
+<header class="dashboard-header">
+    <nav class="dashboard-nav">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <a href="/dashboard" class="academy-name-display" style="font-weight: 600; font-size: 18px; color: #333; text-decoration: none; cursor: pointer;"><%= academyName %></a>
+                    <a href="/academies/select" class="btn-switch-academy" title="학원 전환" style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; text-decoration: none; transition: transform 0.3s ease, box-shadow 0.3s ease; box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <polyline points="1 20 1 14 7 14"></polyline>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                        </svg>
+                    </a>
+                </div>
+                <div class="main-menu">
+                    <div class="menu-dropdown">
+                        <a href="#" class="menu-item <%= page === 'students' ? 'active' : '' %>" id="studentMenu" aria-haspopup="true" aria-expanded="false">학생 ▼</a>
+                        <div class="dropdown-content">
+                            <a href="/students" class="dropdown-item">학생 현황</a>
+                            <a href="/students/new" class="dropdown-item">신규 추가</a>
+                            <a href="/students/bulk" class="dropdown-item">엑셀로 추가</a>
+                            <a href="/students/withdrawn" class="dropdown-item">퇴원생 관리</a>
+                        </div>
+                    </div>
+                    <div class="menu-dropdown">
+                        <a href="#" class="menu-item <%= page === 'classes' ? 'active' : '' %>" id="classMenu" aria-haspopup="true" aria-expanded="false">수업 ▼</a>
+                        <div class="dropdown-content">
+                            <a href="/classes" class="dropdown-item">수업관리</a>
+                            <a href="/classes/new" class="dropdown-item">수업추가</a>
+                            <a href="/teachers" class="dropdown-item">강사관리</a>
+                        </div>
+                    </div>
+                    <div class="menu-dropdown">
+                        <a href="#" class="menu-item <%= page === 'payments' ? 'active' : '' %>" id="paymentMenu" aria-haspopup="true" aria-expanded="false">수납 ▼</a>
+                        <div class="dropdown-content">
+                            <a href="/payments/tuition" class="dropdown-item">원비 수납</a>
+                            <a href="#" class="dropdown-item" onclick="alert('🚧 준비중입니다. 곧 업데이트 예정입니다.'); return false;">수납 통계</a>
+                            <a href="#" class="dropdown-item" onclick="alert('🚧 준비중입니다. 곧 업데이트 예정입니다.'); return false;">미납 확인</a>
+                            <a href="/payments/generate" class="dropdown-item">원비 생성</a>
+                        </div>
+                    </div>
+                    <div class="menu-dropdown">
+                        <a href="#" class="menu-item <%= page === 'attendance' ? 'active' : '' %>" id="attendanceMenu" aria-haspopup="true" aria-expanded="false">출결 ▼</a>
+                        <div class="dropdown-content">
+                            <a href="/attendance/dashboard" class="dropdown-item">출결 대시보드</a>
+                            <a href="/attendance/records" class="dropdown-item">출결 현황</a>
+                            <a href="/attendance/sessions" class="dropdown-item">횟수제 관리</a>
+                            <a href="/attendance/makeup" class="dropdown-item">보강 수업</a>
+                            <a href="/attendance/statistics" class="dropdown-item">출결 통계</a>
+                            <a href="/attendance/kiosk" class="dropdown-item" target="_blank">키오스크 모드</a>
+                        </div>
+                    </div>
+                    <div class="menu-dropdown">
+                        <a href="#" class="menu-item <%= page === 'billing' ? 'active' : '' %>" id="billingMenu" aria-haspopup="true" aria-expanded="false">청구/수납 ▼</a>
+                        <div class="dropdown-content">
+                            <a href="/billing/dashboard" class="dropdown-item">청구/수납 대시보드</a>
+                            <a href="/billing/charges" class="dropdown-item">청구 관리</a>
+                            <a href="/billing/payments" class="dropdown-item">수납 관리</a>
+                            <a href="/billing/unpaid" class="dropdown-item">미납자 관리</a>
+                            <a href="/billing/items" class="dropdown-item">청구 항목 설정</a>
+                            <a href="/billing/statistics" class="dropdown-item">청구/수납 통계</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-right">
+                <!-- 학생 검색 -->
+                <div class="student-search-container" style="position: relative; margin-right: 24px;">
+                    <div class="search-input-group" style="display: flex; align-items: center; background: #f8f9fa; border-radius: 20px; padding: 6px 16px; transition: all 0.3s;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <input
+                            type="text"
+                            id="studentSearchInput"
+                            placeholder="학생 검색..."
+                            style="border: none; background: transparent; outline: none; width: 200px; font-size: 14px; color: #333;"
+                        >
+                    </div>
+                    <!-- 검색 결과 드롭다운 -->
+                    <div id="searchResultsDropdown" class="search-results-dropdown" style="display: none; position: absolute; top: 45px; right: 0; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); min-width: 320px; max-height: 400px; overflow-y: auto; z-index: 1001;">
+                        <!-- 검색 결과가 여기에 동적으로 추가됩니다 -->
+                    </div>
+                </div>
+
+                <!-- 사용자 메뉴 드롭다운 -->
+                <div class="user-menu-dropdown" style="position: relative;">
+                    <button class="user-menu-btn" id="userMenuBtn" style="display: flex; align-items: center; gap: 6px; padding: 8px 16px; background: transparent; border: 1px solid #e0e0e0; border-radius: 20px; cursor: pointer; font-size: 14px; color: #333; transition: all 0.3s;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <span><%= userName || '사용자' %>님</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="user-dropdown-content" id="userDropdownContent" style="display: none; position: absolute; top: 45px; right: 0; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); min-width: 160px; z-index: 1001; overflow: hidden;">
+                        <a href="/profile" class="user-dropdown-item" style="display: block; padding: 12px 20px; color: #333; text-decoration: none; transition: background 0.2s;">내정보</a>
+                        <button type="button" id="logoutBtn" class="user-dropdown-item" style="display: block; width: 100%; padding: 12px 20px; color: #333; text-decoration: none; transition: background 0.2s; border-top: 1px solid #f0f0f0; background: none; border: none; border-top: 1px solid #f0f0f0; text-align: left; cursor: pointer;">로그아웃</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<style>
+/* 검색창 포커스 효과 */
+.search-input-group:focus-within {
+    background: white;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 검색 결과 아이템 */
+.search-result-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item:hover {
+    background: #f8f9fa;
+}
+
+.search-result-name {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.search-result-info {
+    font-size: 13px;
+    color: #666;
+}
+
+.search-no-results {
+    padding: 20px;
+    text-align: center;
+    color: #999;
+}
+
+/* 사용자 메뉴 호버 효과 */
+.user-menu-btn:hover {
+    background: #f8f9fa;
+    border-color: #667eea;
+}
+
+.user-dropdown-item:hover {
+    background: #f8f9fa;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('studentSearchInput');
+    const searchDropdown = document.getElementById('searchResultsDropdown');
+    const userMenuBtn = document.getElementById('userMenuBtn');
+    const userDropdownContent = document.getElementById('userDropdownContent');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    let searchTimeout;
+
+    // 학생 검색
+    if (searchInput) {
+        // 검색 실행 함수
+        async function performSearch() {
+            const query = searchInput.value.trim();
+
+            if (query === '') {
+                searchDropdown.style.display = 'none';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/students/search?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+
+                if (data.success && data.data.students) {
+                    displaySearchResults(data.data.students);
+                }
+            } catch (error) {
+                console.error('검색 오류:', error);
+            }
+        }
+
+        // 입력 이벤트 (실시간 검색)
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const query = this.value.trim();
+
+            if (query === '') {
+                searchDropdown.style.display = 'none';
+                return;
+            }
+
+            // Debounce: 300ms 후 검색
+            searchTimeout = setTimeout(performSearch, 300);
+        });
+
+        // 엔터키 이벤트 (즉시 검색)
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                clearTimeout(searchTimeout);
+                performSearch();
+            }
+        });
+
+        // 검색창 외부 클릭 시 드롭다운 닫기
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
+                searchDropdown.style.display = 'none';
+            }
+        });
+    }
+
+    // 검색 결과 표시
+    function displaySearchResults(students) {
+        if (students.length === 0) {
+            searchDropdown.innerHTML = '<div class="search-no-results">검색 결과가 없습니다</div>';
+        } else {
+            searchDropdown.innerHTML = students.map(student => {
+                // 전화번호 포맷팅
+                const formatPhone = (phone) => {
+                    if (!phone) return '';
+                    const cleaned = phone.replace(/\D/g, '');
+                    if (cleaned.length === 11) {
+                        return cleaned.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+                    } else if (cleaned.length === 10) {
+                        return cleaned.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+                    }
+                    return phone;
+                };
+
+                return `
+                    <div class="search-result-item" onclick="window.location.href='/students/${student.id}'">
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <div>
+                                <div class="search-result-name">${student.name}</div>
+                                <div class="search-result-info">
+                                    ${student.student_phone ? '학생: ' + formatPhone(student.student_phone) + '<br>' : ''}
+                                    ${student.parent_phone ? '부모: ' + formatPhone(student.parent_phone) : ''}
+                                    ${student.school ? ' · ' + student.school : ''}
+                                    ${student.grade ? ' · ' + student.grade : ''}
+                                </div>
+                            </div>
+                            <span style="background: ${student.status === 'active' ? '#28a745' : '#6c757d'}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px;">
+                                ${student.status === 'active' ? '재원' : '퇴원'}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        searchDropdown.style.display = 'block';
+    }
+
+    // 사용자 메뉴 토글
+    if (userMenuBtn) {
+        userMenuBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const isVisible = userDropdownContent.style.display === 'block';
+            userDropdownContent.style.display = isVisible ? 'none' : 'block';
+        });
+
+        // 외부 클릭 시 닫기
+        document.addEventListener('click', function(e) {
+            if (!userMenuBtn.contains(e.target) && !userDropdownContent.contains(e.target)) {
+                userDropdownContent.style.display = 'none';
+            }
+        });
+    }
+
+    // 로그아웃
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async function(e) {
+            e.preventDefault();
+
+            if (confirm('로그아웃 하시겠습니까?')) {
+                try {
+                    const response = await fetch('/api/auth/logout', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        window.location.href = '/login';
+                    } else {
+                        alert('로그아웃 중 오류가 발생했습니다.');
+                    }
+                } catch (error) {
+                    console.error('로그아웃 오류:', error);
+                    alert('로그아웃 중 오류가 발생했습니다.');
+                }
+            }
+        });
+    }
+
+    // 학생 메뉴 드롭다운
+    const studentMenu = document.getElementById('studentMenu');
+    if (studentMenu) {
+        studentMenu.addEventListener('click', function(e) {
+            e.preventDefault();
+            const dropdownContent = this.nextElementSibling;
+            const isExpanded = this.getAttribute('aria-expanded') === 'true';
+
+            this.setAttribute('aria-expanded', !isExpanded);
+            dropdownContent.style.display = isExpanded ? 'none' : 'block';
+        });
+
+        // 드롭다운 외부 클릭 시 닫기
+        document.addEventListener('click', function(e) {
+            if (!studentMenu.contains(e.target)) {
+                const dropdownContent = studentMenu.nextElementSibling;
+                if (dropdownContent) {
+                    dropdownContent.style.display = 'none';
+                    studentMenu.setAttribute('aria-expanded', 'false');
+                }
+            }
+        });
+    }
+
+    // 수업 메뉴 드롭다운
+    const classMenu = document.getElementById('classMenu');
+    if (classMenu) {
+        classMenu.addEventListener('click', function(e) {
+            e.preventDefault();
+            const dropdownContent = this.nextElementSibling;
+            const isExpanded = this.getAttribute('aria-expanded') === 'true';
+
+            this.setAttribute('aria-expanded', !isExpanded);
+            dropdownContent.style.display = isExpanded ? 'none' : 'block';
+        });
+
+        // 드롭다운 외부 클릭 시 닫기
+        document.addEventListener('click', function(e) {
+            if (!classMenu.contains(e.target)) {
+                const dropdownContent = classMenu.nextElementSibling;
+                if (dropdownContent) {
+                    dropdownContent.style.display = 'none';
+                    classMenu.setAttribute('aria-expanded', 'false');
+                }
+            }
+        });
+    }
+
+    // 수납 메뉴 드롭다운
+    const paymentMenu = document.getElementById('paymentMenu');
+    if (paymentMenu) {
+        paymentMenu.addEventListener('click', function(e) {
+            e.preventDefault();
+            const dropdownContent = this.nextElementSibling;
+            const isExpanded = this.getAttribute('aria-expanded') === 'true';
+
+            this.setAttribute('aria-expanded', !isExpanded);
+            dropdownContent.style.display = isExpanded ? 'none' : 'block';
+        });
+
+        // 드롭다운 외부 클릭 시 닫기
+        document.addEventListener('click', function(e) {
+            if (!paymentMenu.contains(e.target)) {
+                const dropdownContent = paymentMenu.nextElementSibling;
+                if (dropdownContent) {
+                    dropdownContent.style.display = 'none';
+                    paymentMenu.setAttribute('aria-expanded', 'false');
+                }
+            }
+        });
+    }
+
+    // 출석 메뉴 드롭다운
+    const attendanceMenu = document.getElementById('attendanceMenu');
+    if (attendanceMenu) {
+        attendanceMenu.addEventListener('click', function(e) {
+            e.preventDefault();
+            const dropdownContent = this.nextElementSibling;
+            const isExpanded = this.getAttribute('aria-expanded') === 'true';
+
+            this.setAttribute('aria-expanded', !isExpanded);
+            dropdownContent.style.display = isExpanded ? 'none' : 'block';
+        });
+
+        // 드롭다운 외부 클릭 시 닫기
+        document.addEventListener('click', function(e) {
+            if (!attendanceMenu.contains(e.target)) {
+                const dropdownContent = attendanceMenu.nextElementSibling;
+                if (dropdownContent) {
+                    dropdownContent.style.display = 'none';
+                    attendanceMenu.setAttribute('aria-expanded', 'false');
+                }
+            }
+        });
+    }
+
+    // 청구/수납 메뉴 드롭다운
+    const billingMenu = document.getElementById('billingMenu');
+    if (billingMenu) {
+        billingMenu.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const dropdownContent = this.nextElementSibling;
+            const isExpanded = this.getAttribute('aria-expanded') === 'true';
+
+            // 다른 드롭다운 닫기
+            document.querySelectorAll('.menu-dropdown .dropdown-content').forEach(d => {
+                if (d !== dropdownContent) d.style.display = 'none';
+            });
+            document.querySelectorAll('.menu-item').forEach(m => {
+                if (m !== this) m.setAttribute('aria-expanded', 'false');
+            });
+
+            // 현재 드롭다운 토글
+            this.setAttribute('aria-expanded', !isExpanded);
+            dropdownContent.style.display = isExpanded ? 'none' : 'block';
+        });
+
+        // 드롭다운 외부 클릭 시 닫기
+        document.addEventListener('click', function(e) {
+            if (!billingMenu.contains(e.target)) {
+                const dropdownContent = billingMenu.nextElementSibling;
+                if (dropdownContent) {
+                    dropdownContent.style.display = 'none';
+                    billingMenu.setAttribute('aria-expanded', 'false');
+                }
+            }
+        });
+    }
+});
+</script>

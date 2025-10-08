@@ -1,0 +1,61 @@
+# 의존성
+node_modules/
+package-lock.json
+
+# 환경변수
+.env
+.env.local
+.env.*.local
+
+# 업로드 파일 (실제 파일은 제외, 폴더 구조만 유지)
+uploads/*
+!uploads/.gitkeep
+
+# 로그
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+server.log
+
+# 백업 파일
+*.backup
+*.bak
+*~
+
+# OS 관련
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 테스트 커버리지
+coverage/
+.nyc_output/
+
+# 빌드 결과물
+dist/
+build/
+
+# 임시 파일
+tmp/
+temp/
+*.tmp
+nul
+
+# Claude 관련
+.claude/
+
+# 데이터베이스 덤프
+*.sql.backup
+*.sql.gz
+
+# OCR 학습 데이터 (프로젝트에 필요한 경우 제외 가능)
+# *.traineddata

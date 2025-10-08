@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <style>
+        .billing-dashboard {
+            padding: 20px;
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stat-card.primary { background: linear-gradient(135deg, #e8f5e9, #f3f4f6); }
+        .stat-card.warning { background: linear-gradient(135deg, #fff3e0, #f3f4f6); }
+        .stat-card.danger { background: linear-gradient(135deg, #ffebee, #f3f4f6); }
+        .stat-card.success { background: linear-gradient(135deg, #e3f2fd, #f3f4f6); }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .stat-detail {
+            font-size: 0.85rem;
+            color: #999;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .action-btn {
+            padding: 15px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .action-btn i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .recent-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .view-all-link {
+            color: #4CAF50;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .recent-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .recent-item {
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .recent-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-student {
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+
+        .item-date {
+            font-size: 0.85rem;
+            color: #999;
+        }
+
+        .item-amount {
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .unpaid-item .item-amount {
+            color: #f44336;
+        }
+
+        .status-badge {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin-left: 10px;
+        }
+
+        .status-paid { background: #e8f5e9; color: #2e7d32; }
+        .status-unpaid { background: #ffebee; color: #c62828; }
+        .status-partial { background: #fff3e0; color: #f57c00; }
+    </style>
+</head>
+<body>
+    <%- include('../components/sidebar-menu', { academyName, userName, page }) %>
+
+    <div class="billing-dashboard">
+        <h1>청구/수납 관리</h1>
+
+        <!-- 통계 카드 -->
+        <div class="dashboard-stats">
+            <div class="stat-card primary">
+                <div class="stat-label">이번 달 청구액</div>
+                <div class="stat-value" id="monthlyChargeAmount">0</div>
+                <div class="stat-detail">청구 건수: <span id="monthlyChargeCount">0</span>건</div>
+            </div>
+
+            <div class="stat-card success">
+                <div class="stat-label">이번 달 수납액</div>
+                <div class="stat-value" id="monthlyPaymentAmount">0</div>
+                <div class="stat-detail">수납율: <span id="paymentRate">0</span>%</div>
+            </div>
+
+            <div class="stat-card warning">
+                <div class="stat-label">미납 금액</div>
+                <div class="stat-value" id="unpaidAmount">0</div>
+                <div class="stat-detail">미납자: <span id="unpaidCount">0</span>명</div>
+            </div>
+
+            <div class="stat-card danger">
+                <div class="stat-label">연체 금액</div>
+                <div class="stat-value" id="overdueAmount">0</div>
+                <div class="stat-detail">연체자: <span id="overdueCount">0</span>명</div>
+            </div>
+        </div>
+
+        <!-- 빠른 작업 버튼 -->
+        <div class="quick-actions">
+            <a href="/billing/charges" class="action-btn">
+                <i>📝</i>
+                <div>청구 생성</div>
+            </a>
+            <a href="/billing/payments" class="action-btn">
+                <i>💰</i>
+                <div>수납 등록</div>
+            </a>
+            <a href="/billing/unpaid" class="action-btn">
+                <i>⚠️</i>
+                <div>미납자 관리</div>
+            </a>
+            <a href="/billing/items" class="action-btn">
+                <i>⚙️</i>
+                <div>청구 항목 설정</div>
+            </a>
+            <a href="/billing/statistics" class="action-btn">
+                <i>📊</i>
+                <div>통계 보기</div>
+            </a>
+        </div>
+
+        <!-- 최근 수납 내역 -->
+        <div class="recent-section">
+            <div class="section-header">
+                <div class="section-title">최근 수납 내역</div>
+                <a href="/billing/payments" class="view-all-link">전체보기 →</a>
+            </div>
+            <div class="recent-list" id="recentPayments">
+                <!-- 동적으로 로드됨 -->
+            </div>
+        </div>
+
+        <!-- 미납자 현황 -->
+        <div class="recent-section">
+            <div class="section-header">
+                <div class="section-title">미납자 현황</div>
+                <a href="/billing/unpaid" class="view-all-link">전체보기 →</a>
+            </div>
+            <div class="recent-list" id="unpaidStudents">
+                <!-- 동적으로 로드됨 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 대시보드 데이터 로드
+        async function loadDashboardData() {
+            try {
+                // 청구 통계
+                const chargeStatsRes = await fetch('/api/billing/statistics/charges');
+                const chargeStats = await chargeStatsRes.json();
+
+                if (chargeStats.success && chargeStats.data) {
+                    const data = chargeStats.data;
+                    document.getElementById('monthlyChargeAmount').textContent =
+                        formatCurrency(data.total_final_amount || 0);
+                    document.getElementById('monthlyChargeCount').textContent =
+                        data.total_charges || 0;
+                    document.getElementById('unpaidAmount').textContent =
+                        formatCurrency(data.total_remaining || 0);
+                    document.getElementById('unpaidCount').textContent =
+                        data.pending_count || 0;
+                    document.getElementById('overdueAmount').textContent =
+                        formatCurrency(data.total_remaining || 0);
+                    document.getElementById('overdueCount').textContent =
+                        data.overdue_count || 0;
+                }
+
+                // 수납 통계
+                const paymentStatsRes = await fetch('/api/billing/statistics/payments');
+                const paymentStats = await paymentStatsRes.json();
+
+                if (paymentStats.success && paymentStats.data) {
+                    const data = paymentStats.data;
+                    document.getElementById('monthlyPaymentAmount').textContent =
+                        formatCurrency(data.total_amount || 0);
+
+                    // 수납율 계산
+                    if (chargeStats.data && chargeStats.data.total_final_amount > 0) {
+                        const rate = (data.total_amount / chargeStats.data.total_final_amount * 100).toFixed(1);
+                        document.getElementById('paymentRate').textContent = rate;
+                    }
+                }
+
+                // 최근 수납 내역
+                const today = new Date().toISOString().split('T')[0];
+                const paymentsRes = await fetch(`/api/payments/daily/${today}`);
+                const payments = await paymentsRes.json();
+
+                if (payments.success && payments.data) {
+                    displayRecentPayments(payments.data.slice(0, 5));
+                }
+
+                // 미납자 현황
+                const unpaidRes = await fetch('/api/billing/unpaid-students');
+                const unpaid = await unpaidRes.json();
+
+                if (unpaid.success && unpaid.data) {
+                    displayUnpaidStudents(unpaid.data.slice(0, 5));
+                }
+
+            } catch (error) {
+                console.error('대시보드 데이터 로드 실패:', error);
+            }
+        }
+
+        // 최근 수납 내역 표시
+        function displayRecentPayments(payments) {
+            const container = document.getElementById('recentPayments');
+
+            if (payments.length === 0) {
+                container.innerHTML = '<div class="recent-item">오늘 수납 내역이 없습니다.</div>';
+                return;
+            }
+
+            container.innerHTML = payments.map(payment => `
+                <div class="recent-item">
+                    <div class="item-info">
+                        <div class="item-student">${payment.student_name}</div>
+                        <div class="item-date">${formatTime(payment.payment_date)}</div>
+                    </div>
+                    <div class="item-amount">${formatCurrency(payment.amount)}</div>
+                </div>
+            `).join('');
+        }
+
+        // 미납자 현황 표시
+        function displayUnpaidStudents(students) {
+            const container = document.getElementById('unpaidStudents');
+
+            if (students.length === 0) {
+                container.innerHTML = '<div class="recent-item">미납자가 없습니다.</div>';
+                return;
+            }
+
+            container.innerHTML = students.map(student => `
+                <div class="recent-item unpaid-item">
+                    <div class="item-info">
+                        <div class="item-student">
+                            ${student.student_name}
+                            ${student.earliest_due_date && new Date(student.earliest_due_date) < new Date()
+                                ? '<span class="status-badge status-unpaid">연체</span>'
+                                : ''}
+                        </div>
+                        <div class="item-date">${student.unpaid_count}건</div>
+                    </div>
+                    <div class="item-amount">${formatCurrency(student.total_unpaid)}</div>
+                </div>
+            `).join('');
+        }
+
+        // 금액 포맷
+        function formatCurrency(amount) {
+            return '₩' + Number(amount).toLocaleString('ko-KR');
+        }
+
+        // 시간 포맷
+        function formatTime(dateString) {
+            const date = new Date(dateString);
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
+
+        // 페이지 로드 시 데이터 로드
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDashboardData();
+
+            // 5분마다 자동 새로고침
+            setInterval(loadDashboardData, 5 * 60 * 1000);
+        });
+    </script>
+</body>
+</html>

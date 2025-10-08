@@ -1,0 +1,996 @@
+<!-- 모바일 오버레이 -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- 모바일 햄버거 메뉴 -->
+<button class="mobile-menu-btn" id="mobileMenuBtn" title="메뉴 열기">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 12h18M3 6h18M3 18h18"/>
+    </svg>
+</button>
+
+<!-- 사이드바 메뉴 컴포넌트 -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <a href="/dashboard" class="sidebar-brand">
+            <img src="/image/logo.ico" alt="클래빗" class="sidebar-logo logo-expanded">
+            <span class="sidebar-title">CLABBIT</span>
+            <!-- 축소 모드 로고 -->
+            <div class="logo-collapsed">
+                <span class="logo-initial">C</span>
+            </div>
+        </a>
+        <button class="sidebar-toggle-btn" id="sidebarToggle" title="사이드바 토글">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/>
+            </svg>
+        </button>
+    </div>
+
+    <nav class="sidebar-nav">
+        <!-- 학원 정보 -->
+        <div class="sidebar-academy">
+            <div class="academy-info">
+                <span class="academy-name"><%= academyName || '학원 선택' %></span>
+                <!-- 축소 모드용 학원 첫 글자 -->
+                <div class="academy-initial">
+                    <span><%= academyName ? academyName.charAt(0) : '학' %></span>
+                </div>
+                <a href="/academies/select" class="academy-switch" title="학원 전환">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                        <path d="M23 10l-4.64-4.36A9 9 0 0 0 3.51 9"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- 메인 메뉴 -->
+        <ul class="sidebar-menu">
+            <!-- 대시보드 -->
+            <li class="menu-item <%= page === 'dashboard' ? 'active' : '' %>">
+                <a href="/dashboard" class="menu-link" data-tooltip="대시보드">
+                    <svg class="menu-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"/>
+                        <rect x="14" y="3" width="7" height="7"/>
+                        <rect x="14" y="14" width="7" height="7"/>
+                        <rect x="3" y="14" width="7" height="7"/>
+                    </svg>
+                    <span class="menu-text">대시보드</span>
+                </a>
+            </li>
+
+            <!-- 학생 관리 -->
+            <li class="menu-item has-submenu <%= page === 'students' ? 'active' : '' %>">
+                <a href="#" class="menu-link" data-toggle="submenu" data-tooltip="학생 관리">
+                    <svg class="menu-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    <span class="menu-text">학생 관리</span>
+                    <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                </a>
+                <ul class="submenu">
+                    <li><a href="/students" class="submenu-link">학생 목록</a></li>
+                    <li><a href="/students/new" class="submenu-link">학생 등록</a></li>
+                    <li><a href="/students/bulk" class="submenu-link">엑셀 일괄등록</a></li>
+                    <li><a href="/students/withdrawn" class="submenu-link">퇴원생 관리</a></li>
+                </ul>
+            </li>
+
+            <!-- 수업 관리 -->
+            <li class="menu-item has-submenu <%= page === 'classes' ? 'active' : '' %>">
+                <a href="#" class="menu-link" data-toggle="submenu" data-tooltip="수업 관리">
+                    <svg class="menu-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                    </svg>
+                    <span class="menu-text">수업 관리</span>
+                    <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                </a>
+                <ul class="submenu">
+                    <li><a href="/classes" class="submenu-link">수업 목록</a></li>
+                    <li><a href="/classes/new" class="submenu-link">수업 추가</a></li>
+                    <li><a href="/teachers" class="submenu-link">강사 관리</a></li>
+                    <li class="submenu-divider"></li>
+                    <li><a href="/classes/schedules" class="submenu-link">수업 일정</a></li>
+                    <li><a href="/classes/materials" class="submenu-link">학습 자료</a></li>
+                    <li><a href="/classes/assignments" class="submenu-link">과제 관리</a></li>
+                </ul>
+            </li>
+
+            <!-- 출결 관리 -->
+            <li class="menu-item has-submenu <%= page === 'attendance' ? 'active' : '' %>">
+                <a href="#" class="menu-link" data-toggle="submenu" data-tooltip="출결 관리">
+                    <svg class="menu-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3L22 4"/>
+                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                    </svg>
+                    <span class="menu-text">출결 관리</span>
+                    <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                </a>
+                <ul class="submenu">
+                    <li><a href="/attendance/dashboard" class="submenu-link">출결 대시보드</a></li>
+                    <li><a href="/attendance/records" class="submenu-link">출결 현황</a></li>
+                    <li><a href="/attendance/sessions" class="submenu-link">횟수제 관리</a></li>
+                    <li><a href="/attendance/makeup" class="submenu-link">보강 수업</a></li>
+                    <li><a href="/attendance/statistics" class="submenu-link">출결 통계</a></li>
+                    <li class="submenu-divider"></li>
+                    <li><a href="/attendance/kiosk" class="submenu-link" target="_blank">키오스크 모드</a></li>
+                </ul>
+            </li>
+
+            <!-- 청구/수납 -->
+            <li class="menu-item has-submenu <%= page === 'billing' ? 'active' : '' %>">
+                <a href="#" class="menu-link" data-toggle="submenu" data-tooltip="청구/수납">
+                    <svg class="menu-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                        <line x1="1" y1="10" x2="23" y2="10"/>
+                    </svg>
+                    <span class="menu-text">청구/수납</span>
+                    <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                </a>
+                <ul class="submenu">
+                    <li><a href="/billing/dashboard" class="submenu-link">청구/수납 대시보드</a></li>
+                    <li><a href="/billing/charges" class="submenu-link">청구 관리</a></li>
+                    <li><a href="/billing/payments" class="submenu-link">수납 관리</a></li>
+                    <li><a href="/billing/unpaid" class="submenu-link">미납자 관리</a></li>
+                    <li class="submenu-divider"></li>
+                    <li><a href="/billing/items" class="submenu-link">청구 항목 설정</a></li>
+                    <li><a href="/billing/statistics" class="submenu-link">청구/수납 통계</a></li>
+                </ul>
+            </li>
+
+            <!-- 학습 관리 (성적/상담/AI) -->
+            <li class="menu-item has-submenu <%= (page === 'performance' || page === 'consultation' || page === 'ai') ? 'active' : '' %>">
+                <a href="#" class="menu-link" data-toggle="submenu" data-tooltip="학습 관리">
+                    <svg class="menu-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                    </svg>
+                    <span class="menu-text">학습 관리</span>
+                    <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                </a>
+                <ul class="submenu">
+                    <li><a href="/performance/exams" class="submenu-link">성적 관리</a></li>
+                    <li><a href="/consultation/records" class="submenu-link">상담 관리</a></li>
+                    <li><a href="/ai/analysis" class="submenu-link">AI 학습 분석</a></li>
+                </ul>
+            </li>
+
+            <!-- 소통 관리 -->
+            <li class="menu-item has-submenu <%= page === 'communications' ? 'active' : '' %>">
+                <a href="#" class="menu-link" data-toggle="submenu" data-tooltip="소통 관리">
+                    <svg class="menu-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                    </svg>
+                    <span class="menu-text">소통 관리</span>
+                    <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                </a>
+                <ul class="submenu">
+                    <li><a href="/communications/announcements" class="submenu-link">공지사항</a></li>
+                    <li><a href="/communications/messages" class="submenu-link">메시지</a></li>
+                    <li><a href="/communications/notifications" class="submenu-link">알림 설정</a></li>
+                </ul>
+            </li>
+
+            <!-- 보고서 -->
+            <li class="menu-item <%= page === 'reports' ? 'active' : '' %>">
+                <a href="/reports" class="menu-link" data-tooltip="보고서">
+                    <svg class="menu-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                        <polyline points="10 9 9 9 8 9"/>
+                    </svg>
+                    <span class="menu-text">보고서</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- 사용자 정보 -->
+    <div class="sidebar-footer">
+        <div class="user-info">
+            <div class="user-avatar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+            </div>
+            <div class="user-details">
+                <span class="user-name"><%= userName || '사용자' %></span>
+                <a href="/profile" class="user-link">내 정보</a>
+            </div>
+            <button class="logout-btn" id="sidebarLogoutBtn" title="로그아웃">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+</aside>
+
+<style>
+/* =====================================================
+   모바일 오버레이
+   ===================================================== */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+/* =====================================================
+   모바일 햄버거 메뉴 버튼
+   ===================================================== */
+.mobile-menu-btn {
+    display: none;
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 1001;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+    color: #374151;
+}
+
+.mobile-menu-btn:hover {
+    background: #f9fafb;
+    transform: scale(1.05);
+}
+
+.mobile-menu-btn:active {
+    transform: scale(0.95);
+}
+
+@media (max-width: 768px) {
+    .mobile-menu-btn {
+        display: flex;
+    }
+}
+
+/* =====================================================
+   사이드바 기본 스타일
+   ===================================================== */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 260px;
+    height: 100vh;
+    background: white;
+    border-right: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    transition: width 0.3s ease, transform 0.3s ease;
+}
+
+/* 데스크톱 축소 상태 */
+.sidebar.collapsed {
+    width: 70px;
+}
+
+/* 텍스트 숨김 (축소 시) */
+.sidebar.collapsed .sidebar-title,
+.sidebar.collapsed .menu-text,
+.sidebar.collapsed .menu-arrow,
+.sidebar.collapsed .academy-name,
+.sidebar.collapsed .academy-switch,
+.sidebar.collapsed .user-details,
+.sidebar.collapsed .logo-expanded {
+    display: none;
+    opacity: 0;
+    visibility: hidden;
+    width: 0;
+}
+
+/* 축소 모드 전용 요소 표시 */
+.logo-collapsed,
+.academy-initial {
+    display: none;
+}
+
+.sidebar.collapsed .logo-collapsed,
+.sidebar.collapsed .academy-initial {
+    display: flex;
+}
+
+.sidebar.collapsed .sidebar-brand {
+    justify-content: center;
+}
+
+.sidebar.collapsed .academy-info {
+    justify-content: center;
+    padding: 8px;
+}
+
+.sidebar.collapsed .user-info {
+    justify-content: center;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sidebar.collapsed .sidebar-footer {
+    padding: 10px 8px;
+}
+
+.sidebar.collapsed .user-avatar {
+    width: 32px;
+    height: 32px;
+}
+
+.sidebar.collapsed .logout-btn {
+    padding: 6px;
+}
+
+.sidebar.collapsed .submenu {
+    display: none !important;
+}
+
+/* 헤더 */
+.sidebar-header {
+    padding: 16px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 64px;
+    flex-shrink: 0;
+}
+
+.sidebar.collapsed .sidebar-header {
+    padding: 12px 8px;
+    min-height: 60px;
+    justify-content: center;
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.sidebar-brand:hover {
+    opacity: 0.8;
+}
+
+.sidebar-logo {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+}
+
+.sidebar-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+    white-space: nowrap;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* 축소 모드 로고 */
+.logo-collapsed {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border-radius: 10px;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.logo-initial {
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+}
+
+/* 토글 버튼 (데스크톱) */
+.sidebar-toggle-btn {
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.sidebar-toggle-btn:hover {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.sidebar.collapsed .sidebar-toggle-btn svg {
+    transform: rotate(180deg);
+}
+
+.sidebar-academy {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.sidebar.collapsed .sidebar-academy {
+    padding: 10px 8px;
+}
+
+.academy-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #f3f4f6;
+    border-radius: 8px;
+}
+
+.academy-name {
+    font-weight: 600;
+    color: #374151;
+    font-size: 14px;
+}
+
+.academy-switch {
+    color: #6b7280;
+    transition: color 0.2s;
+}
+
+.academy-switch:hover {
+    color: #3b82f6;
+}
+
+/* 축소 모드 학원명 */
+.academy-initial {
+    width: 36px;
+    height: 36px;
+    background: #eff6ff;
+    border-radius: 8px;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.academy-initial span {
+    font-size: 16px;
+    font-weight: 700;
+    color: #3b82f6;
+}
+
+.sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 8px 0;
+}
+
+/* 축소 시 스크롤바 숨김 */
+.sidebar.collapsed .sidebar-nav::-webkit-scrollbar {
+    display: none;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-item {
+    margin: 1px 12px;
+}
+
+.menu-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    color: #6b7280;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.2s;
+    font-size: 14px;
+    font-weight: 500;
+    position: relative;
+}
+
+/* 축소 모드 메뉴 */
+.sidebar.collapsed .menu-item {
+    margin: 1px 8px;
+}
+
+.sidebar.collapsed .menu-link {
+    justify-content: center;
+    padding: 10px 0;
+    gap: 0;
+}
+
+.menu-link:hover {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.menu-item.active > .menu-link {
+    background: #eff6ff;
+    color: #3b82f6;
+}
+
+.menu-icon {
+    flex-shrink: 0;
+}
+
+.menu-text {
+    flex: 1;
+}
+
+.menu-arrow {
+    transition: transform 0.2s;
+}
+
+.menu-item.expanded .menu-arrow {
+    transform: rotate(90deg);
+}
+
+/* 서브메뉴 */
+.submenu {
+    display: none;
+    list-style: none;
+    padding: 4px 0 8px 44px;
+    margin: 0;
+}
+
+.menu-item.expanded .submenu {
+    display: block;
+}
+
+.submenu-link {
+    display: block;
+    padding: 8px 12px;
+    color: #6b7280;
+    text-decoration: none;
+    font-size: 13px;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.submenu-link:hover {
+    background: #f9fafb;
+    color: #111827;
+}
+
+.submenu-divider {
+    height: 1px;
+    background: #e5e7eb;
+    margin: 8px 12px;
+}
+
+/* 사용자 정보 */
+/* ====================================================
+   툴팁 (축소 모드)
+   ==================================================== */
+.sidebar.collapsed .menu-link::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: calc(100% + 12px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: #1e293b;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    pointer-events: none;
+    font-size: 13px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1001;
+}
+
+.sidebar.collapsed .menu-link::before {
+    content: '';
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 5px solid transparent;
+    border-right-color: #1e293b;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    pointer-events: none;
+    z-index: 1001;
+    margin-left: 7px;
+}
+
+.sidebar.collapsed .menu-link:hover::after,
+.sidebar.collapsed .menu-link:hover::before {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0.5s;
+}
+
+.sidebar-footer {
+    padding: 12px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    background: #f3f4f6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6b7280;
+}
+
+.user-details {
+    flex: 1;
+}
+
+.user-name {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.user-link {
+    font-size: 12px;
+    color: #6b7280;
+    text-decoration: none;
+}
+
+.user-link:hover {
+    color: #3b82f6;
+}
+
+.logout-btn {
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.logout-btn:hover {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+/* =====================================================
+   모바일 반응형 (768px 이하)
+   ===================================================== */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+        width: 280px !important; /* 모바일에서는 항상 전체 너비 */
+    }
+
+    .sidebar.mobile-open {
+        transform: translateX(0);
+    }
+
+    /* 모바일에서는 collapsed 클래스 무시 */
+    .sidebar.collapsed {
+        width: 280px !important;
+    }
+
+    .sidebar.collapsed .sidebar-title,
+    .sidebar.collapsed .menu-text,
+    .sidebar.collapsed .menu-arrow,
+    .sidebar.collapsed .academy-name,
+    .sidebar.collapsed .academy-switch,
+    .sidebar.collapsed .user-details {
+        opacity: 1;
+        visibility: visible;
+        width: auto;
+    }
+
+    .sidebar.collapsed .submenu {
+        display: block !important;
+    }
+
+    .sidebar.collapsed .menu-item.expanded .submenu {
+        display: block !important;
+    }
+
+    /* 토글 버튼 숨김 (모바일에서는 햄버거 메뉴만) */
+    .sidebar-toggle-btn {
+        display: none;
+    }
+}
+
+/* =====================================================
+   메인 컨텐츠 영역 조정
+   ===================================================== */
+.main-content {
+    margin-left: 260px;
+    transition: margin-left 0.3s ease;
+}
+
+.sidebar.collapsed ~ .main-content {
+    margin-left: 70px;
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0 !important;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // =====================================================
+    // 요소 선택
+    // =====================================================
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const logoutBtn = document.getElementById('sidebarLogoutBtn');
+
+    // =====================================================
+    // LocalStorage에서 사이드바 상태 복원
+    // =====================================================
+    const savedCollapsed = localStorage.getItem('sidebarCollapsed');
+    if (savedCollapsed === 'true' && window.innerWidth > 768) {
+        sidebar.classList.add('collapsed');
+    }
+
+    // =====================================================
+    // 데스크톱 사이드바 토글 (축소/확장)
+    // =====================================================
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            // 모바일이 아닐 때만 작동
+            if (window.innerWidth > 768) {
+                const isCollapsed = sidebar.classList.toggle('collapsed');
+
+                // LocalStorage에 상태 저장
+                localStorage.setItem('sidebarCollapsed', isCollapsed);
+
+                // 축소 시 열린 서브메뉴 닫기
+                if (isCollapsed) {
+                    document.querySelectorAll('.menu-item.expanded').forEach(item => {
+                        item.classList.remove('expanded');
+                    });
+                }
+            }
+        });
+    }
+
+    // =====================================================
+    // 모바일 햄버거 메뉴 토글
+    // =====================================================
+    if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            openMobileSidebar();
+        });
+    }
+
+    // =====================================================
+    // 오버레이 클릭 시 사이드바 닫기
+    // =====================================================
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', function() {
+            closeMobileSidebar();
+        });
+    }
+
+    // =====================================================
+    // 모바일 사이드바 열기/닫기 함수
+    // =====================================================
+    function openMobileSidebar() {
+        sidebar.classList.add('mobile-open');
+        sidebarOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden'; // 스크롤 방지
+    }
+
+    function closeMobileSidebar() {
+        sidebar.classList.remove('mobile-open');
+        sidebarOverlay.classList.remove('active');
+        document.body.style.overflow = ''; // 스크롤 복원
+    }
+
+    // =====================================================
+    // 터치 스와이프 제스처 (모바일)
+    // =====================================================
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    // 좌측 가장자리에서 스와이프하여 사이드바 열기
+    document.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+
+        // 좌측 가장자리 (50px 이내)에서 시작
+        if (touchStartX < 50 && window.innerWidth <= 768) {
+            touchStartX = e.changedTouches[0].screenX;
+        }
+    }, { passive: true });
+
+    document.addEventListener('touchend', function(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+        if (window.innerWidth > 768) return;
+
+        const swipeDistance = touchEndX - touchStartX;
+        const minSwipeDistance = 100;
+
+        // 우측으로 스와이프 (사이드바 열기)
+        if (swipeDistance > minSwipeDistance && touchStartX < 50) {
+            openMobileSidebar();
+        }
+
+        // 좌측으로 스와이프 (사이드바 닫기)
+        if (swipeDistance < -minSwipeDistance && sidebar.classList.contains('mobile-open')) {
+            closeMobileSidebar();
+        }
+    }
+
+    // =====================================================
+    // 서브메뉴 토글
+    // =====================================================
+    document.querySelectorAll('.menu-link[data-toggle="submenu"]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const menuItem = this.parentElement;
+            const wasExpanded = menuItem.classList.contains('expanded');
+
+            // 사이드바가 축소되어 있으면 서브메뉴 열지 않음
+            if (sidebar.classList.contains('collapsed') && window.innerWidth > 768) {
+                return;
+            }
+
+            // 다른 메뉴 닫기
+            document.querySelectorAll('.menu-item.expanded').forEach(item => {
+                if (item !== menuItem) {
+                    item.classList.remove('expanded');
+                }
+            });
+
+            // 현재 메뉴 토글
+            menuItem.classList.toggle('expanded', !wasExpanded);
+        });
+    });
+
+    // =====================================================
+    // 로그아웃
+    // =====================================================
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async function() {
+            if (confirm('로그아웃 하시겠습니까?')) {
+                try {
+                    // Refresh Token 가져오기
+                    const refreshToken = localStorage.getItem('refreshToken');
+
+                    const response = await fetch('/api/auth/logout', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ refreshToken })
+                    });
+
+                    if (response.ok) {
+                        // LocalStorage 토큰 제거
+                        localStorage.removeItem('accessToken');
+                        localStorage.removeItem('refreshToken');
+
+                        // 사이드바 상태는 유지 (사용자 편의성)
+                        // localStorage.removeItem('sidebarCollapsed');
+
+                        window.location.href = '/login';
+                    } else {
+                        throw new Error('로그아웃 요청 실패');
+                    }
+                } catch (error) {
+                    console.error('로그아웃 오류:', error);
+                    alert('로그아웃 중 오류가 발생했습니다.');
+                }
+            }
+        });
+    }
+
+    // =====================================================
+    // 현재 페이지에 해당하는 서브메뉴 자동 열기
+    // =====================================================
+    const activeMenuItem = document.querySelector('.menu-item.active.has-submenu');
+    if (activeMenuItem && !sidebar.classList.contains('collapsed')) {
+        activeMenuItem.classList.add('expanded');
+    }
+
+    // =====================================================
+    // 윈도우 리사이즈 시 처리
+    // =====================================================
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            // 데스크톱으로 전환 시 모바일 상태 초기화
+            if (window.innerWidth > 768) {
+                closeMobileSidebar();
+
+                // LocalStorage에서 collapsed 상태 복원
+                const savedCollapsed = localStorage.getItem('sidebarCollapsed');
+                if (savedCollapsed === 'true') {
+                    sidebar.classList.add('collapsed');
+                } else {
+                    sidebar.classList.remove('collapsed');
+                }
+            } else {
+                // 모바일로 전환 시 collapsed 제거
+                sidebar.classList.remove('collapsed');
+            }
+        }, 250);
+    });
+
+    // =====================================================
+    // ESC 키로 모바일 사이드바 닫기
+    // =====================================================
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && sidebar.classList.contains('mobile-open')) {
+            closeMobileSidebar();
+        }
+    });
+});
+</script>
