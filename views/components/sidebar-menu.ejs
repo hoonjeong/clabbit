@@ -552,6 +552,15 @@
 .menu-item.active > .menu-link {
     background: #eff6ff;
     color: #3b82f6;
+    font-weight: 600;
+    border-left: 4px solid #3b82f6;
+    padding-left: 8px; /* 테두리 공간 보정 */
+}
+
+/* 축소 모드에서도 활성 메뉴 표시 */
+.sidebar.collapsed .menu-item.active > .menu-link {
+    border-left: 4px solid #3b82f6;
+    padding-left: 0; /* 축소 모드에서는 중앙 정렬 유지 */
 }
 
 .menu-icon {
@@ -590,11 +599,21 @@
     font-size: 13px;
     border-radius: 6px;
     transition: all 0.2s;
+    position: relative;
 }
 
 .submenu-link:hover {
     background: #f9fafb;
     color: #111827;
+}
+
+/* 현재 페이지의 서브메뉴 항목 강조 */
+.submenu-link.active {
+    background: #eff6ff;
+    color: #3b82f6;
+    font-weight: 600;
+    border-left: 3px solid #3b82f6;
+    padding-left: 9px; /* 테두리 공간 보정 */
 }
 
 .submenu-divider {
@@ -952,12 +971,26 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // =====================================================
-    // 현재 페이지에 해당하는 서브메뉴 자동 열기
+    // 현재 페이지에 해당하는 서브메뉴 자동 열기 및 활성 표시
     // =====================================================
     const activeMenuItem = document.querySelector('.menu-item.active.has-submenu');
     if (activeMenuItem && !sidebar.classList.contains('collapsed')) {
         activeMenuItem.classList.add('expanded');
     }
+
+    // 현재 페이지 경로와 일치하는 서브메뉴 링크에 active 클래스 추가
+    const currentPath = window.location.pathname;
+    document.querySelectorAll('.submenu-link').forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
+
+            // 해당 서브메뉴의 부모 메뉴도 열기
+            const parentMenuItem = link.closest('.menu-item.has-submenu');
+            if (parentMenuItem && !sidebar.classList.contains('collapsed')) {
+                parentMenuItem.classList.add('expanded');
+            }
+        }
+    });
 
     // =====================================================
     // 윈도우 리사이즈 시 처리

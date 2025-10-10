@@ -10,15 +10,31 @@
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/dashboard.css">
     <style>
-        /* Body padding for fixed header */
-        body {
-            padding-top: 70px;
+        /* 횟수제 관리 메인 레이아웃 */
+        .sessions-main {
+            margin-left: 260px;
+            background: #F8F9FA;
+            min-height: 100vh;
+            padding: 3rem 0;
+            transition: margin-left 0.3s ease;
+        }
+
+        .sidebar.collapsed ~ .sessions-main {
+            margin-left: 70px;
+        }
+
+        @media (max-width: 768px) {
+            .sessions-main {
+                margin-left: 0 !important;
+                padding: 1.5rem 0;
+                padding-top: 72px;
+            }
         }
 
         .sessions-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 0 20px;
         }
 
         .page-header {
@@ -324,7 +340,8 @@
         userName: userName
     }) %>
 
-    <div class="sessions-container">
+    <main class="sessions-main">
+        <div class="sessions-container">
         <div class="page-header">
             <h1 class="page-title">횟수제 학생 관리</h1>
             <button class="btn-add-session" onclick="openNewStudentModal()">
@@ -381,7 +398,8 @@
                 <div class="empty-message">횟수제로 운영되는 학생을 추가해주세요.</div>
             </div>
         </div>
-    </div>
+        </div>
+    </main>
 
     <!-- 횟수 조정 모달 -->
     <div id="adjustModal" class="modal">

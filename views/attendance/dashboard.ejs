@@ -10,16 +10,24 @@
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/dashboard.css">
     <style>
-        /* Body padding for fixed header */
-        body {
-            padding-top: 70px;
+        /* 대시보드 메인 레이아웃 */
+        .attendance-dashboard-main {
+            margin-left: 260px;
+            background: #F8F9FA;
+            min-height: 100vh;
+            padding: 3rem 0;
+            transition: margin-left 0.3s ease;
+        }
+
+        .sidebar.collapsed ~ .attendance-dashboard-main {
+            margin-left: 70px;
         }
 
         /* 대시보드 스타일 */
         .dashboard-container {
-            max-width: 1600px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 0 20px;
         }
 
         .page-header {
@@ -339,6 +347,12 @@
 
         /* 반응형 */
         @media (max-width: 768px) {
+            .attendance-dashboard-main {
+                margin-left: 0 !important;
+                padding: 1.5rem 0;
+                padding-top: 72px; /* 햄버거 메뉴 공간 확보 */
+            }
+
             .student-grid {
                 grid-template-columns: 1fr;
             }
@@ -398,7 +412,8 @@
 <body>
     <%- include('../components/sidebar-menu', { academyName, page, userName }) %>
 
-    <div class="dashboard-container">
+    <main class="attendance-dashboard-main">
+        <div class="dashboard-container">
         <div class="page-header">
             <h1 class="dashboard-title">출결 관리 대시보드</h1>
             <div class="current-time" id="currentTime"></div>
@@ -481,7 +496,7 @@
                 <!-- 동적으로 생성 -->
             </div>
         </div>
-    </div>
+    </main>
 
     <script>
         let dashboardData = null;

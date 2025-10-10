@@ -10,15 +10,31 @@
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/dashboard.css">
     <style>
-        /* Body padding for fixed header */
-        body {
-            padding-top: 70px;
+        /* 보강수업 메인 레이아웃 */
+        .makeup-main {
+            margin-left: 260px;
+            background: #F8F9FA;
+            min-height: 100vh;
+            padding: 3rem 0;
+            transition: margin-left 0.3s ease;
+        }
+
+        .sidebar.collapsed ~ .makeup-main {
+            margin-left: 70px;
+        }
+
+        @media (max-width: 768px) {
+            .makeup-main {
+                margin-left: 0 !important;
+                padding: 1.5rem 0;
+                padding-top: 72px;
+            }
         }
 
         .makeup-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 0 20px;
         }
 
         .makeup-header {
@@ -360,7 +376,8 @@
 <body>
     <%- include('../components/sidebar-menu', { academyName, page, userName }) %>
 
-    <div class="makeup-container">
+    <main class="makeup-main">
+        <div class="makeup-container">
         <div class="makeup-header">
             <h1 class="page-title">보강 수업 관리</h1>
             <button class="btn-add-makeup" onclick="openAddModal()">+ 보강 수업 등록</button>
@@ -431,7 +448,8 @@
                 </tr>
             </tbody>
         </table>
-    </div>
+        </div>
+    </main>
 
     <!-- 보강 수업 등록/수정 모달 -->
     <div id="makeupModal" class="modal">

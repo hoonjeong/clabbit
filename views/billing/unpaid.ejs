@@ -9,8 +9,31 @@
     <link rel="stylesheet" href="/css/layout.css">
     <link rel="stylesheet" href="/css/style.css">
     <style>
+        /* 미납자 관리 메인 레이아웃 */
+        .unpaid-main {
+            margin-left: 260px;
+            background: #F8F9FA;
+            min-height: 100vh;
+            padding: 3rem 0;
+            transition: margin-left 0.3s ease;
+        }
+
+        .sidebar.collapsed ~ .unpaid-main {
+            margin-left: 70px;
+        }
+
+        @media (max-width: 768px) {
+            .unpaid-main {
+                margin-left: 0 !important;
+                padding: 1.5rem 0;
+                padding-top: 72px;
+            }
+        }
+
         .unpaid-container {
-            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
         }
 
         .page-header {
@@ -249,7 +272,8 @@
 <body>
     <%- include('../components/sidebar-menu', { academyName, userName, page }) %>
 
-    <div class="unpaid-container">
+    <main class="unpaid-main">
+        <div class="unpaid-container">
         <div class="page-header">
             <h1>미납자 관리</h1>
             <div class="export-buttons">
@@ -308,7 +332,8 @@
                 </tbody>
             </table>
         </div>
-    </div>
+        </div>
+    </main>
 
     <!-- 알림 발송 모달 -->
     <div id="notificationModal" class="modal">

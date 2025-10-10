@@ -10,8 +10,31 @@
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/dashboard.css">
     <style>
+        /* 청구/수납 메인 레이아웃 */
+        .billing-dashboard-main {
+            margin-left: 260px;
+            background: #F8F9FA;
+            min-height: 100vh;
+            padding: 3rem 0;
+            transition: margin-left 0.3s ease;
+        }
+
+        .sidebar.collapsed ~ .billing-dashboard-main {
+            margin-left: 70px;
+        }
+
+        @media (max-width: 768px) {
+            .billing-dashboard-main {
+                margin-left: 0 !important;
+                padding: 1.5rem 0;
+                padding-top: 72px; /* 햄버거 메뉴 공간 확보 */
+            }
+        }
+
         .billing-dashboard {
-            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
         }
 
         .dashboard-stats {
@@ -161,7 +184,8 @@
 <body>
     <%- include('../components/sidebar-menu', { academyName, userName, page }) %>
 
-    <div class="billing-dashboard">
+    <main class="billing-dashboard-main">
+        <div class="billing-dashboard">
         <h1>청구/수납 관리</h1>
 
         <!-- 통계 카드 -->
@@ -236,7 +260,7 @@
                 <!-- 동적으로 로드됨 -->
             </div>
         </div>
-    </div>
+    </main>
 
     <script>
         // 대시보드 데이터 로드

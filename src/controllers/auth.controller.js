@@ -192,17 +192,26 @@ class AuthController {
         if (err) {
           console.error('세션 삭제 오류:', err);
         }
+
+        // 세션 쿠키 명시적 삭제 (보안 강화)
+        res.clearCookie('clabbit_session');
+        res.clearCookie('connect.sid'); // 기본 세션 쿠키도 삭제
+
+        // 캐시 제어 헤더 추가 (뒤로가기 방지)
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+
+        // API 요청인 경우
+        if (req.path.startsWith('/api/')) {
+          return successResponse(res, {
+            message: '로그아웃되었습니다.'
+          });
+        }
+
+        // 페이지 요청인 경우
+        res.redirect('/login');
       });
-
-      // API 요청인 경우
-      if (req.path.startsWith('/api/')) {
-        return successResponse(res, {
-          message: '로그아웃되었습니다.'
-        });
-      }
-
-      // 페이지 요청인 경우
-      res.redirect('/login');
 
     } catch (error) {
       console.error('로그아웃 오류:', error);

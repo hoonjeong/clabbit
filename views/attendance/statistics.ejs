@@ -12,15 +12,31 @@
     <!-- Chart.js 라이브러리 -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Body padding for fixed header */
-        body {
-            padding-top: 70px;
+        /* 출결 통계 메인 레이아웃 */
+        .statistics-main {
+            margin-left: 260px;
+            background: #F8F9FA;
+            min-height: 100vh;
+            padding: 3rem 0;
+            transition: margin-left 0.3s ease;
+        }
+
+        .sidebar.collapsed ~ .statistics-main {
+            margin-left: 70px;
+        }
+
+        @media (max-width: 768px) {
+            .statistics-main {
+                margin-left: 0 !important;
+                padding: 1.5rem 0;
+                padding-top: 72px;
+            }
         }
 
         .statistics-container {
-            max-width: 1600px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 0 20px;
         }
 
         .statistics-header {
@@ -286,7 +302,8 @@
 <body>
     <%- include('../components/sidebar-menu', { academyName, page, userName }) %>
 
-    <div class="statistics-container">
+    <main class="statistics-main">
+        <div class="statistics-container">
         <div class="statistics-header">
             <h1 class="page-title">출결 통계 분석</h1>
             <div class="export-buttons">
@@ -425,7 +442,8 @@
                 </tbody>
             </table>
         </div>
-    </div>
+        </div>
+    </main>
 
     <script>
         let currentPeriod = 'month';

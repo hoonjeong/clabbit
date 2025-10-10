@@ -9,6 +9,37 @@ require('dotenv').config();
 // 설정 및 상수
 const { SESSION } = require('./src/config/constants');
 
+// ==================== 환경 변수 검증 ====================
+const requiredEnvVars = {
+    development: ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_NAME'],
+    production: ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_NAME', 'SESSION_SECRET']
+};
+
+const currentEnv = process.env.NODE_ENV || 'development';
+const missingVars = [];
+
+requiredEnvVars[currentEnv].forEach(varName => {
+    if (!process.env[varName]) {
+        missingVars.push(varName);
+    }
+});
+
+if (missingVars.length > 0) {
+    console.error('❌ 필수 환경 변수가 설정되지 않았습니다:');
+    missingVars.forEach(varName => {
+        console.error(`   - ${varName}`);
+    });
+    console.error('\n.env 파일을 확인하고 누락된 환경 변수를 추가하세요.');
+    console.error('예시: .env.example 파일을 참조하세요.\n');
+
+    if (currentEnv === 'production') {
+        console.error('프로덕션 환경에서는 모든 필수 환경 변수가 설정되어야 합니다.');
+        process.exit(1);
+    } else {
+        console.error('⚠️  개발 환경에서 계속 진행하지만, 일부 기능이 작동하지 않을 수 있습니다.\n');
+    }
+}
+
 // 데이터베이스 연결 초기화
 const db = require('./src/config/database');
 
@@ -40,18 +71,6 @@ const sessionStore = new MySQLStore({
   checkExpirationInterval: 900000, // 15분마다 만료된 세션 정리
   expiration: SESSION.MAX_AGE
 });
-
-// 세션 시크릿 검증
-if (!process.env.SESSION_SECRET) {
-  console.error('⚠️  경고: SESSION_SECRET이 설정되지 않았습니다!');
-  console.error('   .env 파일에 SESSION_SECRET을 반드시 설정하세요.');
-  console.error('   프로덕션 환경에서는 서버가 시작되지 않습니다.');
-
-  if (process.env.NODE_ENV === 'production') {
-    console.error('❌ 프로덕션 환경에서는 SESSION_SECRET이 필수입니다.');
-    process.exit(1);
-  }
-}
 
 // 세션 설정
 const sessionMiddleware = session({
@@ -98,6 +117,30 @@ app.use((req, res, next) => {
 
   // 권한 정책
   res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+
+  next();
+});
+
+// 캐시 제어 미들웨어 (로그아웃 후 뒤로가기 방지)
+app.use((req, res, next) => {
+  // 정적 파일과 업로드 파일은 캐싱 허용
+  if (req.path.startsWith('/uploads/') ||
+      req.path.startsWith('/css/') ||
+      req.path.startsWith('/js/') ||
+      req.path.startsWith('/images/')) {
+    return next();
+  }
+
+  // 로그인 페이지는 캐싱 허용 (성능 최적화)
+  if (req.path === '/login' || req.path === '/') {
+    return next();
+  }
+
+  // 그 외 모든 페이지는 캐시 비활성화 (보안 강화)
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Surrogate-Control', 'no-store');
 
   next();
 });

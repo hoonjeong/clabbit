@@ -10,11 +10,31 @@
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/dashboard.css">
     <style>
-        /* 출결 현황 페이지 스타일 */
+        /* 출결 현황 메인 레이아웃 */
+        .records-main {
+            margin-left: 260px;
+            background: #F8F9FA;
+            min-height: 100vh;
+            padding: 3rem 0;
+            transition: margin-left 0.3s ease;
+        }
+
+        .sidebar.collapsed ~ .records-main {
+            margin-left: 70px;
+        }
+
+        @media (max-width: 768px) {
+            .records-main {
+                margin-left: 0 !important;
+                padding: 1.5rem 0;
+                padding-top: 72px;
+            }
+        }
+
         .attendance-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 0 20px;
         }
 
         .page-header {
@@ -375,7 +395,8 @@
         userName: userName
     }) %>
 
-    <div class="attendance-container">
+    <main class="records-main">
+        <div class="attendance-container">
         <div class="page-header">
             <h1 class="page-title">출결 현황</h1>
         </div>
@@ -476,7 +497,8 @@
                 <!-- 동적으로 생성됨 -->
             </div>
         </div>
-    </div>
+        </div>
+    </main>
 
     <!-- 로딩 오버레이 -->
     <div class="loading-overlay" id="loadingOverlay">

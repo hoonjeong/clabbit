@@ -8,18 +8,28 @@ function requireAuth(req, res, next) {
       if (err) {
         console.error('세션 삭제 실패:', err);
       }
+
+      // 세션 쿠키 명시적 삭제
+      res.clearCookie('clabbit_session');
+      res.clearCookie('connect.sid');
+
+      // 캐시 제어 헤더 추가 (뒤로가기 방지)
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+
+      // API 요청인 경우
+      if (req.path.startsWith('/api/')) {
+        return res.status(401).json({
+          success: false,
+          error: '로그인이 필요합니다.'
+        });
+      }
+
+      // 페이지 요청인 경우
+      return res.redirect('/login');
     });
-
-    // API 요청인 경우
-    if (req.path.startsWith('/api/')) {
-      return res.status(401).json({
-        success: false,
-        error: '로그인이 필요합니다.'
-      });
-    }
-
-    // 페이지 요청인 경우
-    return res.redirect('/login');
+    return;
   }
 
   // 세션 재생성 (세션 하이재킹 방지 - 일정 시간마다)
